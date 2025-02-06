@@ -36,6 +36,7 @@ android {
 
 dependencies {
 
+    implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
