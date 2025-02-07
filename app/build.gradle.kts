@@ -1,4 +1,5 @@
 plugins {
+    id("com.google.gms.google-services")
     alias(libs.plugins.android.application)
 }
 
@@ -36,6 +37,9 @@ android {
 
 dependencies {
 
+    implementation("com.google.firebase:firebase-auth:22.2.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -44,6 +48,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
