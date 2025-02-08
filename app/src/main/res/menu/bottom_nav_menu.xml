@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/recording"
-        android:title="@string/title_home" />
+        android:icon="@drawable/record"
+        android:title="기록" />
 
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/add_trip"
-        android:title="@string/title_dashboard" />
+        android:title="여행추가" />
 
     <item
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/my_infomation"
-        android:title="@string/title_notifications" />
+        android:title="내 정보" />
 
 </menu>
