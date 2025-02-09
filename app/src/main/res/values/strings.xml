@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TripKey</string>
+    <string name="title_plus">여행 추가</string>
+    <string name="title_info">내 정보</string>
+    <string name="title_home">홈</string>
+
+</resources>
