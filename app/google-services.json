@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "389506781836",
+    "project_id": "tripkey-ba867",
+    "storage_bucket": "tripkey-ba867.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:389506781836:android:f12989e4249350d575e1a9",
+        "android_client_info": {
+          "package_name": "com.example.tripkey"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoIjQ7U08LrZdYuM_5HNOiL-D7x_JLKQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

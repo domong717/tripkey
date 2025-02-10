@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.tripkey" />
+                  <option name="mobileSdkAppId" value="1:389506781836:android:f12989e4249350d575e1a9" />
+                  <option name="projectId" value="tripkey-ba867" />
+                  <option name="projectNumber" value="389506781836" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

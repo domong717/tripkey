@@ -2,7 +2,7 @@
     <style name="Theme.TripKey" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/toolbar</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimaryVariant">@color/mid_green</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="actionBarSize">80dp</item>
         <!-- 툴바 제목 글자 색상 및 크기 설정 -->

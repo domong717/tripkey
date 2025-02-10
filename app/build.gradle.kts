@@ -1,4 +1,6 @@
 plugins {
+
+    id("com.google.gms.google-services")
     alias(libs.plugins.android.application)
 }
 
@@ -9,7 +11,9 @@ android {
     defaultConfig {
         applicationId = "com.example.tripkey"
         minSdk = 24
+
         targetSdk = 35
+
         versionCode = 1
         versionName = "1.0"
 
@@ -26,8 +30,10 @@ android {
         }
     }
     compileOptions {
+
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
     }
     buildFeatures {
         viewBinding = true
@@ -36,6 +42,11 @@ android {
 
 dependencies {
 
+    implementation("com.google.firebase:firebase-auth:22.2.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.kakao.sdk:v2-user:2.19.0")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -43,7 +54,9 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(libs.legacy.support.v4)
+
+    implementation(libs.firebase.firestore)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
