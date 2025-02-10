@@ -3,7 +3,6 @@ package com.example.tripkey;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -39,32 +38,41 @@ public class LoginActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.account_reg);  // 회원가입 버튼
         kakaoLoginButton = findViewById(R.id.btn_kakao_login);
 
-        loginButton.setOnClickListener(v -> loginWithFirebase());
+        loginButton.setOnClickListener(v -> loginWithFirestore());
         registerButton.setOnClickListener(v -> moveToRegisterActivity()); // 회원가입 이동
         kakaoLoginButton.setOnClickListener(v -> loginWithKakao());
     }
 
-    private void loginWithFirebase() {
-        String id = inputId.getText().toString().trim();
+    private void loginWithFirestore() {
+        String userId = inputId.getText().toString().trim();
         String password = inputPassword.getText().toString().trim();
 
-        if (id.isEmpty() || password.isEmpty()) {
+        if (userId.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "모든 필드를 입력하세요.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        mAuth.signInWithEmailAndPassword(id + "@example.com", password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (user != null) {
-                            fetchUserData(id);
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String storedPassword = documentSnapshot.getString("pwd"); // Firestore에 저장된 비밀번호 가져오기
+                        if (storedPassword != null && storedPassword.equals(password)) {
+                            String userName = documentSnapshot.getString("userName"); // Firestore에서 userName 가져오기
+                            Toast.makeText(LoginActivity.this, "로그인 성공!", Toast.LENGTH_SHORT).show();
+                            moveToMainActivity(userName);
+                        } else {
+                            Toast.makeText(LoginActivity.this, "비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(LoginActivity.this, "로그인 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "사용자 ID를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
                     }
-                });
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(LoginActivity.this, "로그인 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
+
 
     private void loginWithKakao() {
         if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(this)) {
