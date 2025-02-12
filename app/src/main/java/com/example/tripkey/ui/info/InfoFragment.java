@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -27,12 +27,8 @@ public class InfoFragment extends Fragment {
         binding = FragmentInfoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // TextView 데이터 설정
-        final TextView textView = binding.textInfo;
-        infoViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
-        // 버튼 클릭 이벤트 설정
-        binding.buttonRecord.setOnClickListener(new View.OnClickListener() {
+        // 클릭 이벤트 설정 (뷰 바인딩 활용)
+        binding.recordLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RecordActivity.class);
