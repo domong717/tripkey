@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 public class MBTITestActivity extends AppCompatActivity {
 
@@ -262,9 +263,11 @@ public class MBTITestActivity extends AppCompatActivity {
 
     // 선택지 버튼 클릭 시 색상 변경 함수
     private void onOptionSelected(Button selectedButton, Button unselectedButton) {
-        selectedButton.setBackgroundColor(getResources().getColor(R.color.dark_green));  // 선택한 버튼 색상 변경
-        unselectedButton.setBackgroundColor(getResources().getColor(R.color.mid_green));  // 선택되지 않은 버튼 원래 색상
+        selectedButton.setBackgroundColor(ContextCompat.getColor(MBTITestActivity.this, R.color.dark_green));  // 선택한 버튼 색상 변경
+        unselectedButton.setBackgroundColor(ContextCompat.getColor(MBTITestActivity.this, R.color.mid_green));  // 선택되지 않은 버튼 원래 색상
     }
+
+
     private String getMBTIResult() {
         StringBuilder mbti = new StringBuilder();
 
