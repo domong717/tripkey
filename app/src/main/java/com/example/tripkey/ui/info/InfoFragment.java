@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.content.Intent;
 import android.widget.Toast;
+import com.example.tripkey.MBTIDescriptionActivity;
+import com.example.tripkey.RecordActivity;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -61,7 +64,19 @@ public class InfoFragment extends Fragment {
             binding.myName.setText("로그인 필요");
         }
 
+        binding.mbtiLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MBTIDescriptionActivity.class);
+            startActivity(intent);
+        });
+
+        binding.recordLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), RecordActivity.class);
+            startActivity(intent);
+        });
+
         return root;
+
+
     }
 
     @Override

@@ -6,6 +6,14 @@ import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import android.content.Context;
+import android.content.SharedPreferences;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
+import android.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MBTITestActivity extends AppCompatActivity {
 
@@ -17,6 +25,8 @@ public class MBTITestActivity extends AppCompatActivity {
     private int simple = 0; // simple 선택지 카운트
     private int food = 0; // food 선택지 카운트
     private int museum = 0; // museum 선택지 카운트
+
+    private FirebaseFirestore db;
 
     // 버튼 변수 선언
     private Button q1Option1, q1Option2, q2Option1, q2Option2, q3Option1, q3Option2;
@@ -256,6 +266,9 @@ public class MBTITestActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String mbtiType = getMBTIResult();
                 Toast.makeText(MBTITestActivity.this, "당신의 MBTI는: " + mbtiType, Toast.LENGTH_SHORT).show();
+
+                // Firestore에 MBTI 결과 저장
+                saveMBTIResult(mbtiType);
             }
         });
 
@@ -266,6 +279,30 @@ public class MBTITestActivity extends AppCompatActivity {
         selectedButton.setBackgroundColor(ContextCompat.getColor(MBTITestActivity.this, R.color.dark_green));  // 선택한 버튼 색상 변경
         unselectedButton.setBackgroundColor(ContextCompat.getColor(MBTITestActivity.this, R.color.mid_green));  // 선택되지 않은 버튼 원래 색상
     }
+
+    private void saveMBTIResult(String mbtiType) {
+        db = FirebaseFirestore.getInstance();  // Firestore 초기화
+
+        // 현재 로그인한 사용자의 이름을 SharedPreferences에서 가져오기
+        SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userName = sharedPref.getString("userId", null);
+
+        if (userName == null) {
+            Toast.makeText(this, "사용자 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Firestore에 저장할 데이터 생성
+        Map<String, Object> data = new HashMap<>();
+        data.put("mbti", mbtiType);
+
+        // Firestore의 "users" 컬렉션에서 해당 userName 문서 업데이트 (없으면 생성)
+        db.collection("users").document(userName)
+                .set(data, SetOptions.merge()) // 기존 데이터 유지하면서 "mbti"만 추가/업데이트
+                .addOnSuccessListener(aVoid -> Log.d("MBTI", "MBTI 저장 완료!"))
+                .addOnFailureListener(e -> Log.e("MBTI", "MBTI 저장 실패: " + e.getMessage()));
+    }
+
 
 
     private String getMBTIResult() {
