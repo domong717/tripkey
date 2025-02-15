@@ -5,6 +5,10 @@
     <!-- 인터넷 사용 권한 추가 -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- 사용자 갤러리 접근 권한 추가 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
     <!-- 특정 앱(카카오톡 등)만 조회할 수 있도록 queries 추가 -->
     <queries>
         <package android:name="com.kakao.talk" />  <!-- 카카오톡 패키지 -->
