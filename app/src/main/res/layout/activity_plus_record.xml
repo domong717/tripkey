@@ -73,7 +73,7 @@
         app:srcCompat="@drawable/gray_box_full" />
 
     <EditText
-        android:id="@+id/placeEditText"
+        android:id="@+id/place_edit_text"
         android:layout_width="280dp"
         android:layout_height="50dp"
         android:layout_marginStart="64dp"
@@ -170,7 +170,7 @@
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="526dp"
+        android:layout_marginTop="535dp"
         android:background="@android:color/transparent"
         android:hint="ex ) 입맛 까다로운 내 친구도 엄청 맛있게 먹고 간 맛집! 사람이 너무 많아서 웨이팅은 필수 ㅠㅠ"
         android:textSize="16dp"

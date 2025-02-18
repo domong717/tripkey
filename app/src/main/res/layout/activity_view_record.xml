@@ -7,14 +7,117 @@
     android:layout_height="match_parent"
     tools:context=".ViewRecordActivity">
 
-    <TextView
-        android:id="@+id/textView1"
+    <!-- toolbar ~ backbutton 까지 다른 activity에서도 사용 !-->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@color/toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <TextView
+            android:id="@+id/toolbarTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="기록 모아보기"
+            android:textSize="30dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+    </androidx.appcompat.widget.Toolbar>
+    <ImageButton
+        android:id="@+id/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="여행기록 보여주는 화면"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/back_button"
+        android:contentDescription="back 버튼"
+        />
+
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="360dp"
+        android:layout_height="604dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="108dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/yellow_box_full" />
+
+    <TextView
+        android:id="@+id/textViewTravelPlace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="120dp"
+        android:text="제주도 🍊"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/placeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="320dp"
+        android:text="방문 장소"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/recordTextView"
+        android:layout_width="249dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="8dp"
+        android:text="여행 기록"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/photoImageView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/photoImageView"
+        android:layout_width="282dp"
+        android:layout_height="108dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintHorizontal_bias="0.41"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/placeTextView" />
+
+    <ImageView
+        android:id="@+id/green_two_bar"
+        android:layout_width="316dp"
+        android:layout_height="134dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="160dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/green_two_bar" />
+
+    <TextView
+        android:id="@+id/travel_info_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="176dp"
+        android:text="여행지 : 제주도\n여행 기간 : 2024.01.06 ~ 2024.01.10\n여행 인원 : 7명\n1인당 총 경비 : 376,530원"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
