@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.content.Intent;
 import android.widget.Toast;
+
+import com.example.tripkey.ChecklistActivity;
 import com.example.tripkey.MBTIDescriptionActivity;
 import com.example.tripkey.RecordActivity;
 
@@ -71,6 +73,11 @@ public class InfoFragment extends Fragment {
 
         binding.recordLayout.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), RecordActivity.class);
+            startActivity(intent);
+        });
+
+        binding.checklistLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ChecklistActivity.class);
             startActivity(intent);
         });
 
