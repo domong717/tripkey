@@ -6,41 +6,307 @@
     android:layout_height="match_parent"
     tools:context=".ui.plus.PlusFragment">
 
+    <!-- 상단 Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="wrap_content"
         android:background="@color/toolbar"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
+
         <TextView
             android:id="@+id/toolbarTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="모임 만들기"
+            android:text="여행 정보 입력"
             android:textColor="@color/black"
-            android:textSize="30dp"
-            android:textStyle="bold"/>
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/textPlus"
+    <!-- 스크롤 가능한 내용 -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:text="plus"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/yellow_box_full"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <!-- 여행 이름 -->
+            <TextView
+                android:id="@+id/travel_name_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="1. 여행 이름"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:id="@+id/travel_name_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintStart_toEndOf="@id/travel_name_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/travel_name_label"
+                android:background="@drawable/gray_box_full"
+                android:hint=""
+                android:textAlignment="center"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/dark_green"
+                android:layout_marginVertical="8dp"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <!-- 장소 선택 -->
+            <TextView
+                android:id="@+id/place_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="2. 장소 선택"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintStart_toEndOf="@id/place_select"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/place_select"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/location_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:hint=""
+                    android:textAlignment="center"/>
+
+                <ImageButton
+                    android:id="@+id/location_search_button"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/search" />
+            </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/dark_green"
+                android:layout_marginVertical="8dp"/>
 
 
+            <!-- 일정 기간 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3. 일정"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="43dp"
+                android:background="@drawable/gray_box_full">
+
+                <EditText
+                    android:id="@+id/start_date_input"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="시작 날짜"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="~" />
+
+                <EditText
+                    android:id="@+id/end_date_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="종료 날짜"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/dark_green"
+                android:layout_marginVertical="8dp"/>
+
+            <!-- 누구와? -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4. 누구와?"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <Button
+                    android:id="@+id/who_alone_button"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:backgroundTint="@null"
+                    android:text="혼자"
+                    android:textSize="16sp"
+                    android:padding="0dp"/>
+
+                <Button
+                    android:id="@+id/who_couple_button"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:layout_margin="8dp"
+                    android:text="연인"
+                    android:textSize="16sp"
+                    android:padding="0dp"/>
+
+                <Button
+                    android:id="@+id/who_friend_button"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:text="친구"
+                    android:textSize="16sp"
+                    android:padding="0dp"/>
+
+
+                <!-- Add more options as needed -->
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/dark_green"
+                android:layout_marginVertical="8dp"/>
+
+            <!-- 여행 스타일 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5. 여행 스타일"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/style_keep_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:text="내 MBTI 유지"
+                    android:layout_marginEnd="16dp"
+                    android:padding="0dp"/>
+
+                <Button
+                    android:id="@+id/style_analyze_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:text="분석 다시하기"
+                    android:padding="0dp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/dark_green"
+                android:layout_marginVertical="8dp"/>
+
+            <!-- 꼭 들르고 싶은 곳 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6. 꼭 들르고 싶은 곳?"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/must_visit_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <!-- + 버튼 -->
+                <ImageButton
+                    android:id="@+id/add_place_button"
+                    android:layout_width="24dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Add Place"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/plus" />
+
+            </LinearLayout>
+
+            <!-- AI 일정 생성 -->
+            <Button
+                android:id="@+id/ai_schedule_button"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/green_box_full"
+                android:text="AI 일정 짜기" />
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
