@@ -47,6 +47,10 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.kakao.sdk:v2-user:2.19.0")
 
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
