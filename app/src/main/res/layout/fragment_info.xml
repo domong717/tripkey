@@ -93,7 +93,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-
     <!-- 체크리스트 버튼 -->
     <LinearLayout
         android:id="@+id/checklistLayout"
@@ -204,7 +203,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            android:scaleType="fitXY"
+            android:scaleType="fitCenter"
             android:src="@drawable/record_button"
             android:layout_marginHorizontal="37dp"
             android:layout_marginBottom="3dp"/>
