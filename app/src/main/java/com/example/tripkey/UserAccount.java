@@ -2,14 +2,16 @@ package com.example.tripkey;
 
 public class UserAccount {
     private String userName;
+    private String userId;
     private String pwd;
 
     // Firestore를 위한 기본 생성자
     public UserAccount() {}
 
     // 매개변수 생성자
-    public UserAccount(String userName, String pwd) {
+    public UserAccount(String userId, String userName,String pwd) {
         this.userName = userName;
+        this.userId = userId;
         this.pwd = pwd;
     }
 
@@ -20,6 +22,14 @@ public class UserAccount {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId){
+        this.userId = userId;
     }
 
     public String getPwd() {

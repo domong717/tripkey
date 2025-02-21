@@ -70,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Log.d("RegisterActivity", "이미 존재하는 사용자 ID입니다.");
                             Toast.makeText(RegisterActivity.this, "이미 존재하는 사용자 ID입니다.", Toast.LENGTH_SHORT).show();
                         } else {
-                            UserAccount newUser = new UserAccount(userId, pwd);
+                            UserAccount newUser = new UserAccount(userId, userId, pwd);
                             db.collection("users").document(userId).set(newUser)
                                     .addOnSuccessListener(aVoid -> {
                                         Log.d("RegisterActivity", "회원가입 성공");

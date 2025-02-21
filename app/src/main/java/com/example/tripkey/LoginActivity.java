@@ -138,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
                         db.collection("users").document(kakaoUserId)
-                                .set(new UserAccount(kakaoUserId, userName))
+                                .set(new UserAccount(kakaoUserId, userName, null))
                                 .addOnSuccessListener(aVoid -> {
                                     Log.i(TAG, "카카오 유저 Firestore 저장 완료");
                                     moveToMainActivity(userName);
