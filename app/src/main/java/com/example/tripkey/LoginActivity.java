@@ -1,6 +1,7 @@
 package com.example.tripkey;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -10,15 +11,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kakao.sdk.user.UserApiClient;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
-    private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private EditText inputId, inputPassword;
     private Button loginButton, registerButton;
@@ -29,7 +28,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
+        // 자동 로그인 체크
+        checkAutoLogin();
+
         db = FirebaseFirestore.getInstance();
 
         inputId = findViewById(R.id.input_id);
@@ -43,6 +44,18 @@ public class LoginActivity extends AppCompatActivity {
         kakaoLoginButton.setOnClickListener(v -> loginWithKakao());
     }
 
+    // 자동 로그인 체크
+    private void checkAutoLogin() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userId = prefs.getString("userId", null);  // 로그인 상태 확인
+
+        if (userId != null) {
+            // 이미 로그인된 상태라면 MainActivity로 이동
+            moveToMainActivity(userId);
+        }
+    }
+
+    // Firestore를 통한 로그인 처리
     private void loginWithFirestore() {
         String userId = inputId.getText().toString().trim();
         String password = inputPassword.getText().toString().trim();
@@ -60,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (storedPassword != null && storedPassword.equals(password)) {
                             String userName = documentSnapshot.getString("userName"); // Firestore에서 userName 가져오기
                             Toast.makeText(LoginActivity.this, "로그인 성공!", Toast.LENGTH_SHORT).show();
+                            saveLoginState(userId); // 로그인 상태 저장
                             moveToMainActivity(userName);
                         } else {
                             Toast.makeText(LoginActivity.this, "비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
@@ -68,12 +82,12 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "사용자 ID를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(LoginActivity.this, "로그인 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+                .addOnFailureListener(e -> {
+                    Toast.makeText(LoginActivity.this, "로그인 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
-
+    // 카카오 로그인 처리
     private void loginWithKakao() {
         if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(this)) {
             UserApiClient.getInstance().loginWithKakaoTalk(this, (token, error) -> {
@@ -98,23 +112,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchUserData(String id) {
-        db.collection("users").document(id)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String userName = documentSnapshot.getString("userName");
-                        Toast.makeText(LoginActivity.this, "환영합니다, " + userName + "님!", Toast.LENGTH_SHORT).show();
-                        moveToMainActivity(userName);
-                    } else {
-                        Toast.makeText(LoginActivity.this, "사용자 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(LoginActivity.this, "데이터 불러오기 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
-    }
-
+    // 카카오 사용자 정보 가져오기
     private void getUserInfoFromKakao() {
         UserApiClient.getInstance().me((user, error) -> {
             if (error != null) {
@@ -126,19 +124,21 @@ public class LoginActivity extends AppCompatActivity {
                 Log.i(TAG, "카카오 유저 ID: " + kakaoUserId);
                 Log.i(TAG, "카카오 유저 이름: " + userName);
 
+                saveKakaoLoginState(kakaoUserId); // 카카오 로그인 상태 저장
                 saveKakaoUserToFirestore(kakaoUserId, userName);
             }
             return null;
         });
     }
 
+    // 카카오 사용자 정보를 Firestore에 저장
     private void saveKakaoUserToFirestore(String kakaoUserId, String userName) {
         db.collection("users").document(kakaoUserId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
                         db.collection("users").document(kakaoUserId)
-                                .set(new UserModel(kakaoUserId, userName))
+                                .set(new UserAccount(kakaoUserId, userName))
                                 .addOnSuccessListener(aVoid -> {
                                     Log.i(TAG, "카카오 유저 Firestore 저장 완료");
                                     moveToMainActivity(userName);
@@ -151,6 +151,21 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e(TAG, "Firestore 유저 조회 실패", e));
     }
 
+    // 로그인 상태 저장
+    private void saveLoginState(String userId) {
+        SharedPreferences.Editor editor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
+        editor.putString("userId", userId);
+        editor.apply(); // 저장
+    }
+
+    // 카카오 로그인 상태 저장
+    private void saveKakaoLoginState(String kakaoUserId) {
+        SharedPreferences.Editor editor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
+        editor.putString("userId", kakaoUserId);
+        editor.apply(); // 저장
+    }
+
+    // 로그인 후 MainActivity로 이동
     private void moveToMainActivity(String userName) {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.putExtra("userName", userName);
@@ -158,20 +173,9 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
+    // 회원가입 화면으로 이동
     private void moveToRegisterActivity() {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
-    }
-
-    public static class UserModel {
-        public String userId;
-        public String userName;
-
-        public UserModel() {}
-
-        public UserModel(String userId, String userName) {
-            this.userId = userId;
-            this.userName = userName;
-        }
     }
 }

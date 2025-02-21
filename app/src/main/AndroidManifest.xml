@@ -10,11 +10,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
-
-
-
-
-    <!-- 특정 앱(카카오톡 등)만 조회할 수 있도록 queries 추가 -->
     <queries>
         <package android:name="com.kakao.talk" />  <!-- 카카오톡 패키지 -->
     </queries>
@@ -42,7 +37,6 @@
             </intent-filter>
         </activity>
 
-        <!-- MainActivity (MBTI 테스트 후 결과 페이지라면 필요) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
