@@ -10,7 +10,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="90dp"
         android:background="@color/toolbar"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -21,7 +21,7 @@
             android:gravity="center"
             android:text="여행 정보 입력"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="30sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
@@ -31,7 +31,10 @@
         android:layout_height="0dp"
         android:layout_margin="16dp"
         android:background="@drawable/yellow_box_full"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <LinearLayout
@@ -44,90 +47,90 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <!-- 여행 이름 -->
-            <TextView
-                android:id="@+id/travel_name_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:text="1. 여행 이름"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
+                <!-- 여행 이름 -->
+                <TextView
+                    android:id="@+id/travel_name_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1. 여행 이름"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/travel_name_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                app:layout_constraintStart_toEndOf="@id/travel_name_label"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/travel_name_label"
-                android:background="@drawable/gray_box_full"
-                android:hint=""
-                android:textAlignment="center"/>
+                <EditText
+                    android:id="@+id/travel_name_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/gray_box_full"
+                    android:hint=""
+                    android:textAlignment="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/travel_name_label"
+                    app:layout_constraintTop_toTopOf="@id/travel_name_label" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/dark_green"
-                android:layout_marginVertical="8dp"/>
+                android:layout_marginVertical="8dp"
+                android:background="@color/dark_green" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <!-- 장소 선택 -->
-            <TextView
-                android:id="@+id/place_select"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:text="2. 장소 선택"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                <!-- 장소 선택 -->
+                <TextView
+                    android:id="@+id/place_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2. 장소 선택"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                app:layout_constraintStart_toEndOf="@id/place_select"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/place_select"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/location_input"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/gray_box_full"
-                    android:hint=""
-                    android:textAlignment="center"/>
+                    android:layout_marginLeft="8dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/place_select"
+                    app:layout_constraintTop_toTopOf="@id/place_select">
 
-                <ImageButton
-                    android:id="@+id/location_search_button"
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerInside"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:srcCompat="@drawable/search" />
-            </LinearLayout>
+                    <EditText
+                        android:id="@+id/location_input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_box_full"
+                        android:hint=""
+                        android:textAlignment="center" />
+
+                    <ImageButton
+                        android:id="@+id/location_search_button"
+                        android:layout_width="32dp"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:scaleType="centerInside"
+                        app:srcCompat="@drawable/search" />
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/dark_green"
-                android:layout_marginVertical="8dp"/>
+                android:layout_marginVertical="8dp"
+                android:background="@color/dark_green" />
 
 
             <!-- 일정 기간 -->
@@ -169,8 +172,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/dark_green"
-                android:layout_marginVertical="8dp"/>
+                android:layout_marginVertical="8dp"
+                android:background="@color/dark_green" />
 
             <!-- 누구와? -->
             <TextView
@@ -184,8 +187,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/who_alone_button"
@@ -194,20 +197,20 @@
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
                     android:backgroundTint="@null"
+                    android:padding="0dp"
                     android:text="혼자"
-                    android:textSize="16sp"
-                    android:padding="0dp"/>
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/who_couple_button"
                     android:layout_width="0dp"
                     android:layout_height="32dp"
+                    android:layout_margin="8dp"
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
-                    android:layout_margin="8dp"
+                    android:padding="0dp"
                     android:text="연인"
-                    android:textSize="16sp"
-                    android:padding="0dp"/>
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/who_friend_button"
@@ -215,9 +218,9 @@
                     android:layout_height="32dp"
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
+                    android:padding="0dp"
                     android:text="친구"
-                    android:textSize="16sp"
-                    android:padding="0dp"/>
+                    android:textSize="16sp" />
 
 
                 <!-- Add more options as needed -->
@@ -226,8 +229,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/dark_green"
-                android:layout_marginVertical="8dp"/>
+                android:layout_marginVertical="8dp"
+                android:background="@color/dark_green" />
 
             <!-- 여행 스타일 -->
             <TextView
@@ -247,11 +250,11 @@
                     android:id="@+id/style_keep_button"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
-                    android:text="내 MBTI 유지"
-                    android:layout_marginEnd="16dp"
-                    android:padding="0dp"/>
+                    android:padding="0dp"
+                    android:text="내 MBTI 유지" />
 
                 <Button
                     android:id="@+id/style_analyze_button"
@@ -259,15 +262,15 @@
                     android:layout_height="48dp"
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
-                    android:text="분석 다시하기"
-                    android:padding="0dp"/>
+                    android:padding="0dp"
+                    android:text="분석 다시하기" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/dark_green"
-                android:layout_marginVertical="8dp"/>
+                android:layout_marginVertical="8dp"
+                android:background="@color/dark_green" />
 
             <!-- 꼭 들르고 싶은 곳 -->
             <TextView
@@ -308,5 +311,6 @@
                 android:text="AI 일정 짜기" />
         </LinearLayout>
     </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
