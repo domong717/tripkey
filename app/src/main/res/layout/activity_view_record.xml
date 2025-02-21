@@ -64,48 +64,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/placeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <View
+        android:layout_width="300dp"
+        android:layout_height="3dp"
+        android:layout_marginVertical="8dp"
         android:layout_marginStart="52dp"
-        android:layout_marginTop="320dp"
-        android:text="방문 장소"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/recordTextView"
-        android:layout_width="249dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="68dp"
         android:layout_marginTop="8dp"
-        android:text="여행 기록"
-        android:textSize="16sp"
+        android:background="@color/dark_green"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/photoImageView" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/photoImageView"
-        android:layout_width="282dp"
-        android:layout_height="108dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.41"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/placeTextView" />
-
-    <ImageView
-        android:id="@+id/green_two_bar"
-        android:layout_width="316dp"
-        android:layout_height="134dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="160dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/green_two_bar" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTravelPlace" />
 
     <TextView
         android:id="@+id/travel_info_2"
@@ -118,6 +85,52 @@
         android:textSize="18dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:id="@+id/view_bar2"
+        android:layout_width="300dp"
+        android:layout_height="3dp"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/dark_green"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/travel_info_2" />
+
+    <TextView
+        android:id="@+id/placeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="10dp"
+        android:text="방문 장소"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_bar2"/>
+
+    <TextView
+        android:id="@+id/recordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="20dp"
+        android:text="여행 기록"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/photoImageView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/photoImageView"
+        android:layout_width="282dp"
+        android:layout_height="108dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.41"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/placeTextView" />
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
