@@ -133,10 +133,10 @@ public class PlusFragment extends Fragment {
         // 삭제 버튼 생성
         ImageButton deleteButton = new ImageButton(getContext());
         deleteButton.setLayoutParams(new LinearLayout.LayoutParams(
-                48,
-                48
+                100,
+                100
         ));
-        deleteButton.setImageResource(R.drawable.kakao_login_medium_wide); // 삭제 아이콘 설정
+        deleteButton.setImageResource(R.drawable.delete);
         deleteButton.setBackground(null); // 배경 제거
         deleteButton.setContentDescription("Delete Place");
 
