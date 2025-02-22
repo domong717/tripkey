@@ -348,6 +348,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/green_box_full"
                 android:text="AI 일정 짜기"
+                android:layout_marginBottom="?attr/actionBarSize"
                 />
         </LinearLayout>
     </ScrollView>
