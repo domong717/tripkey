@@ -8,6 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.app.DatePickerDialog;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Calendar;
 import com.example.tripkey.R;
 import com.example.tripkey.databinding.FragmentPlusBinding;
 
@@ -27,6 +31,7 @@ public class PlusFragment extends Fragment {
     private FragmentPlusBinding binding;
 
     private LinearLayout mustVisitContainer;
+    private TextView startDateInput, endDateInput;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -39,8 +44,8 @@ public class PlusFragment extends Fragment {
         // UI 요소 참조
         EditText travelNameInput = binding.travelNameInput; // 여행 이름 입력
         EditText locationInput = binding.locationInput; // 장소 입력
-        EditText startDateInput = binding.startDateInput; // 시작 날짜
-        EditText endDateInput = binding.endDateInput; // 종료 날짜
+        startDateInput = binding.startDateInput;
+        endDateInput = binding.endDateInput;
 
         Button whoAloneButton = binding.whoAloneButton;
         Button whoCoupleButton = binding.whoCoupleButton;
@@ -58,6 +63,12 @@ public class PlusFragment extends Fragment {
         ImageButton addPlaceButton = root.findViewById(R.id.add_place_button);
 
         addPlaceButton.setOnClickListener(v -> addNewPlaceField());
+
+        // 시작 날짜 클릭 이벤트 처리
+        startDateInput.setOnClickListener(v -> showDatePickerDialog(true));
+
+// 종료 날짜 클릭 이벤트 처리
+        endDateInput.setOnClickListener(v -> showDatePickerDialog(false));
 
         // 검색 버튼 클릭 이벤트 처리
         searchButton.setOnClickListener(v -> {
@@ -174,6 +185,28 @@ public class PlusFragment extends Fragment {
 
         // 최종적으로 "꼭 들르고 싶은 곳" 컨테이너에 새 레이아웃 추가
         mustVisitContainer.addView(newFieldLayout);
+    }
+
+    private void showDatePickerDialog(boolean isStartDate) {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    String selectedDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDayOfMonth;
+                    if (isStartDate) {
+                        startDateInput.setText(selectedDate);
+                    } else {
+                        endDateInput.setText(selectedDate);
+                    }
+                },
+                year, month, dayOfMonth
+        );
+
+        datePickerDialog.show();
     }
 
     @Override
