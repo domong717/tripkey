@@ -10,6 +10,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -41,6 +45,9 @@ public class PlusFragment extends Fragment {
         Button whoAloneButton = binding.whoAloneButton;
         Button whoCoupleButton = binding.whoCoupleButton;
         Button whoFriendButton = binding.whoFriendButton;
+        Button whoFamilyButton = binding.whoFamilyButton;
+        Button whoParentButton = binding.whoParentButton;
+        Button whoChildButton = binding.whoChildButton;
 
         Button styleKeepButton = binding.styleKeepButton;
         Button styleAnalyzeButton = binding.styleAnalyzeButton;
@@ -62,18 +69,32 @@ public class PlusFragment extends Fragment {
         });
 
         whoAloneButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
             whoAloneButton.setBackgroundResource(R.drawable.green_button);
         });
 
         whoCoupleButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
             whoCoupleButton.setBackgroundResource(R.drawable.green_button);
         });
 
         whoFriendButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
             whoFriendButton.setBackgroundResource(R.drawable.green_button);
+        });
+        whoFamilyButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoFamilyButton.setBackgroundResource(R.drawable.green_button);
+        });
+
+        whoParentButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoParentButton.setBackgroundResource(R.drawable.green_button);
+        });
+
+        whoChildButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoChildButton.setBackgroundResource(R.drawable.green_button);
         });
 
 
@@ -97,10 +118,14 @@ public class PlusFragment extends Fragment {
         return root;
     }
 
-    private void resetWhoButtons(Button whoAloneButton, Button whoCoupleButton, Button whoFriendButton) {
+    private void resetWhoButtons(Button whoAloneButton, Button whoCoupleButton, Button whoFriendButton,Button whoFamilyButton, Button whoParentButton, Button whoChildButton) {
         whoAloneButton.setBackgroundResource(R.drawable.gray_box_full);
         whoCoupleButton.setBackgroundResource(R.drawable.gray_box_full);
         whoFriendButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoFamilyButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoParentButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoChildButton.setBackgroundResource(R.drawable.gray_box_full);
+
     }
 
     private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton) {

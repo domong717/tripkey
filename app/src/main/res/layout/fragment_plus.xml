@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -221,10 +221,49 @@
                     android:padding="0dp"
                     android:text="친구"
                     android:textSize="16sp" />
-
-
-                <!-- Add more options as needed -->
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/who_family_button"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:backgroundTint="@null"
+                    android:padding="0dp"
+                    android:text="가족"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/who_parent_button"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:padding="0dp"
+                    android:text="부모님"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/who_child_button"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gray_box_full"
+                    android:padding="0dp"
+                    android:text="아이"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -308,7 +347,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/green_box_full"
-                android:text="AI 일정 짜기" />
+                android:text="AI 일정 짜기"
+                />
         </LinearLayout>
     </ScrollView>
 
