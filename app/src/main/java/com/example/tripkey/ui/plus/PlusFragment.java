@@ -1,5 +1,8 @@
 package com.example.tripkey.ui.plus;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import com.example.tripkey.MainActivity;
+import com.example.tripkey.ui.home.HomeFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,7 +73,7 @@ public class PlusFragment extends Fragment {
         // 시작 날짜 클릭 이벤트 처리
         startDateInput.setOnClickListener(v -> showDatePickerDialog(true));
 
-// 종료 날짜 클릭 이벤트 처리
+        // 종료 날짜 클릭 이벤트 처리
         endDateInput.setOnClickListener(v -> showDatePickerDialog(false));
 
         // 검색 버튼 클릭 이벤트 처리
@@ -121,6 +127,61 @@ public class PlusFragment extends Fragment {
 
 
         binding.aiScheduleButton.setOnClickListener(v -> {
+            String travelName = binding.travelNameInput.getText().toString().trim();
+            String location = binding.locationInput.getText().toString().trim();
+            String startDate = startDateInput.getText().toString().trim();
+            String endDate = endDateInput.getText().toString().trim();
+
+            if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty()) {
+                Toast.makeText(getContext(), "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 현재 로그인된 사용자 ID 가져오기
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+            String userId = sharedPreferences.getString("userId", null);
+            if (userId == null) {
+                Toast.makeText(getContext(), "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String travelId = db.collection("users").document(userId)
+                    .collection("travel").document().getId();
+
+            Map<String, Object> travelData = new HashMap<>();
+            travelData.put("travelName", travelName);
+            travelData.put("location", location);
+            travelData.put("startDate", startDate);
+            travelData.put("endDate", endDate);
+
+            // '꼭 들르고 싶은 곳' 목록 저장
+            for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
+                View child = mustVisitContainer.getChildAt(i);
+                if (child instanceof LinearLayout) {
+                    EditText placeInput = (EditText) ((LinearLayout) child).getChildAt(0);
+                    String place = placeInput.getText().toString().trim();
+                    if (!place.isEmpty()) {
+                        travelData.put("place_" + i, place);
+                    }
+                }
+            }
+
+            // Firestore에 저장
+            db.collection("users").document(userId)
+                    .collection("travel").document(travelId)
+                    .set(travelData)
+                    .addOnSuccessListener(aVoid ->{
+                        Toast.makeText(getContext(), "여행 일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        getActivity().finish();
+
+                            })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(getContext(), "저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
 
         });
 
