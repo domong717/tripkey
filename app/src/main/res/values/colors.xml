@@ -15,4 +15,5 @@
     <color name="toolbar">#88B093</color>
     <color name="bottom_nav_bar">#EDF6F0</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="gray">#454444</color>
 </resources>
