@@ -257,7 +257,11 @@ public class PlusFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getContext(),
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-                    String selectedDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDayOfMonth;
+                    // 날짜를 항상 두 자릿수로 포맷
+                    String formattedMonth = String.format("%02d", selectedMonth + 1);
+                    String formattedDay = String.format("%02d", selectedDayOfMonth);
+
+                    String selectedDate = selectedYear + "-" + formattedMonth + "-" + formattedDay;
                     if (isStartDate) {
                         startDateInput.setText(selectedDate);
                     } else {
@@ -269,6 +273,7 @@ public class PlusFragment extends Fragment {
 
         datePickerDialog.show();
     }
+
 
     @Override
     public void onDestroyView() {
