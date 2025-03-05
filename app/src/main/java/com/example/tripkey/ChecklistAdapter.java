@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,8 +35,15 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.View
         holder.checkBox.setChecked(item.isChecked());
         holder.textView.setText(item.getText());
 
-        // 체크박스 상태 변경 이벤트 처리
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> item.setChecked(isChecked));
+        // 체크박스 상태 변경 리스너 설정
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                item.setChecked(isChecked);
+                // SharedPreferences에 저장하는 로직 추가 (ChecklistActivity의 saveChecklistItem() 호출)
+                ((ChecklistActivity) buttonView.getContext()).saveChecklistItem(item);
+            }
+        });
     }
 
     @Override
