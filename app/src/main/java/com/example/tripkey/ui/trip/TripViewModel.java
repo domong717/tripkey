@@ -1,10 +1,9 @@
-package com.example.tripkey.ui.plus;
+package com.example.tripkey.ui.trip;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-public class PlusViewModel extends ViewModel {
+public class TripViewModel extends androidx.lifecycle.ViewModel {
 
     private final MutableLiveData<String> travelName;
     private final MutableLiveData<String> location;
@@ -12,7 +11,7 @@ public class PlusViewModel extends ViewModel {
     private final MutableLiveData<String> endDate;
     private final MutableLiveData<String> travelStyle;
 
-    public PlusViewModel() {
+    public TripViewModel() {
         travelName = new MutableLiveData<>();
         location = new MutableLiveData<>();
         startDate = new MutableLiveData<>();
