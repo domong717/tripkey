@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.tripkey.ChecklistActivity;
 import com.example.tripkey.FriendListActivity;
 import com.example.tripkey.FriendSearchActivity;
+import com.example.tripkey.LoginActivity;
 import com.example.tripkey.MBTIDescriptionActivity;
 import com.example.tripkey.RecordActivity;
 
@@ -77,6 +78,9 @@ public class InfoFragment extends Fragment {
             startActivity(intent);
         });
 
+        // 로그아웃 버튼 클릭 이벤트 처리
+        binding.logoutButton.setOnClickListener(v -> handleLogout());
+
         return root;
     }
 
@@ -118,5 +122,24 @@ public class InfoFragment extends Fragment {
     // 사용자 ID 설정 다이얼로그 (미구현)
     private void showUserIdDialog() {
         // ID 설정 다이얼로그 구현 필요
+    }
+
+    // 로그아웃 처리 메서드
+    private void handleLogout() {
+        // SharedPreferences에서 사용자 ID 삭제
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(KEY_USER_ID);
+        editor.apply();
+
+        // 로그아웃 메시지 표시
+        Toast.makeText(getActivity(), "로그아웃되었습니다.", Toast.LENGTH_SHORT).show();
+
+        // 로그인 화면으로 이동
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        // 현재 액티비티 종료
+        getActivity().finish();
     }
 }
