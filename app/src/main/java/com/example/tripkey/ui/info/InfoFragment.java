@@ -12,6 +12,8 @@ import android.widget.Toast;
 import android.widget.TextView;
 
 import com.example.tripkey.ChecklistActivity;
+import com.example.tripkey.FriendListActivity;
+import com.example.tripkey.FriendSearchActivity;
 import com.example.tripkey.MBTIDescriptionActivity;
 import com.example.tripkey.RecordActivity;
 
@@ -67,6 +69,11 @@ public class InfoFragment extends Fragment {
 
         binding.checklistLayout.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), ChecklistActivity.class);
+            startActivity(intent);
+        });
+
+        binding.friendsLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), FriendListActivity.class);
             startActivity(intent);
         });
 
