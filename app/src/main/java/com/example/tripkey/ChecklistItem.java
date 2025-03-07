@@ -1,5 +1,6 @@
 package com.example.tripkey;
 
+// hihihi
 public class ChecklistItem {
     private String text;      // 항목 이름
     private boolean isChecked; // 체크 여부
