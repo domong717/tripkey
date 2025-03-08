@@ -157,7 +157,7 @@
 
     <!-- 친구 관리 버튼 -->
     <LinearLayout
-        android:id="@+id/friendsLayout"
+        android:id="@+id/heartLayout"
         android:layout_width="155dp"
         android:layout_height="155dp"
         android:background="@drawable/yellow_circle"
@@ -172,7 +172,7 @@
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/friend"
+            android:src="@drawable/big_heart"
             android:layout_marginHorizontal="37dp"
             android:layout_marginBottom="3dp"/>
 
@@ -180,7 +180,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="친구 관리"
+            android:text="찜 보기"
             android:textColor="@color/mid_green"
             android:textSize="24sp"
             android:textStyle="bold"/>

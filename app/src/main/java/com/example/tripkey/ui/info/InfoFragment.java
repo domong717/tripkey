@@ -73,8 +73,8 @@ public class InfoFragment extends Fragment {
             startActivity(intent);
         });
 
-        binding.friendsLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), FriendListActivity.class);
+        binding.heartLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), FriendListActivity.class); //수정 필
             startActivity(intent);
         });
 
