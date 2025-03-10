@@ -28,6 +28,9 @@ public class AddTripActivity extends AppCompatActivity {
     private ActivityAddTripBinding binding;
     private LinearLayout mustVisitContainer;
     private TextView startDateInput, endDateInput;
+    private String selectedWho = "";
+    private String selectedStyle = "";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +43,16 @@ public class AddTripActivity extends AppCompatActivity {
         startDateInput = binding.startDateInput;
         endDateInput = binding.endDateInput;
 
+        Button whoAloneButton = binding.whoAloneButton;
+        Button whoCoupleButton = binding.whoCoupleButton;
+        Button whoFriendButton = binding.whoFriendButton;
+        Button whoFamilyButton = binding.whoFamilyButton;
+        Button whoParentButton = binding.whoParentButton;
+        Button whoChildButton = binding.whoChildButton;
+
+        Button styleKeepButton = binding.styleKeepButton;
+        Button styleAnalyzeButton = binding.styleAnalyzeButton;
+
         mustVisitContainer = findViewById(R.id.must_visit_container);
         ImageButton addPlaceButton = findViewById(R.id.add_place_button);
         addPlaceButton.setOnClickListener(v -> addNewPlaceField());
@@ -51,6 +64,54 @@ public class AddTripActivity extends AppCompatActivity {
         startDateInput.setOnClickListener(v -> showDatePickerDialog(true));
         endDateInput.setOnClickListener(v -> showDatePickerDialog(false));
 
+        whoAloneButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoAloneButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="혼자";
+        });
+
+        whoCoupleButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoCoupleButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="연인";
+        });
+
+        whoFriendButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoFriendButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="친구";
+        });
+        whoFamilyButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoFamilyButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="가족";
+        });
+
+        whoParentButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoParentButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="부모님";
+        });
+
+        whoChildButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            whoChildButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="아이";
+        });
+
+
+        styleKeepButton.setOnClickListener(v -> {
+            resetStyleButtons(styleKeepButton, styleAnalyzeButton);
+            styleKeepButton.setBackgroundResource(R.drawable.green_button);
+            selectedStyle="유지";
+        });
+
+        styleAnalyzeButton.setOnClickListener(v -> {
+            resetStyleButtons(styleKeepButton, styleAnalyzeButton);
+            styleAnalyzeButton.setBackgroundResource(R.drawable.green_button);
+            selectedStyle="다시 분석";
+        });
+
         binding.aiScheduleButton.setOnClickListener(v -> saveTripData());
     }
 
@@ -60,10 +121,12 @@ public class AddTripActivity extends AppCompatActivity {
         String startDate = startDateInput.getText().toString().trim();
         String endDate = endDateInput.getText().toString().trim();
 
-        if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty()) {
+
+        if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty()|| selectedWho.isEmpty()||selectedStyle.isEmpty()) {
             Toast.makeText(this, "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
             return;
         }
+
 
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userId = sharedPreferences.getString("userId", null);
@@ -81,6 +144,9 @@ public class AddTripActivity extends AppCompatActivity {
         travelData.put("location", location);
         travelData.put("startDate", startDate);
         travelData.put("endDate", endDate);
+        travelData.put("who", selectedWho);
+        travelData.put("travelStyle", selectedStyle);
+
 
         for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
             View child = mustVisitContainer.getChildAt(i);
@@ -108,6 +174,20 @@ public class AddTripActivity extends AppCompatActivity {
                 );
     }
 
+private void resetWhoButtons(Button whoAloneButton, Button whoCoupleButton, Button whoFriendButton,Button whoFamilyButton, Button whoParentButton, Button whoChildButton) {
+    whoAloneButton.setBackgroundResource(R.drawable.gray_box_full);
+    whoCoupleButton.setBackgroundResource(R.drawable.gray_box_full);
+    whoFriendButton.setBackgroundResource(R.drawable.gray_box_full);
+    whoFamilyButton.setBackgroundResource(R.drawable.gray_box_full);
+    whoParentButton.setBackgroundResource(R.drawable.gray_box_full);
+    whoChildButton.setBackgroundResource(R.drawable.gray_box_full);
+
+}
+
+private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton) {
+    styleKeepButton.setBackgroundResource(R.drawable.gray_box_full);
+    styleAnalyzeButton.setBackgroundResource(R.drawable.gray_box_full);
+}
     private void addNewPlaceField() {
         LinearLayout newFieldLayout = new LinearLayout(this);
         newFieldLayout.setOrientation(LinearLayout.HORIZONTAL);
