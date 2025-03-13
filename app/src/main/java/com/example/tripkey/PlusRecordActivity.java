@@ -2,6 +2,8 @@ package com.example.tripkey;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
+
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.Manifest;
 import android.os.Bundle;
@@ -41,6 +43,17 @@ public class PlusRecordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plus_record);
+
+        String travelId = getIntent().getStringExtra("travelId");
+
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+
+
+        if (userId == null) {
+            Toast.makeText(PlusRecordActivity.this, "로그인 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
         // 권한 확인
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -92,13 +105,15 @@ public class PlusRecordActivity extends AppCompatActivity {
                 recordData.put("record", record);
                 recordData.put("photos", photoUris);
 
-                db.collection("travelRecords")
+                db.collection("users")
+                        .document(userId)
+                        .collection("travel")
+                        .document(travelId)
+                        .collection("records")
                         .add(recordData)
                         .addOnSuccessListener(documentReference -> {
                             Toast.makeText(PlusRecordActivity.this, "저장 완료!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(PlusRecordActivity.this, RecordActivity.class);
-                            startActivity(intent);
-                            finish(); // 현재 액티비티 종료
+                            finish();
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(PlusRecordActivity.this, "저장 실패!", Toast.LENGTH_SHORT).show();
