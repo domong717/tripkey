@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ChecklistActivity extends AppCompatActivity {
+public class ChecklistActivity extends AppCompatActivity implements ChecklistAdapter.OnItemDeleteListener {
 
     private List<ChecklistItem> checklistItems; // 체크리스트 데이터
     private ChecklistAdapter adapter;          // RecyclerView 어댑터
@@ -40,7 +40,7 @@ public class ChecklistActivity extends AppCompatActivity {
         // RecyclerView 설정
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ChecklistAdapter(checklistItems);
+        adapter = new ChecklistAdapter(checklistItems, this);
         recyclerView.setAdapter(adapter);
 
         // 추가 버튼 클릭 이벤트
@@ -112,5 +112,21 @@ public class ChecklistActivity extends AppCompatActivity {
             }
         }
     }
+    /**
+     * 체크리스트 항목 삭제
+     */
+    @Override
+    public void onItemDelete(int position) {
+        // 삭제할 항목의 텍스트 가져오기
+        String itemText = checklistItems.get(position).getText();
 
+        // SharedPreferences에서 삭제
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(itemText);
+        editor.apply();
+
+        // 리스트에서 제거
+        checklistItems.remove(position);
+        adapter.notifyItemRemoved(position);
+    }
 }
