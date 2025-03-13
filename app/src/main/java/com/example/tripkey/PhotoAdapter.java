@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -30,9 +31,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         Uri photoUri = photoList.get(position);
-        Glide.with(holder.imageView.getContext())
-                .load(photoUri)
-                .into(holder.imageView);
+        holder.bind(photoUri);
+
+        // 사진 클릭 시 삭제 처리
+        holder.deleteButton.setOnClickListener(v -> {
+            removePhoto(position);  // 사진 삭제
+        });
     }
 
     @Override
@@ -40,18 +44,33 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return photoList.size();
     }
 
+    // 사진을 삭제하는 메서드
+    public void removePhoto(int position) {
+        if (position >= 0 && position < photoList.size()) {
+            photoList.remove(position);
+            notifyItemRemoved(position);  // 해당 아이템을 RecyclerView에서 삭제
+        }
+    }
     public void updatePhotoList(ArrayList<Uri> newPhotos) {
         photoList.clear();
         photoList.addAll(newPhotos);
         notifyDataSetChanged();
     }
 
-    static class PhotoViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+    public class PhotoViewHolder extends RecyclerView.ViewHolder {
+        ImageView photoImageView;
+        ImageButton deleteButton;
 
-        public PhotoViewHolder(@NonNull View itemView) {
+        public PhotoViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.photoImageView);
+            photoImageView = itemView.findViewById(R.id.photoImageView);  // 사진
+            deleteButton = itemView.findViewById(R.id.deleteButton);      // 삭제 버튼
+        }
+
+        public void bind(Uri photoUri) {
+            Glide.with(photoImageView.getContext())
+                    .load(photoUri)
+                    .into(photoImageView);
         }
     }
 }
