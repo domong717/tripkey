@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,9 +16,15 @@ import java.util.List;
 public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
 
     private List<ChecklistItem> items; // 체크리스트 데이터
+    private OnItemDeleteListener deleteListener; // 삭제 리스너
 
-    public ChecklistAdapter(List<ChecklistItem> items) {
+    public interface OnItemDeleteListener {
+        void onItemDelete(int position);
+    }
+
+    public ChecklistAdapter(List<ChecklistItem> items, OnItemDeleteListener deleteListener) {
         this.items = items;
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -44,6 +51,17 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.View
                 ((ChecklistActivity) buttonView.getContext()).saveChecklistItem(item);
             }
         });
+
+        // 삭제 버튼 클릭 리스너 설정
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = holder.getAdapterPosition();
+                if (deleteListener != null) {
+                    deleteListener.onItemDelete(adapterPosition);
+                }
+            }
+        });
     }
 
     @Override
@@ -54,11 +72,14 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox;  // 체크박스
         TextView textView;  // 항목 이름
+        ImageButton deleteButton; // 삭제 버튼
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.checkBox);
             textView = itemView.findViewById(R.id.itemText);
+            deleteButton = itemView.findViewById(R.id.deleteButton); // 삭제 버튼 초기화
         }
     }
 }
