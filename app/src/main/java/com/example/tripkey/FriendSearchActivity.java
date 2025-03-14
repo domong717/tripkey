@@ -7,18 +7,29 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class FriendSearchActivity extends AppCompatActivity {
+public class FriendSearchActivity extends AppCompatActivity implements FriendRequestAdapter.OnRequestClickListener {
 
     private EditText searchIdEditText;
     private Button searchButton;
     private TextView resultTextView;
-    private Button addFriendButton;
     private FirebaseFirestore db;
     private String currentUserId;
+
+    private Button sendRequestButton;
+    private RecyclerView recyclerViewRequests;
+    private FriendRequestAdapter requestAdapter;
+    private List<FriendItem> requestList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +42,20 @@ public class FriendSearchActivity extends AppCompatActivity {
         searchIdEditText = findViewById(R.id.searchIdEditText);
         searchButton = findViewById(R.id.searchButton);
         resultTextView = findViewById(R.id.resultTextView);
-        addFriendButton = findViewById(R.id.addFriendButton);
 
         searchButton.setOnClickListener(v -> searchUser());
-        addFriendButton.setOnClickListener(v -> addFriend());
+
+        sendRequestButton = findViewById(R.id.sendRequestButton);
+        recyclerViewRequests = findViewById(R.id.recyclerViewRequests);
+
+        recyclerViewRequests.setLayoutManager(new LinearLayoutManager(this));
+        requestList = new ArrayList<>();
+        requestAdapter = new FriendRequestAdapter(requestList, this);
+        recyclerViewRequests.setAdapter(requestAdapter);
+
+        sendRequestButton.setOnClickListener(v -> sendFriendRequest(searchIdEditText.getText().toString().trim()));
+
+        loadReceivedRequests();
 
 
         // 뒤로가기 버튼 클릭 이벤트
@@ -54,10 +75,10 @@ public class FriendSearchActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         String userName = documentSnapshot.getString("userName");
                         resultTextView.setText("사용자 찾음: " + userName);
-                        addFriendButton.setEnabled(true);
+                        sendRequestButton.setEnabled(true);
                     } else {
                         resultTextView.setText("사용자를 찾을 수 없습니다.");
-                        addFriendButton.setEnabled(false);
+                        sendRequestButton.setEnabled(false);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -65,21 +86,87 @@ public class FriendSearchActivity extends AppCompatActivity {
                 });
     }
 
-    private void addFriend() {
-        String friendId = searchIdEditText.getText().toString().trim();
-        if (friendId.equals(currentUserId)) {
-            Toast.makeText(this, "자기 자신을 친구로 추가할 수 없습니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+    private void sendFriendRequest(String targetUserId) {
         db.collection("users").document(currentUserId)
-                .collection("friends").document(friendId)
+                .collection("sentRequests")
+                .document(targetUserId)
                 .set(new HashMap<>())
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "친구 추가 성공!", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "친구 추가 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    db.collection("users").document(targetUserId)
+                            .collection("receivedRequests")
+                            .document(currentUserId)
+                            .set(new HashMap<>())
+                            .addOnSuccessListener(aVoid2 -> {
+                                Toast.makeText(this, "친구 요청을 보냈습니다.", Toast.LENGTH_SHORT).show();
+                            });
+                });
+    }
+
+    private void loadReceivedRequests() {
+        db.collection("users").document(currentUserId)
+                .collection("receivedRequests")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        requestList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String requestId = document.getId();
+                            db.collection("users").document(requestId).get()
+                                    .addOnSuccessListener(userSnapshot -> {
+                                        if (userSnapshot.exists()) {
+                                            String requestName = userSnapshot.getString("userName");
+                                            FriendItem friendItem = new FriendItem(requestName, requestId);
+                                            requestList.add(friendItem);
+                                            requestAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }
+                    }
+                });
+    }
+    @Override
+    public void onAcceptClick(String targetUserId) {
+        db.collection("users").document(currentUserId)
+                .collection("friends")
+                .document(targetUserId)
+                .set(new HashMap<>())
+                .addOnSuccessListener(aVoid -> {
+                    db.collection("users").document(targetUserId)
+                            .collection("friends")
+                            .document(currentUserId)
+                            .set(new HashMap<>())
+                            .addOnSuccessListener(aVoid2 -> {
+                                db.collection("users").document(currentUserId)
+                                        .collection("receivedRequests")
+                                        .document(targetUserId)
+                                        .delete()
+                                        .addOnSuccessListener(aVoid3 -> {
+                                            db.collection("users").document(targetUserId)
+                                                    .collection("sentRequests")
+                                                    .document(currentUserId)
+                                                    .delete()
+                                                    .addOnSuccessListener(aVoid4 -> {
+                                                        Toast.makeText(this, "친구 요청을 수락했습니다.", Toast.LENGTH_SHORT).show();
+                                                    });
+                                        });
+                            });
+                });
+    }
+
+    @Override
+    public void onRejectClick(String targetUserId) {
+        db.collection("users").document(currentUserId)
+                .collection("receivedRequests")
+                .document(targetUserId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    db.collection("users").document(targetUserId)
+                            .collection("sentRequests")
+                            .document(currentUserId)
+                            .delete()
+                            .addOnSuccessListener(aVoid2 -> {
+                                Toast.makeText(this, "친구 요청을 거절했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                 });
     }
 }
