@@ -1,61 +1,94 @@
 package com.example.tripkey.ui.info;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.content.Intent;
-import android.widget.Toast;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.tripkey.ChecklistActivity;
-import com.example.tripkey.FriendListActivity;
-import com.example.tripkey.FriendSearchActivity;
-import com.example.tripkey.LoginActivity;
-import com.example.tripkey.MBTIDescriptionActivity;
-import com.example.tripkey.RecordActivity;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.example.tripkey.ChecklistActivity;
+import com.example.tripkey.FriendListActivity;
+import com.example.tripkey.LoginActivity;
+import com.example.tripkey.MBTIDescriptionActivity;
+import com.example.tripkey.RecordActivity;
 import com.example.tripkey.databinding.FragmentInfoBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class InfoFragment extends Fragment {
 
+    private ImageView profileImageView;
     private FragmentInfoBinding binding;
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
     private SharedPreferences sharedPreferences;
     private TextView userNameTextView;
     private static final String PREFS_NAME = "UserPrefs";
     private static final String KEY_USER_ID = "userId";
-    private DocumentReference userRef;  // 사용자 정보를 가져올 DocumentReference 추가
+    private DocumentReference userRef;
+    private ActivityResultLauncher<Intent> galleryLauncher;
+    private String userId;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        // Firestore 초기화
-        db = FirebaseFirestore.getInstance();
-        sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
-        // View Binding 초기화
         binding = FragmentInfoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
+        sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        profileImageView = binding.profileImageView;
         userNameTextView = binding.myName;
 
-        String userId = getUserIdFromPreferences();
+        userId = getUserIdFromPreferences();
         if (userId != null) {
-            userRef = db.collection("users").document(userId);  // userRef 초기화
+            userRef = db.collection("users").document(userId);
             loadUserName();
+            loadProfileImage();
         } else {
             showUserIdDialog();
         }
+
+        profileImageView.setOnClickListener(v -> openGallery());
+
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        if (imageUri != null) {
+                            uploadImageToFirebase(imageUri);
+                        }
+                    }
+                });
 
         // 버튼 클릭 이벤트 처리
         binding.mbtiLayout.setOnClickListener(v -> {
@@ -84,46 +117,6 @@ public class InfoFragment extends Fragment {
         return root;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
-    // Firestore에서 사용자 이름을 가져오는 메서드
-    private void loadUserName() {
-        userRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null && document.exists()) {
-                    String userName = document.getString("userName");
-                    userNameTextView.setText(userName != null ? userName : "이름 불러오기 실패");
-                } else {
-                    Toast.makeText(getActivity(), "사용자 데이터가 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(getActivity(), "데이터 불러오기 실패", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // SharedPreferences에서 사용자 ID를 가져오는 메서드
-    private String getUserIdFromPreferences() {
-        return sharedPreferences.getString(KEY_USER_ID, null);
-    }
-
-    // SharedPreferences에 사용자 ID를 저장하는 메서드
-    private void saveUserIdToPreferences(String userId) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_USER_ID, userId);
-        editor.apply();
-    }
-
-    // 사용자 ID 설정 다이얼로그 (미구현)
-    private void showUserIdDialog() {
-        // ID 설정 다이얼로그 구현 필요
-    }
-
     // 로그아웃 처리 메서드
     private void handleLogout() {
         // SharedPreferences에서 사용자 ID 삭제
@@ -141,5 +134,72 @@ public class InfoFragment extends Fragment {
 
         // 현재 액티비티 종료
         getActivity().finish();
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryLauncher.launch(intent);
+    }
+
+    private void uploadImageToFirebase(Uri imageUri) {
+        if (userId == null) {
+            Toast.makeText(getActivity(), "사용자 ID를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StorageReference profileRef = storageRef.child("profile_images/" + userId + ".jpg");
+
+        profileRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> profileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String imageUrl = uri.toString();
+                    saveProfileImageUrl(imageUrl);
+                }))
+                .addOnFailureListener(e -> Toast.makeText(getActivity(), "이미지 업로드 실패", Toast.LENGTH_SHORT).show());
+    }
+
+    private void saveProfileImageUrl(String imageUrl) {
+        userRef.update("profileImage", imageUrl)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getActivity(), "프로필 이미지 업데이트 완료", Toast.LENGTH_SHORT).show();
+                    loadProfileImage();
+                })
+                .addOnFailureListener(e -> Toast.makeText(getActivity(), "프로필 이미지 저장 실패", Toast.LENGTH_SHORT).show());
+    }
+
+    private void loadProfileImage() {
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String imageUrl = document.getString("profileImage");
+                    if (imageUrl != null) {
+                        Glide.with(this)
+                                .load(imageUrl)
+                                .circleCrop()
+                                .into(profileImageView);
+                    }
+                }
+            }
+        });
+    }
+
+    private void loadUserName() {
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String userName = document.getString("userName");
+                    userNameTextView.setText(userName != null ? userName : "이름 불러오기 실패");
+                }
+            }
+        });
+    }
+
+    private String getUserIdFromPreferences() {
+        return sharedPreferences.getString(KEY_USER_ID, null);
+    }
+
+    private void showUserIdDialog() {
+        Toast.makeText(getActivity(), "사용자 ID를 설정해주세요.", Toast.LENGTH_SHORT).show();
     }
 }

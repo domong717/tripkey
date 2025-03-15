@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
 
     <queries>
         <package android:name="com.kakao.talk" />  <!-- 카카오톡 패키지 -->
@@ -29,8 +31,7 @@
         <!-- LoginActivity를 앱 실행 시 가장 먼저 보이도록 설정 -->
         <activity
             android:name=".LoginActivity"
-            android:exported="true"
-            android:label="로그인 화면">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
