@@ -47,49 +47,59 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/description_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="63dp"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="37dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            android:paddingVertical="4dp">
+            android:layout_gravity="center"
+            app:layout_constraintHorizontal_bias="0.5">
 
             <TextView
+                android:id="@+id/text_you_are"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="51dp"
-                android:text="당신은"
+                android:text="당신은 "
                 android:textColor="#446E5C"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <TextView
                 android:id="@+id/your_mbti"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="47dp"
-                android:textColor="#6A9C78"
                 android:text="    "
+                android:textColor="#6A9C78"
                 android:textSize="40sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/text_you_are"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/text_is"
+                app:layout_constraintHorizontal_bias="0.5" />
 
             <TextView
+                android:id="@+id/text_is"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="입니다!"
+                android:text=" 입니다!"
                 android:textColor="#446E5C"
                 android:textSize="24sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
