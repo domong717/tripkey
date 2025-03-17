@@ -312,7 +312,7 @@ public class MBTITestActivity extends AppCompatActivity {
         if (inside > outside) {
             mbti.append("I");  // inside가 더 많으면 I
         } else {
-            mbti.append("E");  // outside가 더 많으면 E
+            mbti.append("O");  // outside가 더 많으면 E
         }
 
         // bus/taxi/walk/car
