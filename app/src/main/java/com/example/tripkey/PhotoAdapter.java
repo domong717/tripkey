@@ -16,9 +16,19 @@ import java.util.ArrayList;
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
     private ArrayList<Uri> photoList;
+    private OnPhotoDeleteListener onPhotoDeleteListener;
+    private boolean isDeleteButtonVisible;
 
-    public PhotoAdapter(ArrayList<Uri> photoList) {
-        this.photoList = photoList;  // Uri 타입으로 설정
+
+    public PhotoAdapter(ArrayList<Uri> photoList, boolean isDeleteButtonVisible, OnPhotoDeleteListener onPhotoDeleteListener) {
+        this.photoList = photoList;
+        this.isDeleteButtonVisible = isDeleteButtonVisible;
+        this.onPhotoDeleteListener = onPhotoDeleteListener;
+
+    }
+
+    public interface OnPhotoDeleteListener {
+        void onPhotoDelete(Uri photoUri);
     }
 
     @NonNull
@@ -33,9 +43,17 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         Uri photoUri = photoList.get(position);
         holder.bind(photoUri);
 
-        // 사진 클릭 시 삭제 처리
+        if (isDeleteButtonVisible) {
+            holder.deleteButton.setVisibility(View.VISIBLE);
+        } else {
+            holder.deleteButton.setVisibility(View.GONE);
+        }
+
+        // 삭제 버튼 클릭 이벤트
         holder.deleteButton.setOnClickListener(v -> {
-            removePhoto(position);  // 사진 삭제
+            if (onPhotoDeleteListener != null) {
+                onPhotoDeleteListener.onPhotoDelete(photoUri); // Corrected to use photoUri
+            }
         });
     }
 
@@ -44,13 +62,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return photoList.size();
     }
 
-    // 사진을 삭제하는 메서드
-    public void removePhoto(int position) {
-        if (position >= 0 && position < photoList.size()) {
-            photoList.remove(position);
-            notifyItemRemoved(position);  // 해당 아이템을 RecyclerView에서 삭제
-        }
-    }
     public void updatePhotoList(ArrayList<Uri> newPhotos) {
         photoList.clear();
         photoList.addAll(newPhotos);

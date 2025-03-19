@@ -22,33 +22,47 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.FieldValue;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlusRecordActivity extends AppCompatActivity {
+public class PlusRecordActivity extends AppCompatActivity implements PhotoAdapter.OnPhotoDeleteListener {
     private static final int PICK_IMAGE = 1; // 이미지 선택 in 갤러리
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;  // 권한 요청 코드
     private Button plusPhotoBtn;
     private ImageButton backButton;
     private ImageButton saveRecordButton;
-    private ImageView plusPhotoButton;
     private RecyclerView photoRecyclerView;
     private PhotoAdapter photoAdapter;
     private ArrayList<Uri> photoList = new ArrayList<>(); // 추가한 사진 리스트
     private FirebaseFirestore db;
+    private String userId, travelId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plus_record);
 
-        String travelId = getIntent().getStringExtra("travelId");
+        // RecyclerView 설정
+        photoRecyclerView = findViewById(R.id.photoRecyclerView);
+        photoRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        photoAdapter = new PhotoAdapter(photoList, true, new PhotoAdapter.OnPhotoDeleteListener() {
+            @Override
+            public void onPhotoDelete(Uri photoUri) {
+                removePhoto(photoUri);
+                deletePhotoFromFirebase(photoUri);
+            }
+        });
+        photoRecyclerView.setAdapter(photoAdapter);
 
+        travelId = getIntent().getStringExtra("travelId");
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        String userId = sharedPreferences.getString("userId", null);
-
+        userId = sharedPreferences.getString("userId", null);
 
         if (userId == null) {
             Toast.makeText(PlusRecordActivity.this, "로그인 정보가 없습니다.", Toast.LENGTH_SHORT).show();
@@ -68,16 +82,10 @@ public class PlusRecordActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // UI 요소 초기화
-        plusPhotoButton = findViewById(R.id.plus_photo_button);
         plusPhotoBtn = findViewById(R.id.plus_photo_btn);
         backButton = findViewById(R.id.button_back);
         saveRecordButton = findViewById(R.id.save_record_button);
-        photoRecyclerView = findViewById(R.id.photoRecyclerView);
 
-        // RecyclerView 설정
-        photoRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        photoAdapter = new PhotoAdapter(photoList);
-        photoRecyclerView.setAdapter(photoAdapter);
 
         // 사진 추가 버튼 클릭 이벤트
         plusPhotoBtn.setOnClickListener(v -> openGallery());
@@ -86,42 +94,26 @@ public class PlusRecordActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         // 여행 기록 저장 버튼
-        saveRecordButton.setOnClickListener(v -> {
-            String place = ((EditText) findViewById(R.id.place_edit_text)).getText().toString();
-            String record = ((EditText) findViewById(R.id.travel_place_record_text)).getText().toString();
-
-            if (place.isEmpty() || record.isEmpty() || photoList.isEmpty()) {
-                Toast.makeText(PlusRecordActivity.this, "모든 항목을 채워주세요 (장소, 기록, 사진)", Toast.LENGTH_SHORT).show();
-            } else {
-                // 모든 필드가 작성되었으면 Firestore에 저장
-                ArrayList<String> photoUris = new ArrayList<>();
-                for (Uri uri : photoList) {
-                    photoUris.add(uri.toString());
-                }
-
-                // Firestore 저장할 데이터 생성
-                Map<String, Object> recordData = new HashMap<>();
-                recordData.put("place", place);
-                recordData.put("record", record);
-                recordData.put("photos", photoUris);
-
-                db.collection("users")
-                        .document(userId)
-                        .collection("travel")
-                        .document(travelId)
-                        .collection("records")
-                        .add(recordData)
-                        .addOnSuccessListener(documentReference -> {
-                            Toast.makeText(PlusRecordActivity.this, "저장 완료!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(PlusRecordActivity.this, "저장 실패!", Toast.LENGTH_SHORT).show();
-                        });
-            }
-        });
+        saveRecordButton.setOnClickListener(v -> saveRecordToFirestore());
+    }
+    @Override
+    public void onPhotoDelete(Uri photoUri) {
+        removePhoto(photoUri);  // 리스트에서 사진 삭제
+        deletePhotoFromFirebase(photoUri);  // Firebase에서 삭제
     }
 
+    // 리스트에서 사진 삭제
+    public void removePhoto(Uri photoUri) {
+        photoList.remove(photoUri);
+        photoAdapter.notifyDataSetChanged();
+    }
+    // Firebase에서 사진 삭제
+    private void deletePhotoFromFirebase(Uri photoUri) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(photoUri.toString());
+        storageRef.delete()
+                .addOnSuccessListener(aVoid -> Toast.makeText(this, "사진 삭제 완료", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(this, "사진 삭제 실패", Toast.LENGTH_SHORT).show());
+    }
     // 갤러리 열기
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -130,25 +122,72 @@ public class PlusRecordActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "사진 선택"), PICK_IMAGE);
     }
 
-
-    // 갤러리에서 선택한 사진 받아오기
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
             if (data.getClipData() != null) {
-                // 여러 장 선택한 경우
+                // 여러 장 선택
                 int count = data.getClipData().getItemCount();
                 for (int i = 0; i < count; i++) {
                     Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                    photoList.add(imageUri);
+                    uploadImageToFirebase(imageUri);
                 }
             } else if (data.getData() != null) {
-                // 단일 이미지 선택한 경우
+                // 단일 이미지 선택
                 Uri imageUri = data.getData();
-                photoList.add(imageUri);
+                uploadImageToFirebase(imageUri);
             }
-            photoAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
         }
+    }
+    // Firebase Storage에 이미지 업로드
+    private void uploadImageToFirebase(Uri imageUri) {
+        if (photoList.contains(imageUri)) {
+            Toast.makeText(this, "이미 추가된 사진입니다.", Toast.LENGTH_SHORT).show();
+            return; // 중복 이미지 추가 방지
+        }
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                .child("travel_images/" + userId + "/" + travelId + "/" + System.currentTimeMillis() + ".jpg");
+
+        storageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
+                            photoList.add(uri); // RecyclerView 업데이트용 리스트에도 추가
+                            photoAdapter.notifyDataSetChanged();
+                            Toast.makeText(this, "사진 업로드 완료!", Toast.LENGTH_SHORT).show();
+                        }))
+                .addOnFailureListener(e -> Toast.makeText(this, "사진 업로드 실패!", Toast.LENGTH_SHORT).show());
+    }
+    // Firestore에 여행 기록 저장
+    private void saveRecordToFirestore() {
+        String place = ((EditText) findViewById(R.id.place_edit_text)).getText().toString();
+        String record = ((EditText) findViewById(R.id.travel_place_record_text)).getText().toString();
+
+        if (place.isEmpty() || record.isEmpty() || photoList.isEmpty()) {
+            Toast.makeText(this, "모든 항목을 채워주세요 (장소, 기록, 사진)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ArrayList<String> photoUrls = new ArrayList<>();
+        for (Uri uri : photoList) {
+            photoUrls.add(uri.toString());
+        }
+
+        Map<String, Object> recordData = new HashMap<>();
+        recordData.put("place", place);
+        recordData.put("record", record);
+        recordData.put("photos", photoUrls);
+        recordData.put("timestamp", FieldValue.serverTimestamp());
+
+        db.collection("users")
+                .document(userId)
+                .collection("travel")
+                .document(travelId)
+                .collection("records")
+                .add(recordData)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(this, "저장 완료!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "저장 실패!", Toast.LENGTH_SHORT).show());
     }
 }

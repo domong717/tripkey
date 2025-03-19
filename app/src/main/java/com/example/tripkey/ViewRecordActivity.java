@@ -39,7 +39,13 @@ public class ViewRecordActivity extends AppCompatActivity {
         pastTripsContainer = findViewById(R.id.past_trips_container);
         photoRecyclerView = findViewById(R.id.photoRecyclerView);
         photoRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        photoAdapter = new PhotoAdapter(new ArrayList<Uri>());
+        photoAdapter = new PhotoAdapter(new ArrayList<Uri>(), false, new PhotoAdapter.OnPhotoDeleteListener() {
+            @Override
+            public void onPhotoDelete(Uri photoUri) {
+                // 삭제 동작 처리 코드 작성
+            }
+        });
+
         photoRecyclerView.setAdapter(photoAdapter);
 
         noRecordsTextView = findViewById(R.id.noRecordsTextView);
@@ -62,6 +68,13 @@ public class ViewRecordActivity extends AppCompatActivity {
         addRecordButton.setOnClickListener(v -> {
             Intent intent = new Intent(ViewRecordActivity.this, PlusRecordActivity.class);
             intent.putExtra("travelId", travelId);
+            startActivity(intent);
+        });
+
+        ImageButton modifyRecordButton = findViewById(R.id.modify_record_button);
+        modifyRecordButton.setOnClickListener(v->{
+            Intent intent = new Intent(ViewRecordActivity.this, ModifyRecordActivity.class);
+            intent.putExtra("travelId",travelId);
             startActivity(intent);
         });
     }
@@ -102,6 +115,7 @@ public class ViewRecordActivity extends AppCompatActivity {
                                 .collection("travel")
                                 .document(travelId)
                                 .collection("records")
+                                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.ASCENDING)
                                 .get()
                                 .addOnSuccessListener(queryDocumentSnapshots -> {
                                     if (queryDocumentSnapshots.isEmpty()) {
@@ -138,13 +152,14 @@ public class ViewRecordActivity extends AppCompatActivity {
         // 여행 기록을 하나의 LinearLayout으로 묶기
         LinearLayout recordLayout = new LinearLayout(this);
         recordLayout.setOrientation(LinearLayout.VERTICAL);
-        recordLayout.setPadding(16, 16, 16, 16);
+        recordLayout.setPadding(0,4,0,4);
         recordLayout.setBackgroundResource(R.drawable.yellow_box_full); // 배경 설정
+
 
         // 여행 장소
         TextView placeTextView = new TextView(this);
         placeTextView.setText(place);
-        placeTextView.setTextSize(18);
+        placeTextView.setTextSize(20);
         placeTextView.setTextColor(getResources().getColor(R.color.black));
 
         // 여행 기록
@@ -156,7 +171,12 @@ public class ViewRecordActivity extends AppCompatActivity {
         RecyclerView photoRecyclerView = new RecyclerView(this);
         photoRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        PhotoAdapter newPhotoAdapter = new PhotoAdapter(new ArrayList<>());
+        PhotoAdapter newPhotoAdapter = new PhotoAdapter(new ArrayList<>(), false, new PhotoAdapter.OnPhotoDeleteListener() {
+            @Override
+            public void onPhotoDelete(Uri photoUri) {
+
+            }
+        });
 
         if (photoUris != null && !photoUris.isEmpty()) {
             ArrayList<Uri> photoUriList = new ArrayList<>();
