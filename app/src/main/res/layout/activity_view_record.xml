@@ -135,31 +135,40 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:gravity="center"
-                android:visibility="gone"
                 android:paddingTop="50dp"
                 android:text="여행 기록이 없습니다.\n여행 기록을 추가해주세요."
                 android:textColor="@android:color/black"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="gone" />
         </LinearLayout>
-
-
-
-
 
 
     </androidx.core.widget.NestedScrollView>
 
     <ImageButton
         android:id="@+id/add_record_button"
-        android:layout_width="wrap_content"
+        android:layout_width="204dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/modify_record_button"
+        app:layout_constraintEnd_toStartOf="@+id/modify_record_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/modify_record_button"
+        app:srcCompat="@drawable/add_record" />
+
+    <ImageButton
+        android:id="@+id/modify_record_button"
+        android:layout_width="204dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:background="@color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.13"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/add_record" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/add_record_button"
+        app:srcCompat="@drawable/modify_record_button" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
