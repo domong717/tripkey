@@ -1,5 +1,6 @@
 package com.example.tripkey;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -269,6 +270,12 @@ public class MBTITestActivity extends AppCompatActivity {
 
                 // Firestore에 MBTI 결과 저장
                 saveMBTIResult(mbtiType);
+
+                // MBTIDescriptionActivity 새로 로드
+                Intent intent = new Intent(MBTITestActivity.this, MBTIDescriptionActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // 기존 액티비티 제거 후 새로 시작
+                startActivity(intent);
+                finish(); // 현재 액티비티 종료
             }
         });
 
@@ -312,14 +319,14 @@ public class MBTITestActivity extends AppCompatActivity {
         if (inside > outside) {
             mbti.append("I");  // inside가 더 많으면 I
         } else {
-            mbti.append("O");  // outside가 더 많으면 E
+            mbti.append("O");  // outside가 더 많으면 O
         }
 
         // bus/taxi/walk/car
         if (bus > taxi) {
-            mbti.append("B");  // bus가 가장 많으면 B
+            mbti.append("B");  // bus+walk가 가장 많으면 B
         } else {
-            mbti.append("T");  // taxi가 가장 많으면 T
+            mbti.append("T");  // taxi+bus가 가장 많으면 T
         }
 
         // luxury/simple
