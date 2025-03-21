@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -40,6 +41,10 @@ public class MBTITestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mbti_test);  // 여기서 activity_mbti_test.xml 파일을 참조
+
+        ImageButton backButton = findViewById(R.id.button_back);
+        // 뒤로가기 버튼 클릭 이벤트
+        backButton.setOnClickListener(v -> finish());
 
         // 버튼 초기화
         q1Option1 = findViewById(R.id.q1_option1);//inside++
