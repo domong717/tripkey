@@ -27,6 +27,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.firestore.FieldValue;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -185,6 +186,9 @@ public class PlusRecordActivity extends AppCompatActivity implements PhotoAdapte
                 .collection("records")
                 .add(recordData)
                 .addOnSuccessListener(documentReference -> {
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("newRecord", (Serializable) recordData);
+                    setResult(RESULT_OK, resultIntent);
                     Toast.makeText(this, "저장 완료!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
