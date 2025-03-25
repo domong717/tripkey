@@ -26,6 +26,9 @@ public class ViewRecordActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String travelId, userId;
     private LinearLayout pastTripsContainer;
+    private String place;
+    private String record;
+    private ArrayList<String> photoUris;
 
     //    private static final String TAG = "ViewRecordActivity";
     private TextView noRecordsTextView;
@@ -35,6 +38,9 @@ public class ViewRecordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_record);
+
+        // 🔹 Intent에서 값 받아오기
+        travelId = getIntent().getStringExtra("travelId");
 
         pastTripsContainer = findViewById(R.id.past_trips_container);
         photoRecyclerView = findViewById(R.id.photoRecyclerView);
@@ -56,7 +62,10 @@ public class ViewRecordActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         userId = sharedPreferences.getString("userId", null);
-        String travelId = getIntent().getStringExtra("travelId");
+
+        Log.d("ViewRecordActivity", "userId: " + userId);
+        Log.d("ViewRecordActivity", "travelId: " + travelId);
+
         if (userId != null && travelId != null) {
             loadTravelRecord(travelId); // Load travel data
         } else {
@@ -74,9 +83,25 @@ public class ViewRecordActivity extends AppCompatActivity {
         ImageButton modifyRecordButton = findViewById(R.id.modify_record_button);
         modifyRecordButton.setOnClickListener(v->{
             Intent intent = new Intent(ViewRecordActivity.this, ModifyRecordActivity.class);
-            intent.putExtra("travelId",travelId);
+            intent.putExtra("travelId", travelId);
+            intent.putExtra("place", place);  // 기록의 place
+            intent.putExtra("record", record);  // 기록의 내용
+            intent.putExtra("photos", photoUris);  // 사진의 URI 리스트
             startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            // 새로운 기록이 추가되었을 때
+            String place = data.getStringExtra("place");
+            String record = data.getStringExtra("record");
+
+            // Firebase에서 새로운 기록을 불러오고 화면에 갱신
+            loadTravelRecord(travelId);
+        }
     }
 
     private void loadTravelRecord(String travelId) {
@@ -152,24 +177,30 @@ public class ViewRecordActivity extends AppCompatActivity {
         // 여행 기록을 하나의 LinearLayout으로 묶기
         LinearLayout recordLayout = new LinearLayout(this);
         recordLayout.setOrientation(LinearLayout.VERTICAL);
-        recordLayout.setPadding(0,4,0,4);
-        recordLayout.setBackgroundResource(R.drawable.yellow_box_full); // 배경 설정
+        recordLayout.setPadding(25,20,0,50);
+        recordLayout.setBackgroundResource(R.drawable.record_background); // 배경 설정
+        // 배경 간 마진을 추가해주기 위한 LayoutParams 설정
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(0, 20, 0, 20); // 배경들 간에 간격을 두기 위해 상단과 하단에 마진 추가 (예: 20dp)
 
 
         // 여행 장소
         TextView placeTextView = new TextView(this);
-        placeTextView.setText(place);
+        placeTextView.setText("\uD83D\uDD16"+place);
         placeTextView.setTextSize(20);
         placeTextView.setTextColor(getResources().getColor(R.color.black));
+
+
+
+        RecyclerView photoRecyclerView = new RecyclerView(this);
+        photoRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         // 여행 기록
         TextView recordTextView = new TextView(this);
         recordTextView.setText(record);
         recordTextView.setTextSize(16);
         recordTextView.setTextColor(getResources().getColor(R.color.black));
-
-        RecyclerView photoRecyclerView = new RecyclerView(this);
-        photoRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         PhotoAdapter newPhotoAdapter = new PhotoAdapter(new ArrayList<>(), false, new PhotoAdapter.OnPhotoDeleteListener() {
             @Override
@@ -191,10 +222,13 @@ public class ViewRecordActivity extends AppCompatActivity {
 
         // 레이아웃에 추가
         recordLayout.addView(placeTextView);
-        recordLayout.addView(recordTextView);
         recordLayout.addView(photoRecyclerView);
-
+        recordLayout.addView(recordTextView);
+        // 레이아웃에 마진을 적용
+        recordLayout.setLayoutParams(layoutParams);
         // main container에 추가
         pastTripsContainer.addView(recordLayout);
+
+
     }
 }
