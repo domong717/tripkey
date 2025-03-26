@@ -4,27 +4,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+
 import java.util.List;
 
 public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
 
-    private List<ChecklistItem> items; // 체크리스트 데이터
-    private OnItemDeleteListener deleteListener; // 삭제 리스너
+    private List<ChecklistItem> items;
+    private CollectionReference checklistRef;
 
-    public interface OnItemDeleteListener {
-        void onItemDelete(int position);
-    }
-
-    public ChecklistAdapter(List<ChecklistItem> items, OnItemDeleteListener deleteListener) {
+    public ChecklistAdapter(List<ChecklistItem> items, CollectionReference checklistRef) {
         this.items = items;
-        this.deleteListener = deleteListener;
+        this.checklistRef = checklistRef;
     }
 
     @NonNull
@@ -38,29 +35,24 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChecklistItem item = items.get(position);
-
         holder.checkBox.setChecked(item.isChecked());
         holder.textView.setText(item.getText());
 
-        // 체크박스 상태 변경 리스너 설정
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                item.setChecked(isChecked);
-                // SharedPreferences에 저장하는 로직 추가 (ChecklistActivity의 saveChecklistItem() 호출)
-                ((ChecklistActivity) buttonView.getContext()).saveChecklistItem(item);
-            }
+        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            item.setChecked(isChecked);
+
+            // Firestore 업데이트
+            checklistRef.document(item.getId()).update("isChecked", isChecked);
         });
 
-        // 삭제 버튼 클릭 리스너 설정
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int adapterPosition = holder.getAdapterPosition();
-                if (deleteListener != null) {
-                    deleteListener.onItemDelete(adapterPosition);
-                }
-            }
+        holder.deleteButton.setOnClickListener(v -> {
+            String id = item.getId();
+
+            // Firestore에서 삭제
+            checklistRef.document(id).delete().addOnSuccessListener(aVoid -> {
+                items.remove(position);
+                notifyItemRemoved(position);
+            });
         });
     }
 
@@ -70,17 +62,15 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.View
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        CheckBox checkBox;  // 체크박스
-        TextView textView;  // 항목 이름
-        ImageButton deleteButton; // 삭제 버튼
-
+        CheckBox checkBox;
+        TextView textView;
+        ImageButton deleteButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.checkBox);
             textView = itemView.findViewById(R.id.itemText);
-            deleteButton = itemView.findViewById(R.id.deleteButton); // 삭제 버튼 초기화
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
-

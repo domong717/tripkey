@@ -1,77 +1,73 @@
 package com.example.tripkey;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChecklistActivity extends AppCompatActivity implements ChecklistAdapter.OnItemDeleteListener {
+public class ChecklistActivity extends AppCompatActivity {
 
     private List<ChecklistItem> checklistItems; // 체크리스트 데이터
     private ChecklistAdapter adapter;          // RecyclerView 어댑터
-    private EditText newItemEditText; // 새 항목 입력 필드
-    private SharedPreferences sharedPreferences; // SharedPreferences
+    private EditText newItemEditText;          // 새 항목 입력 필드
 
+    private FirebaseFirestore db;              // Firestore 인스턴스
+    private CollectionReference checklistRef;  // Firestore 컬렉션 참조
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checklist); // XML 레이아웃 연결
+        setContentView(R.layout.activity_checklist);
 
-        // SharedPreferences 초기화
-        sharedPreferences = getSharedPreferences("ChecklistPrefs", MODE_PRIVATE);
-        // 데이터 초기화 및 로드
-        checklistItems = new ArrayList<>();
-        loadChecklistItems(); // SharedPreferences에서 데이터 로드
+        // Firestore 초기화
+        db = FirebaseFirestore.getInstance();
 
+        // SharedPreferences에서 사용자 ID 가져오기
+        String userId = getSharedPreferences("UserPrefs", MODE_PRIVATE).getString("userId", "");
+        checklistRef = db.collection("users").document(userId).collection("checklist");
 
-
-        // RecyclerView 설정
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ChecklistAdapter(checklistItems, this);
-        recyclerView.setAdapter(adapter);
-
-        // 추가 버튼 클릭 이벤트
+        // UI 초기화
         newItemEditText = findViewById(R.id.newItemEditText);
         Button addButton = findViewById(R.id.addButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newItemText = newItemEditText.getText().toString().trim();
-                if (!newItemText.isEmpty()) {
-                    // 새 항목 생성 및 추가
-                    ChecklistItem newItem = new ChecklistItem(newItemText, false);
-                    checklistItems.add(newItem);
+        ImageButton resetButton = findViewById(R.id.resetButton);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
-                    // RecyclerView 갱신
-                    adapter.notifyDataSetChanged();
+        checklistItems = new ArrayList<>();
+        adapter = new ChecklistAdapter(checklistItems, checklistRef);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
-                    // SharedPreferences에 저장
-                    saveChecklistItem(newItem);
+        // Firestore에서 데이터 로드
+        loadChecklistItems();
 
-                    // 입력 필드 초기화
-                    newItemEditText.setText("");
-                } else {
-                    // 입력 필드가 비어 있을 경우 Toast 메시지 표시
-                    Toast.makeText(ChecklistActivity.this, "항목 이름을 입력하세요.", Toast.LENGTH_SHORT).show();
-                }
+        // 항목 추가 버튼 클릭 이벤트
+        addButton.setOnClickListener(v -> {
+            String newItemText = newItemEditText.getText().toString().trim();
+            if (!newItemText.isEmpty()) {
+                addChecklistItem(newItemText);
+                newItemEditText.setText("");
+            } else {
+                Toast.makeText(ChecklistActivity.this, "항목 이름을 입력하세요.", Toast.LENGTH_SHORT).show();
             }
         });
 
         // 초기화 버튼 클릭 이벤트
-        ImageButton resetButton = findViewById(R.id.resetButton);
         resetButton.setOnClickListener(v -> resetChecklist());
 
         // 뒤로가기 버튼 클릭 이벤트
@@ -80,53 +76,45 @@ public class ChecklistActivity extends AppCompatActivity implements ChecklistAda
     }
 
     /**
-     * 체크리스트를 초기화(모든 체크박스 해제)합니다.
+     * Firestore에서 체크리스트 항목을 로드합니다.
+     */
+    private void loadChecklistItems() {
+        checklistRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            checklistItems.clear();
+            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                String id = document.getId();
+                String text = document.getString("text");
+                boolean isChecked = document.getBoolean("isChecked");
+                checklistItems.add(new ChecklistItem(id, text, isChecked));
+            }
+            adapter.notifyDataSetChanged();
+        }).addOnFailureListener(e -> Toast.makeText(this, "데이터 로드 실패", Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Firestore에 체크리스트 항목을 추가합니다.
+     */
+    private void addChecklistItem(String text) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("text", text);
+        item.put("isChecked", false);
+
+        checklistRef.add(item).addOnSuccessListener(documentReference -> {
+            String id = documentReference.getId();
+            checklistItems.add(new ChecklistItem(id, text, false));
+            adapter.notifyDataSetChanged();
+            Toast.makeText(this, "항목 추가 성공", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> Toast.makeText(this, "항목 추가 실패", Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Firestore에서 모든 체크박스를 해제합니다.
      */
     private void resetChecklist() {
         for (ChecklistItem item : checklistItems) {
-            item.setChecked(false); // 모든 항목의 체크 상태를 해제
-            saveChecklistItem(item); // SharedPreferences에 업데이트
+            item.setChecked(false);
+            checklistRef.document(item.getId()).update("isChecked", false);
         }
-        adapter.notifyDataSetChanged(); // RecyclerView 갱신
-    }
-
-
-    /**
-     * 체크리스트 항목을 SharedPreferences에 저장합니다.
-     */
-    public void saveChecklistItem(ChecklistItem item) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(item.getText(), item.isChecked());
-        editor.apply();
-    }
-    /**
-     * SharedPreferences에서 체크리스트 항목을 로드합니다.
-     */
-    private void loadChecklistItems() {
-        Map<String, ?> allEntries = sharedPreferences.getAll();
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            if (entry.getValue() instanceof Boolean) {
-                String key = entry.getKey();
-                boolean value = (boolean) entry.getValue();
-                checklistItems.add(new ChecklistItem(key, value));
-            }
-        }
-    }
-    /**
-     * 체크리스트 항목 삭제
-     */
-    @Override
-    public void onItemDelete(int position) {
-        // 삭제할 항목의 텍스트 가져오기
-        String itemText = checklistItems.get(position).getText();
-
-        // SharedPreferences에서 삭제
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(itemText);
-        editor.apply();
-
-        // 리스트에서 제거
-        checklistItems.remove(position);
-        adapter.notifyItemRemoved(position);
+        adapter.notifyDataSetChanged();
     }
 }
