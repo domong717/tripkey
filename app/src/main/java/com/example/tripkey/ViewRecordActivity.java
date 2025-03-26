@@ -80,15 +80,7 @@ public class ViewRecordActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        ImageButton modifyRecordButton = findViewById(R.id.modify_record_button);
-        modifyRecordButton.setOnClickListener(v->{
-            Intent intent = new Intent(ViewRecordActivity.this, ModifyRecordActivity.class);
-            intent.putExtra("travelId", travelId);
-            intent.putExtra("place", place);  // 기록의 place
-            intent.putExtra("record", record);  // 기록의 내용
-            intent.putExtra("photos", photoUris);  // 사진의 URI 리스트
-            startActivity(intent);
-        });
+
     }
 
     @Override
@@ -146,6 +138,8 @@ public class ViewRecordActivity extends AppCompatActivity {
                                     if (queryDocumentSnapshots.isEmpty()) {
                                         noRecordsTextView.setVisibility(View.VISIBLE);
                                         pastTripsContainer.setVisibility(View.GONE);
+                                        Log.d("ViewRecordActivity", "기록 없음: " + queryDocumentSnapshots.isEmpty());
+
                                     } else {
                                         noRecordsTextView.setVisibility(View.GONE);
                                         pastTripsContainer.setVisibility(View.VISIBLE);
