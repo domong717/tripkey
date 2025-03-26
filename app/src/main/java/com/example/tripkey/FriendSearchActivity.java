@@ -146,6 +146,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendReq
                                                     .document(currentUserId)
                                                     .delete()
                                                     .addOnSuccessListener(aVoid4 -> {
+                                                        loadReceivedRequests();
                                                         Toast.makeText(this, "친구 요청을 수락했습니다.", Toast.LENGTH_SHORT).show();
                                                     });
                                         });
