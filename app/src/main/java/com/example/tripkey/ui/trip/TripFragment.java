@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.tripkey.AddTripActivity;
+import com.example.tripkey.MakeTeamActivity;
 import com.example.tripkey.R;
 import com.example.tripkey.TravelAdapter;
 import com.example.tripkey.TravelItem;
@@ -43,7 +44,7 @@ public class TripFragment extends Fragment {
 
         // '여행 추가' 버튼 클릭 이벤트
         binding.btnAddTrip.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), AddTripActivity.class);
+            Intent intent = new Intent(getActivity(), MakeTeamActivity.class);
             startActivity(intent);
         });
 

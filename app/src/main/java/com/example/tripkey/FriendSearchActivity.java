@@ -1,6 +1,7 @@
 package com.example.tripkey;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -111,19 +112,26 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendReq
                         requestList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String requestId = document.getId();
+
+                            // 요청을 보낸 사용자의 프로필 정보 가져오기
                             db.collection("users").document(requestId).get()
                                     .addOnSuccessListener(userSnapshot -> {
                                         if (userSnapshot.exists()) {
                                             String requestName = userSnapshot.getString("userName");
-                                            FriendItem friendItem = new FriendItem(requestName, requestId);
+                                            String requestProfileImageUrl = userSnapshot.getString("profileImage"); // 프로필 이미지 추가
+
+                                            FriendItem friendItem = new FriendItem(requestName, requestId, requestProfileImageUrl);
                                             requestList.add(friendItem);
                                             requestAdapter.notifyDataSetChanged();
                                         }
                                     });
                         }
+                    } else {
+                        Log.e("Firestore", "받은 요청을 불러오는 중 오류 발생", task.getException());
                     }
                 });
     }
+
     @Override
     public void onAcceptClick(String targetUserId) {
         db.collection("users").document(currentUserId)

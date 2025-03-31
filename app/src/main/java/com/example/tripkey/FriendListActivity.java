@@ -2,6 +2,7 @@ package com.example.tripkey;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -63,21 +64,26 @@ public class FriendListActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         friendList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String friendId = document.getId();
+                            String friendId = document.getId(); // 친구 ID 가져오기
+
+                            // 친구의 프로필 정보는 users/{friendId} 문서에서 가져옴
                             db.collection("users").document(friendId).get()
                                     .addOnSuccessListener(documentSnapshot -> {
                                         if (documentSnapshot.exists()) {
                                             String friendName = documentSnapshot.getString("userName");
-                                            FriendItem friendItem = new FriendItem(friendName, friendId);
+                                            String friendProfileImageUrl = documentSnapshot.getString("profileImage"); // profileImage 가져오기
+
+                                            FriendItem friendItem = new FriendItem(friendName, friendId, friendProfileImageUrl);
                                             friendList.add(friendItem);
                                             adapter.notifyDataSetChanged();
                                         }
                                     });
                         }
                     } else {
-                        // 오류 처리
+                        Log.e("Firestore", "친구 목록을 불러오는 중 오류 발생", task.getException());
                     }
                 });
     }
+
 
 }
