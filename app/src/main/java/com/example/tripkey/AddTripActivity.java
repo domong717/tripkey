@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.tripkey.databinding.ActivityAddTripBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,13 +32,20 @@ public class AddTripActivity extends AppCompatActivity {
     private TextView startDateInput, endDateInput;
     private String selectedWho = "";
     private String selectedStyle = "";
-
+    private static final String TAG = "AddTripActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAddTripBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // 선택된 친구들의 ID 리스트 받기
+        ArrayList<String> selectedFriendsIds = getIntent().getStringArrayListExtra("selectedFriendsIds");
+        if (selectedFriendsIds != null) {
+            Log.d(TAG, "선택된 친구 ID 리스트: " + selectedFriendsIds);
+            // 이후 원하는 방식으로 선택된 친구 ID 리스트를 사용하세요
+        }
 
         EditText travelNameInput = binding.travelNameInput;
         EditText locationInput = binding.locationInput;
