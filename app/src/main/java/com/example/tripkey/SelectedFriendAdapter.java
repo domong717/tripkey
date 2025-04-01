@@ -1,5 +1,6 @@
 package com.example.tripkey;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +13,11 @@ import java.util.List;
 
 public class SelectedFriendAdapter extends RecyclerView.Adapter<SelectedFriendAdapter.SelectedFriendViewHolder> {
     private List<FriendItem> selectedFriends;
+    private String currentUserId; // 🔹 현재 사용자 ID 추가
 
-    public SelectedFriendAdapter(List<FriendItem> selectedFriends) {
+    public SelectedFriendAdapter(List<FriendItem> selectedFriends, String currentUserId) {
         this.selectedFriends = selectedFriends;
+        this.currentUserId = currentUserId; // 🔹 생성자로 받아서 저장
     }
 
     @NonNull
@@ -32,9 +35,18 @@ public class SelectedFriendAdapter extends RecyclerView.Adapter<SelectedFriendAd
         Glide.with(holder.itemView.getContext())
                 .load(friend.getProfileImageUrl())
                 .circleCrop()
-                .placeholder(R.drawable.profile)  // 🔹 기본 이미지 설정
-                .error(R.drawable.profile)       // 🔹 오류 발생 시 기본 이미지
+                .placeholder(R.drawable.profile)
+                .error(R.drawable.profile)
                 .into(holder.profileImageView);
+
+        // 🔹 내 계정이면 테두리 추가
+        if (friend.getId().equals(currentUserId)) {
+            holder.profileBorder.setVisibility(View.VISIBLE);
+            holder.profileBorder.post(() -> holder.profileBorder.setVisibility(View.VISIBLE)); // 💡 추가
+            Log.d("SelectedFriendAdapter", "MY account YES");
+        } else {
+            holder.profileBorder.setVisibility(View.GONE);
+        }
     }
 
 
@@ -46,10 +58,12 @@ public class SelectedFriendAdapter extends RecyclerView.Adapter<SelectedFriendAd
     static class SelectedFriendViewHolder extends RecyclerView.ViewHolder {
         ImageView profileImageView;
         TextView nameTextView;
+        ImageView profileBorder;
 
         public SelectedFriendViewHolder(@NonNull View itemView) {
             super(itemView);
             profileImageView = itemView.findViewById(R.id.profileImage);
+            profileBorder = itemView.findViewById(R.id.profileBorder);
             nameTextView = itemView.findViewById(R.id.friendName);
         }
     }

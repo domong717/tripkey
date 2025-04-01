@@ -26,8 +26,8 @@ public class MakeTeamActivity extends AppCompatActivity {
     private String currentUserId; // 실제 로그인된 사용자의 ID
 
     private static final String TAG = "MakeTeamActivity"; // 로그 태그 추가
-    private static final String PREFS_NAME = "UserPrefs"; // InfoFragment에서 사용한 키
-    private static final String KEY_USER_ID = "userId";  // InfoFragment와 동일한 키 사용
+    private static final String PREFS_NAME = "UserPrefs";
+    private static final String KEY_USER_ID = "userId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,6 @@ public class MakeTeamActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        // 🔹 InfoFragment와 동일한 방식으로 SharedPreferences에서 userId 가져오기
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         currentUserId = prefs.getString(KEY_USER_ID, null);
 
@@ -47,7 +46,6 @@ public class MakeTeamActivity extends AppCompatActivity {
             return;
         }
 
-        Log.d(TAG, "현재 로그인된 사용자 ID: " + currentUserId);
 
         friendsRecyclerView = findViewById(R.id.friendsRecyclerView);
         selectedRecyclerView = findViewById(R.id.selectedRecyclerView);
@@ -58,11 +56,14 @@ public class MakeTeamActivity extends AppCompatActivity {
         friendsRecyclerView.setAdapter(friendTeamAdapter);
         Log.d(TAG, "friendTeamAdapter 설정 완료");
 
-        selectedFriendAdapter = new SelectedFriendAdapter(selectedFriendsList);
+        Log.d(TAG, "현재 로그인된 사용자 ID: " + currentUserId);
+        selectedFriendAdapter = new SelectedFriendAdapter(selectedFriendsList, currentUserId);
         selectedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         selectedRecyclerView.setAdapter(selectedFriendAdapter);
+
         Log.d(TAG, "selectedFriendAdapter 설정 완료");
 
+        addCurrentUserToSelectedList();
         loadFriends();
 
         Button buttonCreateTeam = findViewById(R.id.buttonCreateTeam);
@@ -121,14 +122,33 @@ public class MakeTeamActivity extends AppCompatActivity {
                 });
     }
 
+    private void addCurrentUserToSelectedList() {
+        db.collection("users").document(currentUserId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String myName = documentSnapshot.getString("userName");
+                        String myProfileImage = documentSnapshot.getString("profileImage");
+
+                        FriendItem myAccount = new FriendItem(myName, currentUserId, myProfileImage);
+
+                        // 🔹 중복 방지: 이미 추가된 경우 다시 추가하지 않음
+                        if (!selectedFriendsList.contains(myAccount)) {
+                            selectedFriendsList.add(myAccount);
+                            selectedFriendAdapter.notifyDataSetChanged();
+                            Log.d(TAG, "내 계정 추가 완료: " + myName);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "내 계정 정보 가져오기 실패", e));
+    }
+
 
     private void onFriendSelected(FriendItem friend) {
         if (selectedFriendsList.contains(friend)) {
-            // 🔹 이미 선택된 경우 -> 리스트에서 제거
+
             selectedFriendsList.remove(friend);
             Log.d(TAG, "선택 해제됨: " + friend.getName());
         } else {
-            // 🔹 선택되지 않은 경우 -> 리스트에 추가
             selectedFriendsList.add(friend);
             Log.d(TAG, "선택됨: " + friend.getName());
         }

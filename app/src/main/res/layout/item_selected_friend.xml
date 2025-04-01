@@ -4,13 +4,30 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <ImageView
-        android:id="@+id/profileImage"
+    <FrameLayout
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:scaleType="centerCrop"
-        android:layout_gravity="center"
-        android:src="@drawable/profile" />
+        android:layout_gravity="center">
+
+
+        <!-- 🔹 실제 프로필 이미지 (위에 배치) -->
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/profile"
+            android:adjustViewBounds="false"
+            android:scaleType="centerCrop"/>  <!-- 💡 fitCenter 대신 centerCrop 사용 -->
+
+        <!-- 🔹 프로필 테두리 (가장 아래) -->
+        <ImageView
+            android:id="@+id/profileBorder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/border_selected_friend"
+            android:scaleType="fitXY"/>  <!-- 💡 이걸로 크기 정확히 맞춤 -->
+    </FrameLayout>
+
 
     <TextView
         android:id="@+id/friendName"
