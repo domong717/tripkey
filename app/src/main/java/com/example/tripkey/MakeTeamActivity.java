@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MakeTeamActivity extends AppCompatActivity {
     private RecyclerView friendsRecyclerView, selectedRecyclerView;
@@ -67,22 +69,45 @@ public class MakeTeamActivity extends AppCompatActivity {
         loadFriends();
 
         Button buttonCreateTeam = findViewById(R.id.buttonCreateTeam);
+        // 버튼 클릭 이벤트 수정
         buttonCreateTeam.setOnClickListener(v -> {
-            // 선택된 친구들의 ID 리스트를 생성
+            if (selectedFriendsList.isEmpty()) {
+                Toast.makeText(this, "팀원을 선택하세요.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            createTeamInFirestore(selectedFriendsList);
+            Intent intent = new Intent(MakeTeamActivity.this, AddTripActivity.class);
             ArrayList<String> selectedFriendsIds = new ArrayList<>();
             for (FriendItem friend : selectedFriendsList) {
-                selectedFriendsIds.add(friend.getId()); // 친구 ID 추가
+                selectedFriendsIds.add(friend.getId());
             }
-
-            // 로그로 선택된 친구 ID 리스트 확인
-            Log.d(TAG, "선택된 친구 ID 리스트: " + selectedFriendsIds);
-
-            // Intent를 통해 AddTripActivity로 이동
-            Intent intent = new Intent(MakeTeamActivity.this, AddTripActivity.class);
             intent.putStringArrayListExtra("selectedFriendsIds", selectedFriendsIds);
             startActivity(intent);
         });
     }
+
+    private void createTeamInFirestore(List<FriendItem> selectedFriends) {
+        String teamId = db.collection("teams").document().getId(); // 랜덤 팀 ID 생성
+        Map<String, Object> teamData = new HashMap<>();
+        List<String> memberIds = new ArrayList<>();
+
+        for (FriendItem friend : selectedFriends) {
+            memberIds.add(friend.getId());
+        }
+
+        teamData.put("teamId", teamId);
+        teamData.put("members", memberIds);
+
+        // 각 멤버의 Firestore에 팀 정보 저장
+        for (FriendItem friend : selectedFriends) {
+            db.collection("users").document(friend.getId())
+                    .collection("teams").document(teamId)
+                    .set(teamData)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "팀 저장 성공: " + friend.getId()))
+                    .addOnFailureListener(e -> Log.e(TAG, "팀 저장 실패: " + friend.getId(), e));
+        }
+    }
+
 
     private void loadFriends() {
         Log.d(TAG, "loadFriends() 호출됨");
