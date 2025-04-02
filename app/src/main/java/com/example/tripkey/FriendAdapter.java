@@ -1,5 +1,6 @@
 package com.example.tripkey;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,11 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.util.List;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
     private List<FriendItem> friendList;
     private OnFriendClickListener listener;
+    private static final String TAG = "FriendAdapter";
 
     public interface OnFriendClickListener {
         void onFriendClick(FriendItem friend);
@@ -34,7 +38,20 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
     public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
         FriendItem friend = friendList.get(position);
         holder.nameTextView.setText(friend.getName());
-        Glide.with(holder.itemView.getContext()).load(friend.getProfileImageUrl()).into(holder.profileImageView);
+
+        if (friend.getProfileImageUrl() != null && !friend.getProfileImageUrl().isEmpty()) {
+            Log.d(TAG, "Glide 로드 URL: " + friend.getProfileImageUrl());
+            Glide.with(holder.itemView.getContext())
+                    .load(friend.getProfileImageUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.profile)
+                    .error(R.drawable.profile)
+                    .circleCrop()
+                    .into(holder.profileImageView);
+
+        } else {
+            holder.profileImageView.setImageResource(R.drawable.profile);
+        }
 
         holder.itemView.setOnClickListener(v -> listener.onFriendClick(friend));
     }
