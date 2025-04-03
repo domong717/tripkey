@@ -29,7 +29,7 @@ public class AddTripActivity extends AppCompatActivity {
 
     private ActivityAddTripBinding binding;
     private LinearLayout mustVisitContainer;
-    private TextView startDateInput, endDateInput;
+    private TextView startDateInput, endDateInput, currentMBTI;
     private String selectedWho = "";
     private String selectedStyle = "";
     private static final String TAG = "AddTripActivity";
@@ -44,13 +44,14 @@ public class AddTripActivity extends AppCompatActivity {
         ArrayList<String> selectedFriendsIds = getIntent().getStringArrayListExtra("selectedFriendsIds");
         if (selectedFriendsIds != null) {
             Log.d(TAG, "선택된 친구 ID 리스트: " + selectedFriendsIds);
-            // 이후 원하는 방식으로 선택된 친구 ID 리스트를 사용하세요
+            calculateGroupMBTI(selectedFriendsIds, teamMBTI -> currentMBTI.setText(teamMBTI));
         }
 
         EditText travelNameInput = binding.travelNameInput;
         EditText locationInput = binding.locationInput;
         startDateInput = binding.startDateInput;
         endDateInput = binding.endDateInput;
+        currentMBTI = binding.currentMbtiText;
 
         Button whoAloneButton = binding.whoAloneButton;
         Button whoCoupleButton = binding.whoCoupleButton;
@@ -124,65 +125,6 @@ public class AddTripActivity extends AppCompatActivity {
         binding.aiScheduleButton.setOnClickListener(v -> saveTripData());
     }
 
-    private void saveTripData() {
-        String travelName = binding.travelNameInput.getText().toString().trim();
-        String location = binding.locationInput.getText().toString().trim();
-        String startDate = startDateInput.getText().toString().trim();
-        String endDate = endDateInput.getText().toString().trim();
-
-
-        if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty()|| selectedWho.isEmpty()||selectedStyle.isEmpty()) {
-            Toast.makeText(this, "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-
-        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        String userId = sharedPreferences.getString("userId", null);
-        if (userId == null) {
-            Toast.makeText(this, "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String travelId = db.collection("users").document(userId)
-                .collection("travel").document().getId();
-
-        Map<String, Object> travelData = new HashMap<>();
-        travelData.put("travelName", travelName);
-        travelData.put("location", location);
-        travelData.put("startDate", startDate);
-        travelData.put("endDate", endDate);
-        travelData.put("who", selectedWho);
-        travelData.put("travelStyle", selectedStyle);
-
-
-        for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
-            View child = mustVisitContainer.getChildAt(i);
-            if (child instanceof LinearLayout) {
-                EditText placeInput = (EditText) ((LinearLayout) child).getChildAt(0);
-                String place = placeInput.getText().toString().trim();
-                if (!place.isEmpty()) {
-                    travelData.put("place_" + i, place);
-                }
-            }
-        }
-
-        db.collection("users").document(userId)
-                .collection("travel").document(travelId)
-                .set(travelData)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "여행 일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
-    }
-
 private void resetWhoButtons(Button whoAloneButton, Button whoCoupleButton, Button whoFriendButton,Button whoFamilyButton, Button whoParentButton, Button whoChildButton) {
     whoAloneButton.setBackgroundResource(R.drawable.gray_box_full);
     whoCoupleButton.setBackgroundResource(R.drawable.gray_box_full);
@@ -248,4 +190,123 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
         datePickerDialog.show();
     }
+
+    private void calculateGroupMBTI(ArrayList<String> selectedFriendsIds, OnMBTICalculatedListener listener) {
+        if (selectedFriendsIds == null || selectedFriendsIds.isEmpty()) {
+            Log.d(TAG, "선택된 친구가 없습니다.");
+            listener.onMBTICalculated("");
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<Character, Integer> mbtiCount = new HashMap<>();
+        int[] processedCount = {0};
+        int totalCount = selectedFriendsIds.size();
+
+        for (String friendId : selectedFriendsIds) {
+            db.collection("users").document(friendId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists() && documentSnapshot.contains("mbti")) {
+                            String mbti = documentSnapshot.getString("mbti");
+                            if (mbti != null && mbti.length() == 4) {
+                                for (char c : mbti.toCharArray()) {
+                                    mbtiCount.put(c, mbtiCount.getOrDefault(c, 0) + 1);
+                                }
+                            }
+                        }
+                        processedCount[0]++;
+                        if (processedCount[0] == totalCount) {
+                            listener.onMBTICalculated(determineGroupMBTI(mbtiCount));
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        processedCount[0]++;
+                        if (processedCount[0] == totalCount) {
+                            listener.onMBTICalculated(determineGroupMBTI(mbtiCount));
+                        }
+                    });
+        }
+    }
+
+    private String determineGroupMBTI(Map<Character, Integer> mbtiCount) {
+        char[] mbtiPositions = {'I', 'O', 'B', 'T', 'S', 'L', 'M', 'F'};
+        StringBuilder groupMBTI = new StringBuilder();
+
+        for (int i = 0; i < 4; i++) {
+            char first = mbtiPositions[i * 2];
+            char second = mbtiPositions[i * 2 + 1];
+
+            int countFirst = mbtiCount.getOrDefault(first, 0);
+            int countSecond = mbtiCount.getOrDefault(second, 0);
+
+            groupMBTI.append(countFirst >= countSecond ? first : second);
+        }
+
+        return groupMBTI.toString();
+    }
+
+    private interface OnMBTICalculatedListener {
+        void onMBTICalculated(String teamMBTI);
+    }
+
+    private void saveTripData() {
+        String travelName = binding.travelNameInput.getText().toString().trim();
+        String location = binding.locationInput.getText().toString().trim();
+        String startDate = startDateInput.getText().toString().trim();
+        String endDate = endDateInput.getText().toString().trim();
+
+        if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || selectedWho.isEmpty() || selectedStyle.isEmpty()) {
+            Toast.makeText(this, "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+        if (userId == null) {
+            Toast.makeText(this, "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ArrayList<String> selectedFriendsIds = getIntent().getStringArrayListExtra("selectedFriendsIds");
+        calculateGroupMBTI(selectedFriendsIds, teamMBTI -> {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String travelId = db.collection("users").document(userId)
+                    .collection("travel").document().getId();
+
+            Map<String, Object> travelData = new HashMap<>();
+            travelData.put("travelName", travelName);
+            travelData.put("location", location);
+            travelData.put("startDate", startDate);
+            travelData.put("endDate", endDate);
+            travelData.put("who", selectedWho);
+            travelData.put("travelStyle", selectedStyle);
+            travelData.put("teamMBTI", teamMBTI);
+
+            for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
+                View child = mustVisitContainer.getChildAt(i);
+                if (child instanceof LinearLayout) {
+                    EditText placeInput = (EditText) ((LinearLayout) child).getChildAt(0);
+                    String place = placeInput.getText().toString().trim();
+                    if (!place.isEmpty()) {
+                        travelData.put("place_" + i, place);
+                    }
+                }
+            }
+
+            db.collection("users").document(userId)
+                    .collection("travel").document(travelId)
+                    .set(travelData)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "여행 일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
+        });
+    }
+
 }
