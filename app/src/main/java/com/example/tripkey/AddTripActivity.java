@@ -190,46 +190,58 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
         datePickerDialog.show();
     }
-
     private void calculateGroupMBTI(ArrayList<String> selectedFriendsIds, OnMBTICalculatedListener listener) {
-        if (selectedFriendsIds == null || selectedFriendsIds.isEmpty()) {
-            Log.d(TAG, "선택된 친구가 없습니다.");
-            listener.onMBTICalculated("");
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+        if (userId == null) {
+            Toast.makeText(this, "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Map<Character, Integer> mbtiCount = new HashMap<>();
-        int[] processedCount = {0};
-        int totalCount = selectedFriendsIds.size();
+        final String[] currentUserMBTI = new String[1]; // 💡 final 배열로 래핑
 
-        for (String friendId : selectedFriendsIds) {
-            db.collection("users").document(friendId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists() && documentSnapshot.contains("mbti")) {
-                            String mbti = documentSnapshot.getString("mbti");
-                            if (mbti != null && mbti.length() == 4) {
-                                for (char c : mbti.toCharArray()) {
-                                    mbtiCount.put(c, mbtiCount.getOrDefault(c, 0) + 1);
-                                }
-                            }
-                        }
-                        processedCount[0]++;
-                        if (processedCount[0] == totalCount) {
-                            listener.onMBTICalculated(determineGroupMBTI(mbtiCount));
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        processedCount[0]++;
-                        if (processedCount[0] == totalCount) {
-                            listener.onMBTICalculated(determineGroupMBTI(mbtiCount));
-                        }
-                    });
-        }
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    currentUserMBTI[0] = documentSnapshot.getString("mbti");
+                    if (currentUserMBTI[0] == null || currentUserMBTI[0].length() != 4) {
+                        currentUserMBTI[0] = "INFP"; // fallback
+                    }
+
+                    Map<Character, Integer> mbtiCount = new HashMap<>();
+                    int[] processedCount = {0};
+                    int totalCount = selectedFriendsIds.size();
+
+                    for (String friendId : selectedFriendsIds) {
+                        db.collection("users").document(friendId).get()
+                                .addOnSuccessListener(friendSnapshot -> {
+                                    if (friendSnapshot.exists() && friendSnapshot.contains("mbti")) {
+                                        String mbti = friendSnapshot.getString("mbti");
+                                        if (mbti != null && mbti.length() == 4) {
+                                            for (char c : mbti.toCharArray()) {
+                                                mbtiCount.put(c, mbtiCount.getOrDefault(c, 0) + 1);
+                                            }
+                                        }
+                                    }
+                                    processedCount[0]++;
+                                    if (processedCount[0] == totalCount) {
+                                        listener.onMBTICalculated(determineGroupMBTI(mbtiCount, currentUserMBTI[0]));
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    processedCount[0]++;
+                                    if (processedCount[0] == totalCount) {
+                                        listener.onMBTICalculated(determineGroupMBTI(mbtiCount, currentUserMBTI[0]));
+                                    }
+                                });
+                    }
+                });
     }
 
-    private String determineGroupMBTI(Map<Character, Integer> mbtiCount) {
-        char[] mbtiPositions = {'I', 'O', 'B', 'T', 'S', 'L', 'M', 'F'};
+
+
+    private String determineGroupMBTI(Map<Character, Integer> mbtiCount, String currentUserMBTI) {
+        char[] mbtiPositions = {'I', 'O', 'B', 'T', 'L', 'S', 'M', 'F'};
         StringBuilder groupMBTI = new StringBuilder();
 
         for (int i = 0; i < 4; i++) {
@@ -239,11 +251,19 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             int countFirst = mbtiCount.getOrDefault(first, 0);
             int countSecond = mbtiCount.getOrDefault(second, 0);
 
-            groupMBTI.append(countFirst >= countSecond ? first : second);
+            if (countFirst > countSecond) {
+                groupMBTI.append(first);
+            } else if (countFirst < countSecond) {
+                groupMBTI.append(second);
+            } else {
+                // 같을 경우 현재 유저의 MBTI에서 해당 위치의 값 사용
+                groupMBTI.append(currentUserMBTI.charAt(i));
+            }
         }
 
         return groupMBTI.toString();
     }
+
 
     private interface OnMBTICalculatedListener {
         void onMBTICalculated(String teamMBTI);
