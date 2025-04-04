@@ -113,13 +113,17 @@ public class AddTripActivity extends AppCompatActivity {
         styleKeepButton.setOnClickListener(v -> {
             resetStyleButtons(styleKeepButton, styleAnalyzeButton);
             styleKeepButton.setBackgroundResource(R.drawable.green_button);
-            selectedStyle="유지";
+            selectedStyle = "유지";
         });
 
         styleAnalyzeButton.setOnClickListener(v -> {
             resetStyleButtons(styleKeepButton, styleAnalyzeButton);
             styleAnalyzeButton.setBackgroundResource(R.drawable.green_button);
-            selectedStyle="다시 분석";
+            selectedStyle = "다시 분석";
+
+            // 🔽 MBTITestActivity로 이동
+            Intent intent = new Intent(this, MBTITestActivity.class);
+            startActivity(intent);
         });
 
         binding.aiScheduleButton.setOnClickListener(v -> saveTripData());
