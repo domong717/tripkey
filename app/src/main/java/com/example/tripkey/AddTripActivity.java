@@ -292,12 +292,14 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
         }
 
         ArrayList<String> selectedFriendsIds = getIntent().getStringArrayListExtra("selectedFriendsIds");
+
         calculateGroupMBTI(selectedFriendsIds, teamMBTI -> {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             String travelId = db.collection("users").document(userId)
                     .collection("travel").document().getId();
 
             Map<String, Object> travelData = new HashMap<>();
+            travelData.put("travelId", travelId); // 친구 쪽에도 travelId 동일하게 저장
             travelData.put("travelName", travelName);
             travelData.put("location", location);
             travelData.put("startDate", startDate);
@@ -305,6 +307,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             travelData.put("who", selectedWho);
             travelData.put("travelStyle", selectedStyle);
             travelData.put("teamMBTI", teamMBTI);
+            travelData.put("creatorId", userId); // 누가 만든 여행인지 명시
 
             for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
                 View child = mustVisitContainer.getChildAt(i);
@@ -317,10 +320,20 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 }
             }
 
+            // 1. 나의 travel 경로에 저장
             db.collection("users").document(userId)
                     .collection("travel").document(travelId)
                     .set(travelData)
                     .addOnSuccessListener(aVoid -> {
+                        // 2. 친구들 travel 경로에도 동일하게 저장
+                        if (selectedFriendsIds != null && !selectedFriendsIds.isEmpty()) {
+                            for (String friendId : selectedFriendsIds) {
+                                db.collection("users").document(friendId)
+                                        .collection("travel").document(travelId)
+                                        .set(travelData);
+                            }
+                        }
+
                         Toast.makeText(this, "여행 일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -332,5 +345,6 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                     );
         });
     }
+
 
 }
