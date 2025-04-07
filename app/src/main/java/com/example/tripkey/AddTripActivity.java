@@ -32,6 +32,7 @@ public class AddTripActivity extends AppCompatActivity {
     private TextView startDateInput, endDateInput, currentMBTI;
     private String selectedWho = "";
     private String selectedStyle = "";
+    private String teamId;
     private static final String TAG = "AddTripActivity";
 
     @Override
@@ -39,6 +40,8 @@ public class AddTripActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityAddTripBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        teamId = getIntent().getStringExtra("teamId");
 
         // 선택된 친구들의 ID 리스트 받기
         ArrayList<String> selectedFriendsIds = getIntent().getStringArrayListExtra("selectedFriendsIds");
@@ -307,6 +310,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             travelData.put("who", selectedWho);
             travelData.put("travelStyle", selectedStyle);
             travelData.put("teamMBTI", teamMBTI);
+            travelData.put("teamId", teamId);
             travelData.put("creatorId", userId); // 누가 만든 여행인지 명시
 
             for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {

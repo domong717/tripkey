@@ -75,18 +75,27 @@ public class MakeTeamActivity extends AppCompatActivity {
                 Toast.makeText(this, "팀원을 선택하세요.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            createTeamInFirestore(selectedFriendsList);
-            Intent intent = new Intent(MakeTeamActivity.this, AddTripActivity.class);
-            ArrayList<String> selectedFriendsIds = new ArrayList<>();
-            for (FriendItem friend : selectedFriendsList) {
-                selectedFriendsIds.add(friend.getId());
-            }
-            intent.putStringArrayListExtra("selectedFriendsIds", selectedFriendsIds);
-            startActivity(intent);
+
+            // 팀 생성 후 -> AddTripActivity로 이동
+            createTeamInFirestore(selectedFriendsList, teamId -> {
+                Intent intent = new Intent(MakeTeamActivity.this, AddTripActivity.class);
+
+                // 친구 목록 ID
+                ArrayList<String> selectedFriendsIds = new ArrayList<>();
+                for (FriendItem friend : selectedFriendsList) {
+                    selectedFriendsIds.add(friend.getId());
+                }
+
+                intent.putStringArrayListExtra("selectedFriendsIds", selectedFriendsIds);
+                intent.putExtra("teamId", teamId); // 🔹 팀 ID도 추가
+
+                startActivity(intent);
+            });
         });
+
     }
 
-    private void createTeamInFirestore(List<FriendItem> selectedFriends) {
+    private void createTeamInFirestore(List<FriendItem> selectedFriends, OnTeamCreatedListener listener) {
         String teamId = db.collection("teams").document().getId(); // 랜덤 팀 ID 생성
         Map<String, Object> teamData = new HashMap<>();
         List<String> memberIds = new ArrayList<>();
@@ -98,15 +107,29 @@ public class MakeTeamActivity extends AppCompatActivity {
         teamData.put("teamId", teamId);
         teamData.put("members", memberIds);
 
-        // 각 멤버의 Firestore에 팀 정보 저장
+        // 멤버 수만큼 저장 후 완료되었을 때 콜백
+        final int[] successCount = {0};
+
         for (FriendItem friend : selectedFriends) {
             db.collection("users").document(friend.getId())
                     .collection("teams").document(teamId)
                     .set(teamData)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "팀 저장 성공: " + friend.getId()))
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "팀 저장 성공: " + friend.getId());
+                        successCount[0]++;
+                        if (successCount[0] == selectedFriends.size()) {
+                            // 🔹 모든 저장 완료되었을 때 teamId 전달
+                            listener.onTeamCreated(teamId);
+                        }
+                    })
                     .addOnFailureListener(e -> Log.e(TAG, "팀 저장 실패: " + friend.getId(), e));
         }
     }
+
+    interface OnTeamCreatedListener {
+        void onTeamCreated(String teamId);
+    }
+
 
 
     private void loadFriends() {
