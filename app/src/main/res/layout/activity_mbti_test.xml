@@ -34,155 +34,488 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:background="@color/transparent"
+        android:contentDescription="back 버튼"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back_button"
-        android:contentDescription="back 버튼"
-        />
+        app:srcCompat="@drawable/back_button" />
 
 
-    <!-- 중앙 고정된 박스 -->
-    <LinearLayout
-        android:id="@+id/boxLayout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="600dp"
-        android:orientation="vertical"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
         android:background="@drawable/yellow_box_full"
-        android:padding="16dp"
-        android:elevation="4dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/mbtiButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/mbtiButton">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- 질문 1 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:text="1. 여행할 때 무엇을 더 선호하시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
+                android:orientation="horizontal">
 
-                <!-- 질문 1 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="1. 여행할 때 무엇을 더 선호하시나요?" android:textSize="18sp" android:paddingBottom="8dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q1_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="호텔에서 여유롭게 쉬기" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q1_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="자연경관 찾아가기" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
+                <Button
+                    android:id="@+id/q1_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="호텔에서 여유롭게 쉬기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                <!-- 질문 2 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="2. 이동수단으로 어떤 것을 더 선호하시나요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q2_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="대중교통" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q2_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="편리한 택시" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="3. 숙소를 고를 때 더 중요한 것은?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q3_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="최고급 호텔에서의 특별한 경험" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q3_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="침대와 화장실만 있는 실용적인 숙소" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="4. 어느 활동이 더 끌리시나요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q4_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="현지 음식을 탐방하는 미식 여행" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q4_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="역사와 문화를 배울 수 있는 박물관 탐방" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="5. 어떤 활동이 더 재밌어보이시나요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q5_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="스파 즐기고 카페가기" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q5_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="드라이브 즐기기" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <!-- 질문 6 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="6. 장거리 이동 시 어떤 것을 선호하시나요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q6_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="직접 운전해서 원하는 곳으로 자유롭게 이동" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q6_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="걸으면서 천천히 여유롭게 주변을 탐방" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <!-- 질문 7 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="7. 음식을 고를 때 무엇을 선호하시나요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q7_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="고급 레스토랑에서의 여유로운 식사" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q7_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="현지 시장이나 저렴한 맛집에서의 식사" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <!-- 질문 8 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="8. 둘 중에 우선순위인 활동은 무엇인가요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q8_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="맛집과 카페 방문" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q8_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="문화 체험과 전시관람" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <!-- 질문 9 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="9. 보통 어떤 여행을 즐기시나요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q9_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="느긋하게 실내 공간에서 여행 즐기기" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q9_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="바깥에서 다양한 활동하며 즐기기" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <!-- 질문 10 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="10. 여행지에서 이동할 때 무엇이 더 중요한가요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q10_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="편리함" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q10_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="비용" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <!-- 질문 11 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="11. 예산을 계획할 때 어떤 방식을 선호하시나요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q11_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="특별한 경험을 위해선 돈이 아깝지 않다" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q11_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="하루 뿐일지라도 지나치게 비싼 건 싫다" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-                <!-- 질문 12 -->
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="12. 여행 중 남는 시간에 하고 싶은 활동은 무엇인가요?" android:textSize="18sp" android:paddingTop="16dp" android:textStyle="bold" android:textColor="@color/mid_green"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <Button android:id="@+id/q12_option1" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="유명한 현지 음식 즐기기" android:layout_marginEnd="8dp" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                    <Button android:id="@+id/q12_option2" android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:text="유명한 관광지 둘러보기" android:textColor="@color/yellow" android:textStyle="bold" android:textSize="18sp"/>
-                </LinearLayout>
-
-
+                <Button
+                    android:id="@+id/q1_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="자연경관 찾아가기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
             </LinearLayout>
-        </ScrollView>
 
-    </LinearLayout>
+            <!-- 질문 2 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="2. 이동수단으로 어떤 것을 더 선호하시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q2_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="대중교통"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q2_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="편리한 택시"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="3. 숙소를 고를 때 더 중요한 것은?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q3_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="최고급 호텔에서의 특별한 경험"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q3_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="침대와 화장실만 있는 실용적인 숙소"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="4. 어느 활동이 더 끌리시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q4_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="현지 음식을 탐방하는 미식 여행"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q4_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="역사와 문화를 배울 수 있는 박물관 탐방"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="5. 어떤 활동이 더 재밌어보이시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q5_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="스파 즐기고 카페가기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q5_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="드라이브 즐기기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 6 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="6. 장거리 이동 시 어떤 것을 선호하시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q6_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="직접 운전해서 원하는 곳으로 자유롭게 이동"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q6_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="걸으면서 천천히 여유롭게 주변을 탐방"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 7 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="7. 음식을 고를 때 무엇을 선호하시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q7_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="고급 레스토랑에서의 여유로운 식사"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q7_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="현지 시장이나 저렴한 맛집에서의 식사"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 8 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="8. 둘 중에 우선순위인 활동은 무엇인가요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q8_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="맛집과 카페 방문"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q8_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="문화 체험과 전시관람"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 9 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="9. 보통 어떤 여행을 즐기시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q9_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="느긋하게 실내 공간에서 여행 즐기기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q9_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="바깥에서 다양한 활동하며 즐기기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 10 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="10. 여행지에서 이동할 때 무엇이 더 중요한가요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q10_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="편리함"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q10_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="비용"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 11 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="11. 예산을 계획할 때 어떤 방식을 선호하시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q11_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="특별한 경험을 위해선 돈이 아깝지 않다"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q11_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="하루 뿐일지라도 지나치게 비싼 건 싫다"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 12 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="12. 여행 중 남는 시간에 하고 싶은 활동은 무엇인가요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q12_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="유명한 현지 음식 즐기기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q12_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="유명한 관광지 둘러보기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
     <!-- MBTI 분석하기 버튼 -->
     <Button
         android:id="@+id/mbtiButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="MBTI 분석하기"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginTop="16dp"
+        android:layout_margin="20dp"
         android:background="@drawable/green_box_full"
+        android:text="MBTI 분석하기"
         android:textColor="@color/yellow"
-        app:layout_constraintTop_toBottomOf="@+id/boxLayout"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

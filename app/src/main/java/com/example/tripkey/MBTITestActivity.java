@@ -270,19 +270,27 @@ public class MBTITestActivity extends AppCompatActivity {
         mbtiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 12문제 중 선택한 문제 수를 계산
+                int totalSelections = inside + outside + bus + taxi + luxury + simple + food + museum;
+
+                // 각 문항은 두 항목 중 하나만 선택되므로 총 12개가 선택됐는지 확인
+                if (totalSelections < 12) {
+                    Toast.makeText(MBTITestActivity.this, "선택하지 않은 문항이 있어요!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String mbtiType = getMBTIResult();
                 Toast.makeText(MBTITestActivity.this, "당신의 MBTI는: " + mbtiType, Toast.LENGTH_SHORT).show();
 
-                // Firestore에 MBTI 결과 저장
                 saveMBTIResult(mbtiType);
 
-                // MBTIDescriptionActivity 새로 로드
                 Intent intent = new Intent(MBTITestActivity.this, MBTIDescriptionActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // 기존 액티비티 제거 후 새로 시작
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                finish(); // 현재 액티비티 종료
+                finish();
             }
         });
+
 
     }
 
