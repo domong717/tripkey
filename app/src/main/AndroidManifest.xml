@@ -5,11 +5,18 @@
     <!-- 인터넷 사용 권한 추가 -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" />
+
     <!-- 사용자 갤러리 접근 권한 추가 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
+    <!-- 위치 권한 추가 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
 
     <queries>
@@ -73,10 +80,16 @@
             android:exported="true"/>
         <activity android:name=".MakeTeamActivity"
             android:exported="true"/>
+        <activity android:name=".PlanDetailActivity"
+            android:exported="true"/>
 
         <!-- 카카오 SDK 초기화를 위한 메타데이터 -->
         <meta-data
             android:name="com.kakao.sdk.AppKey"
+            android:value="@string/kakao_native_app_key"/>
+
+        <meta-data
+            android:name="com.kakao.vectormap.AppKey"
             android:value="@string/kakao_native_app_key"/>
 
         <!-- 카카오 로그인 Redirect URI 지원 -->

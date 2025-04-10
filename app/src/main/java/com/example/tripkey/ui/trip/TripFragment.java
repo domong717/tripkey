@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.tripkey.AddTripActivity;
 import com.example.tripkey.MakeTeamActivity;
+import com.example.tripkey.PlanDetailActivity;
 import com.example.tripkey.R;
 import com.example.tripkey.TravelAdapter;
 import com.example.tripkey.TravelItem;
