@@ -14,6 +14,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.tripkey.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;

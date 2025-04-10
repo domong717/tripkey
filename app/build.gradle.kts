@@ -18,6 +18,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            ndk {
+                abiFilters.add("arm64-v8a")
+                abiFilters.add("armeabi-v7a")
+                abiFilters.add("x86")
+                abiFilters.add("x86_64")
+            }
+        }
     }
 
     buildTypes {
@@ -47,6 +56,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.kakao.sdk:v2-user:2.19.0")
+
+    implementation("com.kakao.maps.open:android:2.12.8")
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")

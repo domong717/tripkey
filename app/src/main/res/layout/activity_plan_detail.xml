@@ -1,0 +1,114 @@
+<!-- activity_plan_detail.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- 상단 Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@color/toolbar"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/toolbarTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="여행 정보 입력"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <ImageButton
+        android:id="@+id/button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/back_button"
+        android:contentDescription="back 버튼" />
+
+    <!-- 여행지와 날짜 정보 -->
+    <LinearLayout
+        android:id="@+id/trip_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="#FFF8DC"
+        android:layout_below="@id/toolbar">
+
+        <TextView
+            android:id="@+id/tv_trip_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제주도 🍊" />
+
+        <TextView
+            android:id="@+id/tv_trip_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="24.01.06 ~ 24.01.10" />
+    </LinearLayout>
+
+    <!-- 지도 표시 영역 -->
+    <RelativeLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_below="@id/trip_info_layout">
+
+        <!-- 여기에 카카오맵이 표시됨 -->
+        <com.kakao.vectormap.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Day 탭 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:background="#FFFFFF">
+
+            <Button
+                android:id="@+id/btn_day1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Day 1"
+                android:textColor="#FFFFFF"
+                android:background="#4CAF50"/>
+
+            <Button
+                android:id="@+id/btn_day2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Day 2"/>
+
+            <Button
+                android:id="@+id/btn_day3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Day 3"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- 장소 목록 -->
+    <ListView
+        android:id="@+id/list_places"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/map_container"
+        android:background="#FFF8DC"/>
+</RelativeLayout>
