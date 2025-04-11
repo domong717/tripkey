@@ -1,8 +1,8 @@
 <!-- activity_plan_detail.xml -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <!-- 상단 Toolbar -->
     <androidx.appcompat.widget.Toolbar
@@ -30,19 +30,19 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:background="@color/transparent"
+        android:contentDescription="back 버튼"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back_button"
-        android:contentDescription="back 버튼" />
+        app:srcCompat="@drawable/back_button" />
 
     <!-- 여행지와 날짜 정보 -->
     <LinearLayout
         android:id="@+id/trip_info_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:layout_below="@id/toolbar"
         android:background="#FFF8DC"
-        android:layout_below="@id/toolbar">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/tv_trip_title"
@@ -76,32 +76,64 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            android:background="#FFFFFF">
+            android:background="#FFFFFF"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btn_day1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="#4CAF50"
                 android:text="Day 1"
-                android:textColor="#FFFFFF"
-                android:background="#4CAF50"/>
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/btn_day2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Day 2"/>
+                android:text="Day 2" />
 
             <Button
                 android:id="@+id/btn_day3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Day 3"/>
+                android:text="Day 3" />
         </LinearLayout>
+
+        <!-- 오른쪽 위에 위치한 정산 버튼 -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_calculate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="정산하기"
+            android:alpha="0.9"
+            android:src="@drawable/ic_calculate"
+            app:fabSize="normal" />
+
+        <!-- 정산 버튼 왼쪽에 16dp 간격으로 붙는 팀 버튼 -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_team"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="@id/btn_calculate"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/btn_calculate"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="팀 버튼"
+            android:alpha="0.9"
+            android:src="@drawable/ic_team"
+            app:fabSize="normal" />
+
+
     </RelativeLayout>
 
     <!-- 장소 목록 -->
@@ -110,5 +142,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/map_container"
-        android:background="#FFF8DC"/>
+        android:background="#FFF8DC" />
 </RelativeLayout>
