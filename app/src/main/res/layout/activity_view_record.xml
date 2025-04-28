@@ -43,15 +43,13 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="374dp"
-        android:layout_height="558dp"
-        app:layout_constraintBottom_toTopOf="@+id/add_record_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:layout_marginTop="60dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@drawable/yellow_box_full2" />
 
     <TextView
@@ -59,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="160dp"
         android:textColor="@color/black"
         android:textSize="25dp"
         android:textStyle="bold"
@@ -71,8 +69,7 @@
         android:layout_width="305dp"
         android:layout_height="3dp"
         android:layout_marginVertical="8dp"
-
-        android:layout_marginTop="34dp"
+        android:layout_marginTop="54dp"
         android:layout_marginBottom="8dp"
         android:background="@color/dark_green"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="55dp"
-        android:layout_marginTop="190dp"
+        android:layout_marginTop="210dp"
         android:textColor="@color/black"
         android:textSize="18dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -129,10 +126,7 @@
                 android:layout_height="1dp" />
 
 
-
-
         </LinearLayout>
-
 
 
     </androidx.core.widget.NestedScrollView>
@@ -147,8 +141,7 @@
         android:text="여행 기록이 없습니다.\n여행 기록을 추가해주세요.✈️"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
 
     <ImageButton
@@ -160,7 +153,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-
+        app:layout_constraintTop_toBottomOf="@id/imageView"
         app:srcCompat="@drawable/add_record_button" />
 
 
