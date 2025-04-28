@@ -258,24 +258,24 @@
                     android:textSize="16sp" />
 
                 <Button
-                    android:id="@+id/who_parent_button"
+                    android:id="@+id/who_pet_button"
                     android:layout_width="0dp"
                     android:layout_height="32dp"
                     android:layout_margin="8dp"
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
                     android:padding="0dp"
-                    android:text="부모님"
+                    android:text="반려동물"
                     android:textSize="16sp" />
 
                 <Button
-                    android:id="@+id/who_child_button"
+                    android:id="@+id/who_coworker_button"
                     android:layout_width="0dp"
                     android:layout_height="32dp"
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
                     android:padding="0dp"
-                    android:text="아이"
+                    android:text="동료"
                     android:textSize="16sp" />
 
 
