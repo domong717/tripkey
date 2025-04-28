@@ -1,8 +1,11 @@
+import java.util.Properties
+
 plugins {
 
     id("com.google.gms.google-services")
     alias(libs.plugins.android.application)
 }
+
 
 android {
     namespace = "com.example.tripkey"
@@ -11,11 +14,17 @@ android {
     defaultConfig {
         applicationId = "com.example.tripkey"
         minSdk = 24
-
         targetSdk = 35
-
         versionCode = 1
         versionName = "1.0"
+
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        localProperties.load(localPropertiesFile.inputStream())
+        val openaiApiKey: String = localProperties.getProperty("OPENAI_API_KEY")
+
+        // BuildConfig에 API 키 추가
+        buildConfigField("String", "OPENAI_API_KEY", "\"$openaiApiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -45,6 +54,7 @@ android {
 
     }
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
 }
@@ -62,6 +72,13 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.8.8")
+
+    // OkHttp
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)

@@ -18,12 +18,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tripkey.databinding.ActivityAddTripBinding;
+import com.example.tripkey.network.ApiClient;
+import com.example.tripkey.network.ApiService;
+import com.example.tripkey.network.GptRequest;
+import com.example.tripkey.network.GptResponse;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
 
 public class AddTripActivity extends AppCompatActivity {
 
@@ -60,8 +69,8 @@ public class AddTripActivity extends AppCompatActivity {
         Button whoCoupleButton = binding.whoCoupleButton;
         Button whoFriendButton = binding.whoFriendButton;
         Button whoFamilyButton = binding.whoFamilyButton;
-        Button whoParentButton = binding.whoParentButton;
-        Button whoChildButton = binding.whoChildButton;
+        Button whoCoworkerButton = binding.whoCoworkerButton;
+        Button whoPetButton = binding.whoPetButton;
 
         Button styleKeepButton = binding.styleKeepButton;
         Button styleAnalyzeButton = binding.styleAnalyzeButton;
@@ -78,38 +87,38 @@ public class AddTripActivity extends AppCompatActivity {
         endDateInput.setOnClickListener(v -> showDatePickerDialog(false));
 
         whoAloneButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoAloneButton.setBackgroundResource(R.drawable.green_button);
             selectedWho="혼자";
         });
 
         whoCoupleButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoCoupleButton.setBackgroundResource(R.drawable.green_button);
             selectedWho="연인";
         });
 
         whoFriendButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoFriendButton.setBackgroundResource(R.drawable.green_button);
             selectedWho="친구";
         });
         whoFamilyButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoFamilyButton.setBackgroundResource(R.drawable.green_button);
             selectedWho="가족";
         });
 
-        whoParentButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
-            whoParentButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="부모님";
+        whoCoworkerButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
+            whoCoworkerButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="동료";
         });
 
-        whoChildButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoParentButton, whoChildButton);
-            whoChildButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="아이";
+        whoPetButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
+            whoPetButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho="반려동물";
         });
 
 
@@ -281,6 +290,8 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
         String location = binding.locationInput.getText().toString().trim();
         String startDate = startDateInput.getText().toString().trim();
         String endDate = endDateInput.getText().toString().trim();
+        String groupMBTI = currentMBTI.getText().toString().trim();
+        String who = selectedWho;
 
         if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || selectedWho.isEmpty() || selectedStyle.isEmpty()) {
             Toast.makeText(this, "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
@@ -324,7 +335,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 }
             }
 
-            // 1. 나의 travel 경로에 저장
+            // 나의 travel 경로에 저장
             db.collection("users").document(userId)
                     .collection("travel").document(travelId)
                     .set(travelData)
@@ -347,8 +358,133 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                     .addOnFailureListener(e ->
                             Toast.makeText(this, "저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                     );
+
+            // 여행 MBTI에 맞는 스타일 설명
+            String groupMBTIStyle = "";
+
+            switch (groupMBTI) {
+                case "IBLF":
+                    groupMBTIStyle = "IBLF: 고급 호텔에서 아늑한 하루를 보내고, 대중교통을 타고 맛집을 찾아 떠나는 여유로운 여행 스타일";
+                    break;
+                case "IBLM":
+                    groupMBTIStyle = "IBLM: 고급 숙소에서 힐링하고, 박물관과 미술관을 탐방하는 지적인 여행 스타일";
+                    break;
+                case "IBSF":
+                    groupMBTIStyle = "IBSF: 깔끔한 숙소에서 대중교통을 이용해 지역 맛집을 탐방하는 알뜰한 미식가 스타일";
+                    break;
+                case "IBSM":
+                    groupMBTIStyle = "IBSM: 실내에서 차분하게 시간을 보내고, 박물관과 전시회 탐방을 좋아하는 스타일";
+                    break;
+                case "ITLF":
+                    groupMBTIStyle = "ITLF: 택시를 이용해 고급 호텔에서 특별한 레스토랑을 경험하는 럭셔리 미식 여행자 스타일";
+                    break;
+                case "ITLM":
+                    groupMBTIStyle = "ITLM: 감성적인 여행으로, 고급 숙소에서 택시를 이용해 박물관과 미술관을 탐방하는 스타일";
+                    break;
+                case "ITSF":
+                    groupMBTIStyle = "ITSF: 이동은 택시로 편리하게, 실용적인 숙소에서 현지 맛집을 탐방하는 스타일";
+                    break;
+                case "ITSM":
+                    groupMBTIStyle = "ITSM: 실내에서 편히 머물며, 택시로 편하게 박물관과 역사 명소를 찾아다니는 지적인 스타일";
+                    break;
+                case "OBLF":
+                    groupMBTIStyle = "OBLF: 럭셔리 숙소에서 미식을 즐기며, 대중교통으로 다양한 장소를 탐방하는 자연과 미식의 조화를 사랑하는 스타일";
+                    break;
+                case "OBLM":
+                    groupMBTIStyle = "OBLM: 대중교통을 이용해 감성 넘치는 여행을 즐기고, 박물관과 전시회도 빼놓지 않는 스타일";
+                    break;
+                case "OBSF":
+                    groupMBTIStyle = "OBSF: 대중교통을 이용해 시장과 길거리 음식을 탐방하며 가성비를 중시하는 스타일";
+                    break;
+                case "OBSM":
+                    groupMBTIStyle = "OBSM: 박물관과 역사적 명소를 방문하고, 대중교통을 이용한 가성비 좋은 여행 스타일";
+                    break;
+                case "OTLF":
+                    groupMBTIStyle = "OTLF: 럭셔리 숙소에서 미식을 즐기며, 택시로 편하게 이동하는 여행 스타일";
+                    break;
+                case "OTLM":
+                    groupMBTIStyle = "OTLM: 고급 숙소에서 예술과 역사적 명소를 찾아 다니는 감성적인 여행 스타일";
+                    break;
+                case "OTSF":
+                    groupMBTIStyle = "OTSF: 비싼 숙소보다는 가성비가 중요하며, 택시로 이동해 지역 특산물을 찾아 떠나는 여행 스타일";
+                    break;
+                case "OTSM":
+                    groupMBTIStyle = "OTSM: 가성비 숙소에서 택시로 박물관과 자연을 모두 경험하는 여행 스타일";
+                    break;
+                default:
+                    groupMBTIStyle = "이 유형은 아직 정의되지 않았습니다.";
+                    break;
+            }
+
+            // GPT 프롬프트
+            StringBuilder prompt = new StringBuilder();
+            prompt.append("너는 유명한 여행 계획 전문가야.");
+            prompt.append("나는 ").append(startDate).append("부터 ").append(endDate).append("까지 여행을 가.\n");
+            prompt.append("장소는 ").append(location).append("야.");
+            prompt.append("여행 스타일은 ").append(groupMBTI).append("이고 ").append("이 스타일은 ").append(groupMBTIStyle).append("이라고 할 수 있어.");
+            prompt.append(who).append("와(과) 함께 가\n");
+            if (!travelData.isEmpty()) {
+                List<String> places = new ArrayList<>();
+                for (Map.Entry<String, Object> entry : travelData.entrySet()) {
+                    // "place_"로 시작하는 키만 필터링
+                    if (entry.getKey().startsWith("place_") && entry.getValue() instanceof String) {
+                        String place = ((String) entry.getValue()).trim();
+                        if (!place.isEmpty()) {
+                            places.add(place);
+                        }
+                    }
+                }
+                prompt.append("꼭 가야 하는 장소는 ").append(String.join(", ", places)).append(" 이야.\n");
+            }
+            prompt.append("날짜별로 구별하고 동선을 고려해서 하루 방문 계획을 짜줘. 식당은 하루 최소 세 번 갈거야. 카페는 식사가 아니니까 카페를 넣을거면 식사 사이에 넣는 게 좋아. 1. 방문지 2. 방문지 이런 형태로 추천을 해줘.");
+            prompt.append("그리고 who에서 반려동물이 선택되는 경우에는 최대한 반려동물 동반입장 가능한 곳을 알려줘.");
+            prompt.append("그리고 정확한 장소명/식당명/카페명을 말해줘. 현지 맛집, 특별한 레스토랑, 카페라라고 표기하는 거 절대 안 돼");
+            prompt.append("그리고 처음 시작은 바로 날짜 및 일정부터 말하고 맨 마지막은 무조건 '이상입니다'로만 끝내줘. 그리고 추천해주는건 장소명만 알려줘 인기카페, 현지 맛집 이런 건 안 적어도 될 것 같아.");
+            prompt.append("꼭 방문해야하는 장소는 하루 안에 모두 갈 필요 없고 이동 시간은 30분을 안 넘게 이동 동선을 고려해서 짜줘. 부탁할게");
+
+            ApiService apiService = ApiClient.getRetrofit().create(ApiService.class);
+
+            List<GptRequest.Message> messages = new ArrayList<>();
+            messages.add(new GptRequest.Message("user", prompt.toString()));
+
+            GptRequest gptRequest = new GptRequest("gpt-3.5-turbo", messages);
+
+            // 요청 데이터를 JSON 형식으로 로그에 출력
+            Log.d("GPT", "Sending Request: " + new Gson().toJson(gptRequest));
+
+            // GPT 요청 보내기
+            apiService.getGptAnswer(gptRequest).enqueue(new retrofit2.Callback<GptResponse>() {
+                @Override
+                public void onResponse(Call<GptResponse> call, retrofit2.Response<GptResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String gptReply = response.body().choices.get(0).message.content;
+                        Log.d("GPT", "GPT Reply: " + gptReply);
+
+                        // GPT 응답을 GptTripPlanActivity로 넘기기
+                        Intent intent = new Intent(AddTripActivity.this, GptTripPlanActivity.class);
+                        intent.putExtra("gpt_schedule", gptReply);
+                        startActivity(intent);
+                    } else {
+                        Log.e("GPT", "Response error: " + response.code());
+                        if (response.errorBody() != null) {
+                            try {
+                                String errorResponse = response.errorBody().string();
+                                Log.e("GPT", "Error body: " + errorResponse);
+                            } catch (IOException e) {
+                                Log.e("GPT", "Error reading error body", e);
+                            }
+                        }
+                        Toast.makeText(AddTripActivity.this, "GPT 응답 실패", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<GptResponse> call, Throwable t) {
+                    Toast.makeText(AddTripActivity.this, "GPT 호출 에러", Toast.LENGTH_SHORT).show();
+                    Log.e("GPT", "에러: " + t.getMessage());
+                }
+            });
         });
     }
-
-
 }
