@@ -84,6 +84,8 @@
             android:exported="true"/>
         <activity android:name=".GptTripPlanActivity"
             android:exported="true"/>
+        <activity android:name=".EditRecordActivity"
+            android:exported="true"/>
 
 
         <!-- 카카오 SDK 초기화를 위한 메타데이터 -->

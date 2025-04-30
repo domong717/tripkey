@@ -2,6 +2,7 @@ package com.example.tripkey;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
@@ -125,10 +126,23 @@ public class RecordActivity extends AppCompatActivity {
 //        travelDetails.setTextSize(12);
 //        travelDetails.setTextColor(getResources().getColor(R.color.gray));
 
+        // 삭제 버튼 추가
+        ImageButton deleteButton = new ImageButton(this);
+        deleteButton.setImageResource(R.drawable.delete); // 적절한 삭제 아이콘 사용
+        deleteButton.setBackgroundColor(Color.TRANSPARENT); // 배경 투명
+        // 삭제 버튼 레이아웃 파라미터 설정 (오른쪽 상단 등)
+        LinearLayout.LayoutParams deleteParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        deleteParams.setMargins(0, 0, 0, 0);
+        deleteButton.setLayoutParams(deleteParams);
+
         // 추가된 TextView들을 tripLayout에 추가
         tripLayout.addView(travelTitle);
         tripLayout.addView(travelLocation);
         tripLayout.addView(travelPeriod);
+        tripLayout.addView(deleteButton); // 삭제 버튼 추가
         //tripLayout.addView(travelDetails);
 
         // itemLayout을 pastTripsContainer에 추가
@@ -144,6 +158,19 @@ public class RecordActivity extends AppCompatActivity {
             Intent intent = new Intent(RecordActivity.this, ViewRecordActivity.class);
             intent.putExtra("travelId", travelId);
             startActivity(intent);
+        });
+        // 삭제 버튼 클릭 이벤트
+        deleteButton.setOnClickListener(v -> {
+            db.collection("users").document(userId)
+                    .collection("travel").document(travelId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "기록이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                        pastTripsContainer.removeView(tripLayout); // UI에서 제거
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "기록 삭제에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    });
         });
     }
 }
