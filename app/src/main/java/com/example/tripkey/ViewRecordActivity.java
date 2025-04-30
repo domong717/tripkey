@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -94,9 +95,15 @@ public class ViewRecordActivity extends AppCompatActivity {
             // Firebase에서 새로운 기록을 불러오고 화면에 갱신
             loadTravelRecord(travelId);
         }
+        // 🔽 수정 결과 처리 추가
+        else if (requestCode == 200 && resultCode == RESULT_OK) {
+            // 기록이 수정된 경우에도 기록 전체를 새로 불러와 갱신
+            loadTravelRecord(travelId);
+        }
     }
 
     private void loadTravelRecord(String travelId) {
+        pastTripsContainer.removeAllViews(); // 불러올때 기존의 view 모두 삭제
 //        Log.d(TAG, "loadTravelRecord 시작, travelId: " + travelId);
         db.collection("users").document(userId)
                 .collection("travel")
@@ -147,10 +154,11 @@ public class ViewRecordActivity extends AppCompatActivity {
                                         for (QueryDocumentSnapshot recordDoc : queryDocumentSnapshots) {
                                             String place = recordDoc.getString("place");
                                             String record = recordDoc.getString("record");
+                                            String recordId = recordDoc.getId();
                                             ArrayList<String> photoUris = (ArrayList<String>) recordDoc.get("photos");
 
                                             // 각 기록을 세트로 추가
-                                            addRecordToView(place, record, photoUris);
+                                            addRecordToView(place, record, photoUris, recordId);
 
                                         }
                                     }
@@ -167,7 +175,7 @@ public class ViewRecordActivity extends AppCompatActivity {
                     Log.e("ViewRecordActivity", "Error getting travel document", e);
                 });
     }
-    private void addRecordToView(String place, String record, ArrayList<String> photoUris) {
+    private void addRecordToView(String place, String record, ArrayList<String> photoUris, String recordId) {
         // 여행 기록을 하나의 LinearLayout으로 묶기
         LinearLayout recordLayout = new LinearLayout(this);
         recordLayout.setOrientation(LinearLayout.VERTICAL);
@@ -177,7 +185,6 @@ public class ViewRecordActivity extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(0, 20, 0, 20); // 배경들 간에 간격을 두기 위해 상단과 하단에 마진 추가 (예: 20dp)
-
 
         // 여행 장소
         TextView placeTextView = new TextView(this);
@@ -213,6 +220,20 @@ public class ViewRecordActivity extends AppCompatActivity {
             newPhotoAdapter.updatePhotoList(photoUriList);
         }
         photoRecyclerView.setAdapter(newPhotoAdapter);
+
+        // record 수정
+        Button editButton = new Button(this);
+        editButton.setText("수정");
+        editButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EditRecordActivity.class);
+            intent.putExtra("travelId", travelId);
+            intent.putExtra("recordId", recordId); // 기록의 문서 ID
+            intent.putExtra("place", place);
+            intent.putExtra("record", record);
+            intent.putStringArrayListExtra("photoUris", photoUris);
+            startActivityForResult(intent, 200); // 200: 수정 요청 코드
+        });
+        recordLayout.addView(editButton);
 
         // 레이아웃에 추가
         recordLayout.addView(placeTextView);
