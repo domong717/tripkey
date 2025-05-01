@@ -1,5 +1,6 @@
 package com.example.tripkey;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,13 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tripkey.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-
 import com.kakao.vectormap.*;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,7 @@ public class PlanDetailActivity extends AppCompatActivity {
     private Button btnDay1, btnDay2, btnDay3;
     private ListView listPlaces;
     private TextView tvTripTitle, tvTripDate;
+    private FloatingActionButton btnCalculate, btnTeam;
 
     private String tripId; // 여행 ID
     private FirebaseFirestore db; // Firestore 인스턴스
@@ -107,10 +107,10 @@ public class PlanDetailActivity extends AppCompatActivity {
 
         mapView = findViewById(R.id.map_view);
         mapView.start(lifeCycleCallback, readyCallback);
+        String travelId = getIntent().getStringExtra("travelId");
 
         // Firestore 초기화 및 여행 ID 가져오기
         db = FirebaseFirestore.getInstance();
-        //tripId = getIntent().getStringExtra("TRIP_ID");
 
         initViews();
         //loadTripData();
@@ -124,6 +124,21 @@ public class PlanDetailActivity extends AppCompatActivity {
         listPlaces = findViewById(R.id.list_places);
         tvTripTitle = findViewById(R.id.tv_trip_title);
         tvTripDate = findViewById(R.id.tv_trip_date);
+
+        btnCalculate = findViewById(R.id.btn_calculate); // 계산하기 버튼
+        btnTeam = findViewById(R.id.btn_team); // 팀 버튼
+
+        btnCalculate.setOnClickListener(v -> {
+            Intent intent = new Intent(PlanDetailActivity.this, CalculateActivity.class);
+            intent.putExtra("travelId", getIntent().getStringExtra("travelId")); // travelId 전달
+            startActivity(intent);
+        });
+
+        btnTeam.setOnClickListener(v -> {
+            Intent intent = new Intent(PlanDetailActivity.this, TeamActivity.class);
+            intent.putExtra("travelId", getIntent().getStringExtra("travelId")); // travelId 전달
+            startActivity(intent);
+        });
     }
 
 

@@ -85,9 +85,10 @@ public class TripFragment extends Fragment {
                         String location = doc.getString("location");
                         String startDate = doc.getString("startDate");
                         String endDate = doc.getString("endDate");
+                        String travelId = doc.getString("travelId");
 
                         if (endDate != null && endDate.compareTo(today) >= 0) {
-                            travelList.add(new TravelItem(travelName, location, startDate, endDate));
+                            travelList.add(new TravelItem(travelName, location, startDate, endDate,travelId));
                         }
                     }
 
@@ -143,6 +144,12 @@ public class TripFragment extends Fragment {
             itemLayout.addView(travelNameText);
             itemLayout.addView(travelLocationText);
             itemLayout.addView(travelPeriodText);
+
+            itemLayout.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), PlanDetailActivity.class);
+                intent.putExtra("travelId", item.getTravelId());
+                startActivity(intent);
+            });
 
             // itemLayout을 travelItemLayout에 추가
             binding.travelItemLayout.addView(itemLayout);

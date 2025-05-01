@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.tripkey.databinding.ActivityMainBinding;
+import com.example.tripkey.ui.trip.TripFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -35,4 +36,5 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 }
