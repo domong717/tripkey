@@ -241,44 +241,58 @@ public class RegisterMoneyActivity extends AppCompatActivity {
         textTotal.setText("총 사용금액 : " + totalMoney + "원");
         adapter.notifyDataSetChanged();
 
-        saveExpenseToFirestore(date, newExpense);
+        saveExpenseToAllTeamMembers(date, newExpense);
     }
 
-    private void saveExpenseToFirestore(String date, Expense expense) {
-        if (userId == null || travelId == null) return;
-
-        // 날짜 문서에 dummy 필드 추가 (존재하게 만듦)
+    private void saveExpenseToAllTeamMembers(String date, Expense expense) {
         db.collection("users")
                 .document(userId)
                 .collection("travel")
                 .document(travelId)
-                .collection("expenses")
-                .document(date)
-                .set(Collections.singletonMap("exists", true), SetOptions.merge());
+                .get()
+                .addOnSuccessListener(travelDoc -> {
+                    if (travelDoc.exists()) {
+                        String teamId = travelDoc.getString("teamId");
 
-        // 경로: users / userId / travel / travelId / expenses / date / items / {auto_id}
-        db.collection("users")
-                .document(userId)
-                .collection("travel")
-                .document(travelId)
-                .collection("expenses")
-                .document(date)
-                .collection("items")
-                .add(expense.toMap(userId))  // 🔥 아래 toMap 설명 참조
-                .addOnSuccessListener(documentReference -> {
-                    // 성공 시 작업 (옵션)
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "지출 저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        if (teamId != null) {
+                            db.collection("users")
+                                    .document(userId)
+                                    .collection("teams")
+                                    .document(teamId)
+                                    .get()
+                                    .addOnSuccessListener(teamDoc -> {
+                                        if (teamDoc.exists()) {
+                                            List<String> members = (List<String>) teamDoc.get("members");
+
+                                            if (members != null) {
+                                                for (String memberId : members) {
+                                                    // 날짜 문서 생성
+                                                    db.collection("users")
+                                                            .document(memberId)
+                                                            .collection("travel")
+                                                            .document(travelId)
+                                                            .collection("expenses")
+                                                            .document(date)
+                                                            .set(Collections.singletonMap("exists", true), SetOptions.merge());
+
+                                                    // 지출 항목 추가
+                                                    db.collection("users")
+                                                            .document(memberId)
+                                                            .collection("travel")
+                                                            .document(travelId)
+                                                            .collection("expenses")
+                                                            .document(date)
+                                                            .collection("items")
+                                                            .add(expense.toMap(memberId));
+                                                }
+                                            }
+                                        }
+                                    });
+                        }
+                    }
                 });
-
-        // 날짜별 총합 업데이트
-        db.collection("users")
-                .document(userId)
-                .collection("travel")
-                .document(travelId)
-                .set(Collections.singletonMap("total", totalMoney), SetOptions.merge());
     }
+
 
 }
 
