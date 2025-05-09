@@ -129,7 +129,7 @@ public class PlanDetailActivity extends AppCompatActivity {
         btnTeam = findViewById(R.id.btn_team); // 팀 버튼
 
         btnCalculate.setOnClickListener(v -> {
-            Intent intent = new Intent(PlanDetailActivity.this, CalculateActivity.class);
+            Intent intent = new Intent(PlanDetailActivity.this, RegisterMoneyActivity.class);
             intent.putExtra("travelId", getIntent().getStringExtra("travelId")); // travelId 전달
             startActivity(intent);
         });
