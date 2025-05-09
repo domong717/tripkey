@@ -11,6 +11,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -22,6 +25,7 @@ import java.util.List;
 
 public class GptTripPlanActivity extends AppCompatActivity {
     private Button previouslySelectedButton = null; // 이전에 선택된 버튼을 추적하는 변수
+
     private List<GptPlan> gptPlanList; // 파싱된 GPT 일정 목록
 
     @Override
@@ -29,12 +33,30 @@ public class GptTripPlanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gpt_trip_plan);
 
+
+        TextView tripTitleTextView = findViewById(R.id.tv_trip_title);
+        TextView tripDateTextView = findViewById(R.id.tv_trip_date);
+
+        // Intent에서 데이터 꺼내기
+        String travelName = getIntent().getStringExtra("travelName");
+        String startDate = getIntent().getStringExtra("startDate");
+        String endDate = getIntent().getStringExtra("endDate");
+
         // 뒤로가기 버튼 설정
         ImageButton backButton = findViewById(R.id.button_back);
         backButton.setOnClickListener(v -> finish());
 
         // gpt_schedule 키로 전달된 데이터 받기
         String gptScheduleJson = getIntent().getStringExtra("gpt_schedule");
+
+        // TextView에 값 설정
+        if (travelName != null) {
+            tripTitleTextView.setText(travelName);
+        }
+
+        if (startDate != null && endDate != null) {
+            tripDateTextView.setText(startDate + " ~ " + endDate);
+        }
 
         if (gptScheduleJson != null) {
             try{
@@ -72,12 +94,13 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
                         GptPlan selectedPlan = gptPlanList.get(indexCopy);
                         StringBuilder daySchedule = new StringBuilder();
-                        daySchedule.append("날짜: ").append(selectedPlan.getDate()).append("\n\n");
+                        daySchedule.append("  ").append(selectedPlan.getDate()).append("\n\n");
+
 
                         List<GptPlan.Place> places = selectedPlan.getPlaces();
                         if (places != null) {
                             for (GptPlan.Place place : places) {
-                                daySchedule.append("\uD83D\uDCCD 장소: ").append(place.getPlace()).append("\n")
+                                daySchedule.append("\uD83D\uDCCD  ").append(place.getPlace()).append("\n")
                                         .append("  ∘ 카테고리: ").append(place.getCategory()).append("\n")
                                         .append("  ∘ 이동 수단: ").append(place.getTransport()).append("\n")
                                         .append("  ∘ 예상 소요 시간: ").append(place.getTime()).append("\n\n");

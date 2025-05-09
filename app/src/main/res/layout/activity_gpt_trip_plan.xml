@@ -1,20 +1,14 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".GptTripPlanActivity">
+    android:layout_height="match_parent">
 
-
+    <!-- 상단 Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:background="@color/toolbar"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@color/toolbar">
 
         <TextView
             android:id="@+id/toolbarTitle"
@@ -23,7 +17,7 @@
             android:gravity="center"
             android:text="AI 일정짜기"
             android:textColor="@color/black"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
@@ -35,34 +29,63 @@
         android:layout_marginTop="20dp"
         android:background="@color/transparent"
         android:contentDescription="back 버튼"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         app:srcCompat="@drawable/back_button" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/trip_info_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="164dp"
-        android:text="지도자리"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_below="@id/toolbar"
+        android:background="#FFF8DC"
+        android:padding="10dp"
+        android:orientation="horizontal">
 
+        <TextView
+            android:id="@+id/tv_trip_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="여행 이름" />
+
+        <TextView
+            android:id="@+id/bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  | " />
+
+        <TextView
+            android:id="@+id/tv_trip_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/black"
+            android:text="여행 일정" />
+    </LinearLayout>
+
+    <!-- 지도 표시 영역 -->
+    <RelativeLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_below="@id/trip_info_layout">
+
+        <!-- 여기에 카카오맵이 표시됨 -->
+        <com.kakao.vectormap.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.kakao.vectormap.MapView>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/buttonLayout"
-        android:layout_width="367dp"
-        android:layout_height="389dp"
-        android:background="@drawable/yellow_box_full"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/map_container"
         android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@id/ai_plan_add_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintVertical_bias="0.914">
+        android:padding="2dp">
 
         <!-- 수평 스크롤 가능한 날짜 버튼들 -->
         <HorizontalScrollView
@@ -76,38 +99,51 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" />
         </HorizontalScrollView>
-
-        <!-- 스크롤 가능한 일정 설명 텍스트 -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fillViewport="true">
-
-            <TextView
-                android:id="@+id/scheduleTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="20dp"
-                android:paddingTop="40dp"
-                android:paddingEnd="20dp"
-                android:paddingBottom="20dp"
-                android:text="날짜별로 일정을 확인해주세요."
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
-        </ScrollView>
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/list_places"
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:layout_below="@id/buttonLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="340dp"
+            android:background="#FFF8DC"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fillViewport="true">
+
+                <TextView
+                    android:id="@+id/scheduleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="20dp"
+                    android:text="날짜별로 일정을 확인해주세요."
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
+            </ScrollView>
+        </LinearLayout>
+    </RelativeLayout>
+
     <ImageButton
-        android:id="@+id/ai_plan_add_button"
+        android:id="@+id/ai_plan_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_below="@id/list_places"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
         android:background="@color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ai_plan_add" />
+        app:srcCompat="@drawable/ai_plan_add"
+        android:layout_marginBottom="15dp"
+        />
+    </RelativeLayout>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>

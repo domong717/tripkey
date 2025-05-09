@@ -454,7 +454,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("        \"coord\": \"위도,경도\",\n");
             prompt.append("        \"category\": \"관광지, 음식점, 카페 등\",\n");
             prompt.append("        \"transport\": \"도보, 택시, 버스 등\",\n");
-            prompt.append("        \"time\": \"예상 소요 시간\"\n");
+            prompt.append("        \"time\": \"이전 장소에서 해당 장소를 가는데 예상 이동 시간\"\n");
             prompt.append("      }\n");
             prompt.append("    ]\n");
             prompt.append("  }\n");
@@ -464,7 +464,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("이런 형식으로 하루하루를 나눠서 JSON 배열로 구성해서 줘. 예시 말고 진짜 데이터를 넣어서, 날짜별로 하루에 5~7개 장소를 넣어줘.\n");
             prompt.append("식사는 하루 3번 포함되어야 하고, 카페는 하루에 한 번 정도가 좋은 것 같아.\n");
             prompt.append("그리고 전에 갔던 장소를 또 가는 건 원하지 않아.");
-            prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. 이동 시간은 30분 이내가 되도록 동선을 고려해서 짜줘.\n");
+            prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. 이동 시간은 반드시 30분 이내가 되도록 동선을 고려해서 짜줘.\n");
             prompt.append("그리고 마지막은 절대 '이상입니다' 같은 말 없이 JSON만 반환해.");
 
             ApiService apiService = ApiClient.getRetrofit().create(ApiService.class);
@@ -487,6 +487,9 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
                         // GPT 응답을 GptTripPlanActivity로 넘기기
                         Intent intent = new Intent(AddTripActivity.this, GptTripPlanActivity.class);
+                        intent.putExtra("travelName", travelName);
+                        intent.putExtra("startDate", startDate);
+                        intent.putExtra("endDate", endDate);
                         intent.putExtra("gpt_schedule", gptReply);
                         startActivity(intent);
                     } else {
