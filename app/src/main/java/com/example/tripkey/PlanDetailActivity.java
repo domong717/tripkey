@@ -128,11 +128,11 @@ public class PlanDetailActivity extends AppCompatActivity {
         btnCalculate = findViewById(R.id.btn_calculate); // 계산하기 버튼
         btnTeam = findViewById(R.id.btn_team); // 팀 버튼
 
-        btnCalculate.setOnClickListener(v -> {
-            Intent intent = new Intent(PlanDetailActivity.this, CalculateActivity.class);
-            intent.putExtra("travelId", getIntent().getStringExtra("travelId")); // travelId 전달
-            startActivity(intent);
-        });
+//        btnCalculate.setOnClickListener(v -> {
+//            Intent intent = new Intent(PlanDetailActivity.this, CalculateActivity.class);
+//            intent.putExtra("travelId", getIntent().getStringExtra("travelId")); // travelId 전달
+//            startActivity(intent);
+//        });
 
         btnTeam.setOnClickListener(v -> {
             Intent intent = new Intent(PlanDetailActivity.this, TeamActivity.class);
