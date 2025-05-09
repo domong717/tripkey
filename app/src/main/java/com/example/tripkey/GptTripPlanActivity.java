@@ -1,7 +1,6 @@
 package com.example.tripkey;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -10,93 +9,118 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
+
+
+
 
 public class GptTripPlanActivity extends AppCompatActivity {
-    // 이전에 선택된 버튼을 추적하는 변수
-    private Button previouslySelectedButton = null;
+    private Button previouslySelectedButton = null; // 이전에 선택된 버튼을 추적하는 변수
 
-
+    private List<GptPlan> gptPlanList; // 파싱된 GPT 일정 목록
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gpt_trip_plan);
 
+
+        TextView tripTitleTextView = findViewById(R.id.tv_trip_title);
+        TextView tripDateTextView = findViewById(R.id.tv_trip_date);
+
+        // Intent에서 데이터 꺼내기
+        String travelName = getIntent().getStringExtra("travelName");
+        String startDate = getIntent().getStringExtra("startDate");
+        String endDate = getIntent().getStringExtra("endDate");
+
         // 뒤로가기 버튼 설정
         ImageButton backButton = findViewById(R.id.button_back);
         backButton.setOnClickListener(v -> finish());
 
         // gpt_schedule 키로 전달된 데이터 받기
-        String gptSchedule = getIntent().getStringExtra("gpt_schedule");
+        String gptScheduleJson = getIntent().getStringExtra("gpt_schedule");
 
-        if (gptSchedule != null) {
-            // "이상입니다" 이후의 텍스트를 제거
-            int index = gptSchedule.indexOf("이상입니다");
-            if (index != -1) {
-                gptSchedule = gptSchedule.substring(0, index).trim();
-            }
+        // TextView에 값 설정
+        if (travelName != null) {
+            tripTitleTextView.setText(travelName);
+        }
 
-            // 받은 GPT 일정 데이터를 화면에 표시,사용
-            TextView scheduleTextView = findViewById(R.id.scheduleTextView);
+        if (startDate != null && endDate != null) {
+            tripDateTextView.setText(startDate + " ~ " + endDate);
+        }
 
-            // 날짜를 기준으로 분리
-            // 날짜를 기준으로 분리
-            String[] scheduleDays = gptSchedule.split("(?=\\d{4}-\\d{2}-\\d{2})");
+        if (gptScheduleJson != null) {
+            try{
+                //JSON 문자열을 GptPlan 리스트로 파싱
+                Gson gson= new Gson();
+                Type listType = new TypeToken<List<GptPlan>>() {}.getType();
+                gptPlanList=gson.fromJson(gptScheduleJson, listType);
 
-
-            LinearLayout buttonLayout = findViewById(R.id.buttonLayout);
-
-            // 버튼 가로 배치
-            buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-            // 각 날짜별로 버튼 동적 생성
-            for (int i = 0; i < scheduleDays.length; i++) {
-                final int dayIndex = i; // 버튼 클릭 시 사용될 인덱스
-
-                // 버튼 생성
-                Button dayButton = new Button(this);
-                dayButton.setText("Day " + (i + 1));  // "Day 1", "Day 2" 형식으로 버튼 텍스트 설정
-                // 이미 buttonLayout에 버튼이 있다면 제거
-                if (dayButton.getParent() != null) {
-                    ((ViewGroup) dayButton.getParent()).removeView(dayButton);
+                if (gptPlanList == null || gptPlanList.isEmpty()){
+                    throw new IllegalAccessException("일정이 비어있습니다.");
                 }
-                buttonLayout.addView(dayButton);  // 동적으로 생성한 버튼을 LinearLayout에 추가
 
-                dayButton.setBackgroundColor(getResources().getColor(R.color.mid_green));
+                TextView scheduleTextView = findViewById(R.id.scheduleTextView);
+                LinearLayout buttonContainer = findViewById(R.id.buttonContainer);
 
-                // 버튼 크기 설정
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, // Width set to wrap content
-                        LinearLayout.LayoutParams.WRAP_CONTENT  // Height set to wrap content
-                );
-                params.setMargins(10, 10, 0, 0); // 버튼 간 마진 추가
-                dayButton.setLayoutParams(params);
+                for (int i=0;i<gptPlanList.size();i++){
+                    final int indexCopy = i;
+                    Button dayButton = new Button(this);
+                    dayButton.setText("Day"+(i+1));
+                    dayButton.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_green));
 
-                // 버튼 클릭 리스너 설정
-                dayButton.setOnClickListener(v -> {
-                    // 이전에 선택된 버튼의 색상 초기화
-                    if (previouslySelectedButton != null) {
-                        previouslySelectedButton.setBackgroundColor(getResources().getColor(R.color.mid_green, null));
-                    }
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    params.setMargins(10,10,0,0);
+                    dayButton.setLayoutParams(params);
 
-                    // 현재 버튼의 색상 변경
-                    dayButton.setBackgroundColor(getResources().getColor(R.color.dark_green, null));
-                    previouslySelectedButton = dayButton;
+                    dayButton.setOnClickListener(v -> {
+                        if (previouslySelectedButton != null) {
+                            previouslySelectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.mid_green));
+                        }
+                        dayButton.setBackgroundColor(getResources().getColor(R.color.dark_green, null));
+                        previouslySelectedButton = dayButton;
 
-                    // 선택된 날짜에 해당하는 일정을 표시
-                    scheduleTextView.setText(getDaySchedule(scheduleDays, dayIndex));
-                });
+                        GptPlan selectedPlan = gptPlanList.get(indexCopy);
+                        StringBuilder daySchedule = new StringBuilder();
+                        daySchedule.append("  ").append(selectedPlan.getDate()).append("\n\n");
+
+
+                        List<GptPlan.Place> places = selectedPlan.getPlaces();
+                        if (places != null) {
+                            for (GptPlan.Place place : places) {
+                                daySchedule.append("\uD83D\uDCCD  ").append(place.getPlace()).append("\n")
+                                        .append("  ∘ 카테고리: ").append(place.getCategory()).append("\n")
+                                        .append("  ∘ 이동 수단: ").append(place.getTransport()).append("\n")
+                                        .append("  ∘ 예상 소요 시간: ").append(place.getTime()).append("\n\n");
+                            }
+                        }
+
+
+                        scheduleTextView.setText(daySchedule.toString().trim());
+                    });
+
+                    buttonContainer.addView(dayButton);
+
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "일정 데이터를 파싱하는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
+
         } else {
             Toast.makeText(this, "일정 데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
-    }
-    // 일정에서 특정 날짜의 일정을 반환하는 메서드
-    private String getDaySchedule(String[] scheduleDays, int dayIndex) {
-        // 날짜별로 일정 내용 반환 (인덱스 0: 1일차, 1: 2일차, ...)
-        if (dayIndex >= 0 && dayIndex < scheduleDays.length) {
-            return scheduleDays[dayIndex].replaceAll("이상입니다", "").trim();
-        }
-        return "일정을 불러올 수 없습니다.";
     }
 }
