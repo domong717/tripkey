@@ -61,9 +61,11 @@ public class AddTripActivity extends AppCompatActivity {
 
         EditText travelNameInput = binding.travelNameInput;
         EditText locationInput = binding.locationInput;
+        EditText placeToStayInput = binding.placeToStayInput;
         startDateInput = binding.startDateInput;
         endDateInput = binding.endDateInput;
         currentMBTI = binding.currentMbtiText;
+
 
         Button whoAloneButton = binding.whoAloneButton;
         Button whoCoupleButton = binding.whoCoupleButton;
@@ -288,12 +290,13 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
     private void saveTripData() {
         String travelName = binding.travelNameInput.getText().toString().trim();
         String location = binding.locationInput.getText().toString().trim();
+        String placeToStay=binding.placeToStayInput.getText().toString().trim();
         String startDate = startDateInput.getText().toString().trim();
         String endDate = endDateInput.getText().toString().trim();
         String groupMBTI = currentMBTI.getText().toString().trim();
         String who = selectedWho;
 
-        if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || selectedWho.isEmpty() || selectedStyle.isEmpty()) {
+        if (travelName.isEmpty() || location.isEmpty() || placeToStay.isEmpty()|| startDate.isEmpty() || endDate.isEmpty() || selectedWho.isEmpty() || selectedStyle.isEmpty()) {
             Toast.makeText(this, "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -323,6 +326,8 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             travelData.put("teamMBTI", teamMBTI);
             travelData.put("teamId", teamId);
             travelData.put("creatorId", userId); // 누가 만든 여행인지 명시
+            travelData.put("placeToStay",placeToStay);
+
 
             for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
                 View child = mustVisitContainer.getChildAt(i);
@@ -415,14 +420,16 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                     groupMBTIStyle = "이 유형은 아직 정의되지 않았습니다.";
                     break;
             }
-
+            // GPT API 프롬프트 다시 하기
             // GPT 프롬프트
             StringBuilder prompt = new StringBuilder();
             prompt.append("너는 유명한 여행 계획 전문가야.");
             prompt.append("나는 ").append(startDate).append("부터 ").append(endDate).append("까지 여행을 가.\n");
             prompt.append("장소는 ").append(location).append("야.");
+            prompt.append("숙소는 ").append(placeToStay).append("에 있어. 숙소 위치를 중심으로 동선을 고려해서 짜줘.\n");
             prompt.append("여행 스타일은 ").append(groupMBTI).append("이고 ").append("이 스타일은 ").append(groupMBTIStyle).append("이라고 할 수 있어.");
             prompt.append(who).append("와(과) 함께 가\n");
+
             if (!travelData.isEmpty()) {
                 List<String> places = new ArrayList<>();
                 for (Map.Entry<String, Object> entry : travelData.entrySet()) {
@@ -436,11 +443,29 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 }
                 prompt.append("꼭 가야 하는 장소는 ").append(String.join(", ", places)).append(" 이야.\n");
             }
-            prompt.append("날짜별로 구별하고 동선을 고려해서 하루 방문 계획을 짜줘. 식당은 하루 최소 세 번 갈거야. 카페는 식사가 아니니까 카페를 넣을거면 식사 사이에 넣는 게 좋아. 1. 방문지 2. 방문지 이런 형태로 추천을 해줘.");
-            prompt.append("그리고 who에서 반려동물이 선택되는 경우에는 최대한 반려동물 동반입장 가능한 곳을 알려줘.");
-            prompt.append("그리고 정확한 장소명/식당명/카페명을 말해줘. 현지 맛집, 특별한 레스토랑, 카페라라고 표기하는 거 절대 안 돼");
-            prompt.append("그리고 처음 시작은 바로 날짜 및 일정부터 말하고 맨 마지막은 무조건 '이상입니다'로만 끝내줘. 그리고 추천해주는건 장소명만 알려줘 인기카페, 현지 맛집 이런 건 안 적어도 될 것 같아.");
-            prompt.append("꼭 방문해야하는 장소는 하루 안에 모두 갈 필요 없고 이동 시간은 30분을 안 넘게 이동 동선을 고려해서 짜줘. 부탁할게");
+            prompt.append("아래와 같은 JSON 배열 형식으로 응답해줘. 설명은 절대 하지 말고 JSON 데이터만 반환해. 형식은 다음과 같아:\n\n");
+
+            prompt.append("[\n");
+            prompt.append("  {\n");
+            prompt.append("    \"date\": \"YYYY.MM.DD\",\n");
+            prompt.append("    \"places\": [\n");
+            prompt.append("      {\n");
+            prompt.append("        \"place\": \"장소 이름\",\n");
+            prompt.append("        \"coord\": \"위도,경도\",\n");
+            prompt.append("        \"category\": \"관광지, 음식점, 카페 등\",\n");
+            prompt.append("        \"transport\": \"도보, 택시, 버스 등\",\n");
+            prompt.append("        \"time\": \"예상 소요 시간\"\n");
+            prompt.append("      }\n");
+            prompt.append("    ]\n");
+            prompt.append("  }\n");
+            prompt.append("]\n");
+
+
+            prompt.append("이런 형식으로 하루하루를 나눠서 JSON 배열로 구성해서 줘. 예시 말고 진짜 데이터를 넣어서, 날짜별로 하루에 5~7개 장소를 넣어줘.\n");
+            prompt.append("식사는 하루 3번 포함되어야 하고, 카페는 하루에 한 번 정도가 좋은 것 같아.\n");
+            prompt.append("그리고 전에 갔던 장소를 또 가는 건 원하지 않아.");
+            prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. 이동 시간은 30분 이내가 되도록 동선을 고려해서 짜줘.\n");
+            prompt.append("그리고 마지막은 절대 '이상입니다' 같은 말 없이 JSON만 반환해.");
 
             ApiService apiService = ApiClient.getRetrofit().create(ApiService.class);
 
