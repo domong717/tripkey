@@ -145,5 +145,8 @@
         app:srcCompat="@drawable/ai_plan_add"
         android:layout_marginBottom="15dp"
         />
-    </RelativeLayout>
+
+
+</RelativeLayout>
+
 

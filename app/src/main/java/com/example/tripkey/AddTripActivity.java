@@ -428,6 +428,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("장소는 ").append(location).append("야.");
             prompt.append("숙소는 ").append(placeToStay).append("에 있어. 숙소 위치를 중심으로 동선을 고려해서 짜줘.\n");
             prompt.append("여행 스타일은 ").append(groupMBTI).append("이고 ").append("이 스타일은 ").append(groupMBTIStyle).append("이라고 할 수 있어.");
+            prompt.append("여행 스타일을 통해 알 수 있는 선호하는 교통 수단을 중심으로 짜줘도 되지만 너무 해당 교통수단만 이용하지 않아도 돼.");
             prompt.append(who).append("와(과) 함께 가\n");
 
             if (!travelData.isEmpty()) {
@@ -465,7 +466,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("식사는 하루 3번 포함되어야 하고, 카페는 하루에 한 번 정도가 좋은 것 같아.\n");
             prompt.append("그리고 전에 갔던 장소를 또 가는 건 원하지 않아.");
             prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. 이동 시간은 반드시 30분 이내가 되도록 동선을 고려해서 짜줘.\n");
-            prompt.append("그리고 마지막은 절대 '이상입니다' 같은 말 없이 JSON만 반환해.");
+            prompt.append("그리고 마지막은 절대 '이상입니다' 같은 말 없이 JSON만 반환하고 무조건 한글로만 답해줘.");
 
             ApiService apiService = ApiClient.getRetrofit().create(ApiService.class);
 
@@ -490,6 +491,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                         intent.putExtra("travelName", travelName);
                         intent.putExtra("startDate", startDate);
                         intent.putExtra("endDate", endDate);
+                        intent.putExtra("travelId",travelId);
                         intent.putExtra("gpt_schedule", gptReply);
                         startActivity(intent);
                     } else {
