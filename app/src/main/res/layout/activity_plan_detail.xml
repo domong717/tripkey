@@ -48,14 +48,22 @@
             android:id="@+id/tv_trip_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="제주도 🍊" />
+            android:textColor="@color/black"
+            android:text="여행 이름" />
+
+        <TextView
+            android:id="@+id/bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  | " />
 
         <TextView
             android:id="@+id/tv_trip_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="24.01.06 ~ 24.01.10" />
+            android:layout_marginStart="10dp"
+            android:textColor="@color/black"
+            android:text="여행 일정" />
     </LinearLayout>
 
     <!-- 지도 표시 영역 -->

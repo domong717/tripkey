@@ -148,6 +148,9 @@ public class TripFragment extends Fragment {
             itemLayout.setOnClickListener(v -> {
                 Intent intent = new Intent(getActivity(), PlanDetailActivity.class);
                 intent.putExtra("travelId", item.getTravelId());
+                intent.putExtra("travelName",item.getTravelName());
+                intent.putExtra("startDate",item.getStartDate());
+                intent.putExtra("endDate",item.getEndDate());
                 startActivity(intent);
             });
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -104,6 +105,26 @@ public class PlanDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_detail);
+        TextView tripTitleTextView = findViewById(R.id.tv_trip_title);
+        TextView tripDateTextView = findViewById(R.id.tv_trip_date);
+        // Intent에서 데이터 꺼내기
+        String travelName = getIntent().getStringExtra("travelName");
+        String startDate = getIntent().getStringExtra("startDate");
+        String endDate = getIntent().getStringExtra("endDate");
+
+        // 뒤로가기 버튼 설정
+        ImageButton backButton = findViewById(R.id.button_back);
+        backButton.setOnClickListener(v -> finish());
+
+        // TextView에 값 설정
+        if (travelName != null) {
+            tripTitleTextView.setText(travelName);
+        }
+
+        if (startDate != null && endDate != null) {
+            tripDateTextView.setText(startDate + " ~ " + endDate);
+        }
+
 
         mapView = findViewById(R.id.map_view);
         mapView.start(lifeCycleCallback, readyCallback);
