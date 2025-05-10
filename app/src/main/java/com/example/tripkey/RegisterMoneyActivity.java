@@ -284,6 +284,13 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                                                             .document(date)
                                                             .collection("items")
                                                             .add(expense.toMap(memberId));
+
+                                                    // total 금액 업데이트
+                                                    db.collection("users")
+                                                            .document(memberId)
+                                                            .collection("travel")
+                                                            .document(travelId)
+                                                            .update("total", com.google.firebase.firestore.FieldValue.increment(expense.getAmount()));
                                                 }
                                             }
                                         }
