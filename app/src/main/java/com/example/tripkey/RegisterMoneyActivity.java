@@ -81,7 +81,7 @@ public class RegisterMoneyActivity extends AppCompatActivity {
     private void loadExpensesFromFirestore() {
         if (userId == null || travelId == null) return;
 
-        // 🔹 총 사용금액 불러오기
+        // 총 사용금액 불러오기
         db.collection("users")
                 .document(userId)
                 .collection("travel")
@@ -98,7 +98,7 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                     Toast.makeText(this, "총합 불러오기 실패", Toast.LENGTH_SHORT).show();
                 });
 
-        // 🔹 날짜별 지출 불러오기
+        // 날짜별 지출 불러오기
         db.collection("users")
                 .document(userId)
                 .collection("travel")
@@ -283,7 +283,7 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                                                             .collection("expenses")
                                                             .document(date)
                                                             .collection("items")
-                                                            .add(expense.toMap(memberId));
+                                                            .add(expense.toMap(userId));
 
                                                     // total 금액 업데이트
                                                     db.collection("users")
