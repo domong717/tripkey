@@ -43,6 +43,7 @@ public class AddTripActivity extends AppCompatActivity {
     private String selectedStyle = "";
     private String teamId;
     private static final String TAG = "AddTripActivity";
+    private static final int REQUEST_CODE_LOCATION = 1001;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,6 +85,15 @@ public class AddTripActivity extends AppCompatActivity {
         // 뒤로가기 버튼 설정
         ImageButton backButton = findViewById(R.id.button_back);
         backButton.setOnClickListener(v -> finish());
+
+
+        // 장소
+        ImageButton searchLocationBtn = binding.locationSearchButton;
+        searchLocationBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, LocationSearchActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_LOCATION);
+        });
+
 
         startDateInput.setOnClickListener(v -> showDatePickerDialog(true));
         endDateInput.setOnClickListener(v -> showDatePickerDialog(false));
@@ -514,5 +524,17 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 }
             });
         });
+    }
+
+    // 장소가 올바르게 선택
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_LOCATION && resultCode == RESULT_OK && data != null) {
+            String selectedLocation = data.getStringExtra("selected_location");
+            if (selectedLocation != null) {
+                binding.locationInput.setText(selectedLocation);
+            }
+        }
     }
 }
