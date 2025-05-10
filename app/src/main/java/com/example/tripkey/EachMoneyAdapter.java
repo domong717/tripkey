@@ -37,7 +37,7 @@ public class EachMoneyAdapter extends RecyclerView.Adapter<EachMoneyAdapter.View
     @Override
     public void onBindViewHolder(EachMoneyAdapter.ViewHolder holder, int position) {
         UserExpense ue = userExpenses.get(position);
-        holder.textUserId.setText(ue.getUserId());
+        holder.textUserId.setText(ue.getUserId() + " 님");
         holder.textAmount.setText(ue.getTotalAmount() + " 원");
     }
 

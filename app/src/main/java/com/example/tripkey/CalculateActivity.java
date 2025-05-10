@@ -2,6 +2,7 @@ package com.example.tripkey;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,48 +50,108 @@ public class CalculateActivity extends AppCompatActivity {
     private void loadData() {
         if (userId == null || travelId == null) return;
 
-        Map<String, Integer> userSums = new HashMap<>();
-        final int[] totalSum = {0};
-
+        // teamId 얻기
         db.collection("users")
                 .document(userId)
                 .collection("travel")
                 .document(travelId)
-                .collection("expenses")
                 .get()
-                .addOnSuccessListener(dateSnapshots -> {
-                    for (var dateDoc : dateSnapshots.getDocuments()) {
-                        String date = dateDoc.getId();
-                        db.collection("users")
-                                .document(userId)
-                                .collection("travel")
-                                .document(travelId)
-                                .collection("expenses")
-                                .document(date)
-                                .collection("items")
-                                .get()
-                                .addOnSuccessListener(itemSnapshots -> {
-                                    for (var doc : itemSnapshots.getDocuments()) {
-                                        Long amt = doc.getLong("amount");
-                                        String uId = doc.getString("userId");
+                .addOnSuccessListener(travelDoc -> {
+                    if (travelDoc.exists()) {
+                        String teamId = travelDoc.getString("teamId");
 
-                                        if (amt != null && uId != null) {
-                                            int current = userSums.getOrDefault(uId, 0);
-                                            userSums.put(uId, current + amt.intValue());
-                                            totalSum[0] += amt;
+                        if (teamId != null) {
+                            // 팀 멤버 전체 가져오기
+                            db.collection("users")
+                                    .document(userId)
+                                    .collection("teams")
+                                    .document(teamId)
+                                    .get()
+                                    .addOnSuccessListener(teamDoc -> {
+                                        if (teamDoc.exists()) {
+                                            List<String> members = (List<String>) teamDoc.get("members");
+
+                                            if (members != null && !members.isEmpty()) {
+                                                fetchTeamExpenses(members); // 핵심 로직 분리
+                                            }
                                         }
-                                    }
-
-                                    // 다 돌고 난 뒤, 리스트로 바꾸고 갱신
-                                    userExpenseList.clear();
-                                    for (Map.Entry<String, Integer> entry : userSums.entrySet()) {
-                                        userExpenseList.add(new UserExpense(entry.getKey(), entry.getValue()));
-                                    }
-                                    adapter.notifyDataSetChanged();
-                                    textTotalMoney.setText(String.valueOf(totalSum[0]));
-                                });
+                                    });
+                        }
                     }
                 });
     }
-}
 
+    private void fetchTeamExpenses(List<String> memberIds) {
+        final int memberCount = memberIds.size();
+        final Map<String, Integer> userTotalMap = new HashMap<>();
+        userExpenseList.clear();
+
+        final int[] loadedMemberCount = {0};
+
+        for (String memberId : memberIds) {
+            db.collection("users")
+                    .document(memberId)
+                    .collection("travel")
+                    .document(travelId)
+                    .collection("expenses")
+                    .get()
+                    .addOnSuccessListener(dateDocs -> {
+                        if (dateDocs.isEmpty()) {
+                            loadedMemberCount[0]++;
+                            if (loadedMemberCount[0] == memberCount) updateUI(userTotalMap, memberCount);
+                            return;
+                        }
+
+                        final int[] loadedDateCount = {0};
+                        final int totalDates = dateDocs.size();
+                        final int[] userTotal = {0};
+
+                        for (var dateDoc : dateDocs.getDocuments()) {
+                            String date = dateDoc.getId();
+
+                            db.collection("users")
+                                    .document(memberId)
+                                    .collection("travel")
+                                    .document(travelId)
+                                    .collection("expenses")
+                                    .document(date)
+                                    .collection("items")
+                                    .get()
+                                    .addOnSuccessListener(itemDocs -> {
+                                        for (var doc : itemDocs.getDocuments()) {
+                                            Long amount = doc.getLong("amount");
+                                            String postedUserId = doc.getString("userId");
+
+                                            // items 내부의 userId가 현재 memberId와 같을 때만 누적
+                                            if (amount != null && postedUserId != null && postedUserId.equals(memberId)) {
+                                                userTotal[0] += amount.intValue();
+                                            }
+                                        }
+
+                                        loadedDateCount[0]++;
+                                        if (loadedDateCount[0] == totalDates) {
+                                            userTotalMap.put(memberId, userTotal[0]);
+                                            Log.d(userTotalMap.toString(), "userTotalMap: " + userTotalMap);
+
+                                            loadedMemberCount[0]++;
+                                            if (loadedMemberCount[0] == memberCount) {
+                                                updateUI(userTotalMap, memberCount);
+                                            }
+                                        }
+                                    });
+                        }
+                    });
+        }
+    }
+
+    private void updateUI(Map<String, Integer> userTotalMap, int memberCount) {
+        userExpenseList.clear();
+        for (Map.Entry<String, Integer> entry : userTotalMap.entrySet()) {
+            int divided = entry.getValue() / memberCount;
+            userExpenseList.add(new UserExpense(entry.getKey(), divided));
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+
+}

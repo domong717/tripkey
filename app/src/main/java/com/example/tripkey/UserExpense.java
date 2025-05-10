@@ -2,11 +2,11 @@ package com.example.tripkey;
 
 public class UserExpense {
     private String userId;
-    private int totalAmount;
+    private int perPersonShare;
 
-    public UserExpense(String userId, int totalAmount) {
+    public UserExpense(String userId, int perPersonShare) {
         this.userId = userId;
-        this.totalAmount = totalAmount;
+        this.perPersonShare = perPersonShare;
     }
 
     public String getUserId() {
@@ -14,6 +14,6 @@ public class UserExpense {
     }
 
     public int getTotalAmount() {
-        return totalAmount;
+        return perPersonShare;
     }
 }
