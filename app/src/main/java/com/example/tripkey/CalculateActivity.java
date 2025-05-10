@@ -44,7 +44,7 @@ public class CalculateActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.receiptRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new EachMoneyAdapter(userExpenseList);
+        adapter = new EachMoneyAdapter(this, userExpenseList);
         recyclerView.setAdapter(adapter);
 
         loadData();
@@ -161,13 +161,31 @@ public class CalculateActivity extends AppCompatActivity {
     }
 
     private void updateUI(Map<String, Integer> userTotalMap, int memberCount) {
-        userExpenseList.clear();
-        for (Map.Entry<String, Integer> entry : userTotalMap.entrySet()) {
-            int divided = entry.getValue() / memberCount;
-            userExpenseList.add(new UserExpense(entry.getKey(), divided));
-        }
-        adapter.notifyDataSetChanged();
+        // userId 리스트를 추출하고, profile image 포함해서 불러오기
+        List<String> userIds = new ArrayList<>(userTotalMap.keySet());
+        fetchUserProfiles(userIds, userTotalMap, memberCount);
     }
 
+
+    private void fetchUserProfiles(List<String> userIds, Map<String, Integer> userTotalMap, int memberCount) {
+        userExpenseList.clear();
+        final int[] loadedCount = {0};
+
+        for (String uid : userIds) {
+            db.collection("users").document(uid)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        String profileUrl = doc.getString("profileImage");
+                        int dividedAmount = userTotalMap.get(uid) / memberCount;
+
+                        userExpenseList.add(new UserExpense(uid, dividedAmount, profileUrl));
+                        loadedCount[0]++;
+
+                        if (loadedCount[0] == userIds.size()) {
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+        }
+    }
 
 }

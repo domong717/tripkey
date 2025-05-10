@@ -2,18 +2,16 @@ package com.example.tripkey;
 
 public class UserExpense {
     private String userId;
-    private int perPersonShare;
+    private int totalAmount;
+    private String profileImageUrl;
 
-    public UserExpense(String userId, int perPersonShare) {
+    public UserExpense(String userId, int totalAmount, String profileImageUrl) {
         this.userId = userId;
-        this.perPersonShare = perPersonShare;
+        this.totalAmount = totalAmount;
+        this.profileImageUrl = profileImageUrl;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public int getTotalAmount() {
-        return perPersonShare;
-    }
+    public String getUserId() { return userId; }
+    public int getTotalAmount() { return totalAmount; }
+    public String getProfileImageUrl() { return profileImageUrl; }
 }
