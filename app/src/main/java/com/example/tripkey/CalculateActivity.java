@@ -22,6 +22,7 @@ public class CalculateActivity extends AppCompatActivity {
     private String userId, travelId;
 
     private TextView textTotalMoney;
+    private TextView textTravelDate;
     private RecyclerView recyclerView;
     private EachMoneyAdapter adapter;
     private List<UserExpense> userExpenseList = new ArrayList<>();
@@ -38,7 +39,9 @@ public class CalculateActivity extends AppCompatActivity {
         userId = sharedPreferences.getString("userId", null);
         travelId = getIntent().getStringExtra("travelId");
 
+        textTravelDate = findViewById(R.id.travel_date);
         textTotalMoney = findViewById(R.id.total_money);
+
         recyclerView = findViewById(R.id.receiptRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new EachMoneyAdapter(userExpenseList);
@@ -60,8 +63,20 @@ public class CalculateActivity extends AppCompatActivity {
                     if (travelDoc.exists()) {
                         String teamId = travelDoc.getString("teamId");
 
+                        // total 표시
+                        Long totalMoney = travelDoc.getLong("total");
+                        if (totalMoney != null) {
+                            textTotalMoney.setText(totalMoney + "");
+                        }
+
+                        // 날짜 범위 표시
+                        String startDate = travelDoc.getString("startDate");
+                        String endDate = travelDoc.getString("endDate");
+                        if (startDate != null && endDate != null) {
+                            textTravelDate.setText(startDate + " ~ " + endDate);
+                        }
+
                         if (teamId != null) {
-                            // 팀 멤버 전체 가져오기
                             db.collection("users")
                                     .document(userId)
                                     .collection("teams")
@@ -72,12 +87,13 @@ public class CalculateActivity extends AppCompatActivity {
                                             List<String> members = (List<String>) teamDoc.get("members");
 
                                             if (members != null && !members.isEmpty()) {
-                                                fetchTeamExpenses(members); // 핵심 로직 분리
+                                                fetchTeamExpenses(members);
                                             }
                                         }
                                     });
                         }
                     }
+
                 });
     }
 
