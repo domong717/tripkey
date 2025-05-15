@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +24,12 @@ import com.example.tripkey.R;
 import com.example.tripkey.FriendListActivity;
 import com.example.tripkey.TripPost;
 import com.example.tripkey.TripPostAdapter;
+import com.example.tripkey.WishlistItem;
 import com.example.tripkey.databinding.FragmentHomeBinding;
 import com.google.common.reflect.TypeToken;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -36,7 +39,9 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
@@ -63,11 +68,31 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         });
 
+        // Firestore 인스턴스 초기화
+        db = FirebaseFirestore.getInstance();
+
         // RecyclerView 초기화
         recyclerView = rootView.findViewById(R.id.rv_trip_posts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        tripPostAdapter = new TripPostAdapter(getContext(), tripList); // 변경!
-        recyclerView.setAdapter(tripPostAdapter);
+        tripPostAdapter = new TripPostAdapter(getContext(), tripList, tripPost -> {
+            String travelId = tripPost.getTravelId();
+
+            Log.d("HomeFragment", "userId: " + userId+"travelId: " + travelId);
+            Map<String, Object> data = new HashMap<>();
+            data.put("travelId", travelId);
+            if (userId != null && travelId != null) {
+
+                Log.d("HomeFragment", "찜 클릭됨");
+                db.collection("users")
+                        .document(userId)
+                        .collection("wishlist")
+                        .document(travelId)
+                        .set(new HashMap<String, Object>() {{
+                            put("ownerId", tripPost.getOwnerId()); // travel 주인의 uid
+                            put("timestamp", FieldValue.serverTimestamp());
+                        }});
+            }
+        });
 
         recyclerView.setAdapter(tripPostAdapter);
         AutoCompleteTextView mbtiDropdown = rootView.findViewById(R.id.mbti_dropdown);
@@ -86,9 +111,6 @@ public class HomeFragment extends Fragment {
             String selectedMBTI = parent.getItemAtPosition(position).toString();
             filterTripPostsByMBTI(selectedMBTI); // 필터링 메서드 호출
         });
-
-        // Firestore 인스턴스 초기화
-        db = FirebaseFirestore.getInstance();
 
         // userId 가져오기
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
@@ -111,55 +133,55 @@ public class HomeFragment extends Fragment {
                 .document(userId)
                 .collection("friends")
                 .get().addOnSuccessListener(friendSnap -> {
-            for (QueryDocumentSnapshot doc : friendSnap) {
-                String friendId = doc.getId(); // 친구의 userId
-                allUserIds.add(friendId);
-            }
+                    for (QueryDocumentSnapshot doc : friendSnap) {
+                        String friendId = doc.getId(); // 친구의 userId
+                        allUserIds.add(friendId);
+                    }
 
-            // 나와 친구들의 travel 데이터 조회
-            for (String uid : allUserIds) {
-                db.collection("users")
-                        .document(uid)
-                        .collection("travel")
-                        .get().addOnSuccessListener(travelSnap -> {
-                    for (QueryDocumentSnapshot travelDoc : travelSnap) {
-                        String travelId = travelDoc.getId();
+                    // 나와 친구들의 travel 데이터 조회
+                    for (String uid : allUserIds) {
+                        db.collection("users")
+                                .document(uid)
+                                .collection("travel")
+                                .get().addOnSuccessListener(travelSnap -> {
+                                    for (QueryDocumentSnapshot travelDoc : travelSnap) {
+                                        String travelId = travelDoc.getId();
 
-                        // records 컬렉션 문서 존재 여부 체크
-                        db.collection("users").document(uid)
-                                .collection("travel").document(travelId)
-                                .collection("records")
-                                .limit(1)
-                                .get().addOnSuccessListener(recordsSnap -> {
-                                    if (!recordsSnap.isEmpty()) {
-                                        String title = travelDoc.getString("travelName");
-                                        String startDate = travelDoc.getString("startDate");
-                                        String endDate = travelDoc.getString("endDate");
-                                        String date = startDate + " ~ " + endDate;
-                                        String location = travelDoc.getString("location");
-                                        Long total = travelDoc.contains("total") ? travelDoc.getLong("total") : null;
-                                        String teamId = travelDoc.getString("teamId");
-                                        String teamMBTI = travelDoc.getString("teamMBTI");
+                                        // records 컬렉션 문서 존재 여부 체크
+                                        db.collection("users").document(uid)
+                                                .collection("travel").document(travelId)
+                                                .collection("records")
+                                                .limit(1)
+                                                .get().addOnSuccessListener(recordsSnap -> {
+                                                    if (!recordsSnap.isEmpty()) {
+                                                        String title = travelDoc.getString("travelName");
+                                                        String startDate = travelDoc.getString("startDate");
+                                                        String endDate = travelDoc.getString("endDate");
+                                                        String date = startDate + " ~ " + endDate;
+                                                        String location = travelDoc.getString("location");
+                                                        Long total = travelDoc.contains("total") ? travelDoc.getLong("total") : null;
+                                                        String teamId = travelDoc.getString("teamId");
+                                                        String teamMBTI = travelDoc.getString("teamMBTI");
 
-                                        // 팀 정보 및 records 로딩
-                                        loadTeamMembersAndPlaces(uid, teamId, total, travelId, result -> {
-                                            int peopleCount = result.first;
-                                            String costPerPerson = (total != null && peopleCount > 0)
-                                                    ? String.format("%,d", total / peopleCount)
-                                                    : "알 수 없음";
+                                                        // 팀 정보 및 records 로딩
+                                                        loadTeamMembersAndPlaces(uid, teamId, total, travelId, result -> {
+                                                            int peopleCount = result.first;
+                                                            String costPerPerson = (total != null && peopleCount > 0)
+                                                                    ? String.format("%,d", total / peopleCount)
+                                                                    : "알 수 없음";
 
-                                            TripPost trip = new TripPost(title, date, location, peopleCount, costPerPerson, result.second, teamMBTI);
-                                            tripList.add(trip);
-                                            tripPostAdapter.notifyDataSetChanged();
-                                        });
-                                    } else {
+                                                            TripPost trip = new TripPost(title, date, location, peopleCount, costPerPerson, result.second, teamMBTI,travelId,uid);
+                                                            tripList.add(trip);
+                                                            tripPostAdapter.notifyDataSetChanged();
+                                                        });
+                                                    } else {
 
+                                                    }
+                                                });
                                     }
                                 });
                     }
                 });
-            }
-        });
     }
 
 
@@ -196,7 +218,7 @@ public class HomeFragment extends Fragment {
                     if (photos != null && !photos.isEmpty()) {
                         firstPhotoUrl = photos.get(0);
                     }
-                    placeList.add(new Place(place, comment, firstPhotoUrl)); // photoResId는 0으로 설정하거나 Glide로 처리
+                    placeList.add(new Place(place, comment, firstPhotoUrl));
                 }
             }
             listener.onPlacesLoaded(placeList);

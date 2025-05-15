@@ -27,6 +27,7 @@ import com.example.tripkey.FriendListActivity;
 import com.example.tripkey.LoginActivity;
 import com.example.tripkey.MBTIDescriptionActivity;
 import com.example.tripkey.RecordActivity;
+import com.example.tripkey.WishListActivity;
 import com.example.tripkey.databinding.FragmentInfoBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -107,7 +108,7 @@ public class InfoFragment extends Fragment {
         });
 
         binding.heartLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), FriendListActivity.class); //수정 필
+            Intent intent = new Intent(getActivity(), WishListActivity.class); //수정 필
             startActivity(intent);
         });
 

@@ -1,6 +1,7 @@
 package com.example.tripkey;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,12 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
 
     private Context context;
     private List<TripPost> tripPostList;
+    private OnHeartClickListener heartClickListener;
 
-    public TripPostAdapter(Context context, List<TripPost> tripPostList) {
+    public TripPostAdapter(Context context, List<TripPost> tripPostList, OnHeartClickListener heartClickListener) {
         this.context = context;
         this.tripPostList = tripPostList;
+        this.heartClickListener = heartClickListener;
     }
 
     @NonNull
@@ -44,6 +47,13 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
         holder.tvLocation.setText("여행지 | " + post.getLocation());
         holder.tvPeople.setText("여행 인원 | " + post.getPeopleCount() + "인");
         holder.tvCost.setText("1인당 총 경비 | " + post.getCostPerPerson() +"원");
+
+        holder.btnHeart.setOnClickListener(v -> {
+            Log.d("TripPostAdapter", "하트 버튼 클릭됨");
+            if (heartClickListener != null) {
+                heartClickListener.onHeartClick(post);
+            }
+        });
 
         // 내부 RecyclerView 세팅
         PlaceListAdapter placeAdapter = new PlaceListAdapter(post.getPlaceList());
@@ -65,7 +75,7 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
     static class TripPostViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvDate, tvLocation, tvPeople, tvCost;
         RecyclerView rvPlaceList;
-        ImageButton btnDetail;
+        ImageButton btnDetail, btnHeart;
 
         public TripPostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +86,13 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
             tvCost = itemView.findViewById(R.id.tv_total_cost_per_person);
             rvPlaceList = itemView.findViewById(R.id.rv_place_list);
             btnDetail = itemView.findViewById(R.id.btn_detail);
+            btnHeart = itemView.findViewById(R.id.just_keep); // 하트 버튼
+
         }
     }
+
+    public interface OnHeartClickListener {
+        void onHeartClick(TripPost tripPost);
+    }
+
 }
