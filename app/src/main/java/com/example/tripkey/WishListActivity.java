@@ -38,12 +38,24 @@ public class WishListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rv_trip_posts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
         tripPostAdapter = new TripPostAdapter(this, wishListTrips, new TripPostAdapter.OnHeartClickListener() {
             @Override
             public void onHeartClick(TripPost post) {
-                // 예: 찜 해제 또는 상세 화면 이동 등
-                Toast.makeText(WishListActivity.this, post.getTitle() + " 찜 클릭됨", Toast.LENGTH_SHORT).show();
+                // 찜 해제 처리
+                db.collection("users")
+                        .document(userId)
+                        .collection("wishlist")
+                        .document(post.getTravelId())  // travelId 기준으로 삭제
+                        .delete()
+                        .addOnSuccessListener(aVoid -> {
+                            // UI에서도 목록에서 제거
+                            wishListTrips.remove(post);
+                            tripPostAdapter.notifyDataSetChanged();
+                            Toast.makeText(WishListActivity.this, "찜 해제되었습니다", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(WishListActivity.this, "찜 해제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
         });
 
