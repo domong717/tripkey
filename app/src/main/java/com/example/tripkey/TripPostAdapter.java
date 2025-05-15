@@ -56,6 +56,12 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
         return tripPostList.size();
     }
 
+    public void updateList(List<TripPost> newList) {
+        this.tripPostList = newList;
+        notifyDataSetChanged();
+    }
+
+
     static class TripPostViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvDate, tvLocation, tvPeople, tvCost;
         RecyclerView rvPlaceList;
