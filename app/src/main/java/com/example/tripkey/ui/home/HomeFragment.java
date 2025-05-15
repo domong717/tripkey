@@ -24,6 +24,7 @@ import com.example.tripkey.FriendListActivity;
 import com.example.tripkey.TripPost;
 import com.example.tripkey.TripPostAdapter;
 import com.example.tripkey.databinding.FragmentHomeBinding;
+import com.google.common.reflect.TypeToken;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,7 +32,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.EventListener;
+import com.google.gson.Gson;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +66,9 @@ public class HomeFragment extends Fragment {
         // RecyclerView 초기화
         recyclerView = rootView.findViewById(R.id.rv_trip_posts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        tripPostAdapter = new TripPostAdapter(getContext(), tripList);
+        tripPostAdapter = new TripPostAdapter(getContext(), filteredList); // 변경!
+        recyclerView.setAdapter(tripPostAdapter);
+
         recyclerView.setAdapter(tripPostAdapter);
         AutoCompleteTextView mbtiDropdown = rootView.findViewById(R.id.mbti_dropdown);
 
@@ -88,6 +93,8 @@ public class HomeFragment extends Fragment {
         // userId 가져오기
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         userId = sharedPreferences.getString("userId", null);
+
+        loadTripListFromCache(); // 캐시 먼저 불러오기
 
         if (userId != null) {
             loadTripsFromFirestore();
@@ -145,6 +152,8 @@ public class HomeFragment extends Fragment {
 
                                             TripPost trip = new TripPost(title, date, location, peopleCount, costPerPerson, result.second, teamMBTI);
                                             tripList.add(trip);
+                                            filteredList.clear();
+                                            filteredList.addAll(tripList);
                                             tripPostAdapter.notifyDataSetChanged();
                                         });
                                     } else {
@@ -155,6 +164,7 @@ public class HomeFragment extends Fragment {
                 });
             }
         });
+        saveTripListToCache();
     }
 
 
@@ -223,5 +233,30 @@ public class HomeFragment extends Fragment {
 
         tripPostAdapter.notifyDataSetChanged();
     }
+    private void saveTripListToCache() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("TripCache", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(tripList);
+        editor.putString("tripList", json);
+        editor.apply();
+    }
+
+    private void loadTripListFromCache() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("TripCache", Context.MODE_PRIVATE);
+        String json = prefs.getString("tripList", null);
+
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<TripPost>>() {}.getType();
+            tripList = gson.fromJson(json, type);
+
+            filteredList.clear();
+            filteredList.addAll(tripList);
+            tripPostAdapter.notifyDataSetChanged();
+        }
+    }
+
 
 }
