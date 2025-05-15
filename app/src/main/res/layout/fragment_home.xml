@@ -69,7 +69,6 @@
             android:focusable="false"
             android:textColorHint="@color/mid_green"
             android:textStyle="bold"
-            android:drawableStart="@drawable/dropdown"
             android:padding="10dp"
             android:drawablePadding="5dp"
             android:background="@android:color/transparent" />
