@@ -44,12 +44,15 @@ public class AddTripActivity extends AppCompatActivity {
     private String teamId;
     private static final String TAG = "AddTripActivity";
     private static final int REQUEST_CODE_LOCATION = 1001;
+    private LinearLayout loadingLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAddTripBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        loadingLayout = findViewById(R.id.loading_layout);
 
         teamId = getIntent().getStringExtra("teamId");
 
@@ -364,11 +367,11 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                             }
                         }
 
-                        Toast.makeText(this, "여행 일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
+//                        Toast.makeText(this, "여행 일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+//                        Intent intent = new Intent(this, MainActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                        finish();
                     })
                     .addOnFailureListener(e ->
                             Toast.makeText(this, "저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
@@ -436,9 +439,10 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("너는 유명한 여행 계획 전문가야.");
             prompt.append("나는 ").append(startDate).append("부터 ").append(endDate).append("까지 여행을 가.\n");
             prompt.append("장소는 ").append(location).append("야.");
-            prompt.append("숙소는 ").append(placeToStay).append("에 있어. 숙소 위치를 중심으로 동선을 고려해서 짜줘.\n");
+            prompt.append("숙소는 ").append(placeToStay).append("에 있어. 숙소 위치를 중심으로 반경 20km까지만,동선을 고려해서 짜줘.\n");
+            prompt.append("만약 꼭 가고 싶은 장소가 반경 20km를 넘는다면, 그 날의 일정은 꼭 가고 싶은 장소 주변으로 동선을 짜줘.");
             prompt.append("여행 스타일은 ").append(groupMBTI).append("이고 ").append("이 스타일은 ").append(groupMBTIStyle).append("이라고 할 수 있어.");
-            prompt.append("여행 스타일을 통해 알 수 있는 선호하는 교통 수단을 중심으로 짜줘도 되지만 너무 해당 교통수단만 이용하지 않아도 돼.");
+            prompt.append("여행 스타일을 통해 알 수 있는 선호하는 교통 수단을 중심으로 짜줘");
             prompt.append(who).append("와(과) 함께 가\n");
 
             if (!travelData.isEmpty()) {
@@ -465,7 +469,8 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("        \"coord\": \"위도,경도\",\n");
             prompt.append("        \"category\": \"관광지, 음식점, 카페 등\",\n");
             prompt.append("        \"transport\": \"도보, 택시, 버스 등\",\n");
-            prompt.append("        \"time\": \"이전 장소에서 해당 장소를 가는데 예상 이동 시간\"\n");
+            prompt.append("        \"time\": \"이전 장소에서 해당 장소를 가는데 예상 이동 시간\",\n");
+            prompt.append("         \"supply\" : \"해당 장소에서 꼭 필요한 준비물\"");
             prompt.append("      }\n");
             prompt.append("    ]\n");
             prompt.append("  }\n");
@@ -475,9 +480,11 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("이런 형식으로 하루하루를 나눠서 JSON 배열로 구성해서 줘. 예시 말고 진짜 데이터를 넣어서, 날짜별로 하루에 5~7개 장소를 넣어줘.\n");
             prompt.append("식사는 하루 3번 포함되어야 하고, 카페는 하루에 한 번 정도가 좋은 것 같아.\n");
             prompt.append("그리고 전에 갔던 장소를 또 가는 건 원하지 않아.");
-            prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. 이동 시간은 반드시 30분 이내가 되도록 동선을 고려해서 짜줘.\n");
+            prompt.append("그리고 해당 장소에서 추천하는 준비물도 알려줘. 필요 없는 경우엔 null으로 알려줘도 돼. 예를 들자면 한라산을 방문하기 위해서는 등산화, 편한 옷이 필요하니 supply에 {등산화, 편한옷}을 넣어주면 되고 카페처럼 준비물이 없는 경우 null 값을 넣어줘.");
+            prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. \n");
             prompt.append("그리고 마지막은 절대 '이상입니다' 같은 말 없이 JSON만 반환하고 무조건 한글로만 답해줘.");
 
+            loadingLayout.setVisibility(View.VISIBLE);
             ApiService apiService = ApiClient.getRetrofit().create(ApiService.class);
 
             List<GptRequest.Message> messages = new ArrayList<>();
@@ -493,6 +500,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 @Override
                 public void onResponse(Call<GptResponse> call, retrofit2.Response<GptResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
+                        loadingLayout.setVisibility(View.GONE);
                         String gptReply = response.body().choices.get(0).message.content;
                         Log.d("GPT", "GPT Reply: " + gptReply);
 
@@ -521,6 +529,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
                 @Override
                 public void onFailure(Call<GptResponse> call, Throwable t) {
+                    loadingLayout.setVisibility(View.GONE);
                     Toast.makeText(AddTripActivity.this, "GPT 호출 에러", Toast.LENGTH_SHORT).show();
                     Log.e("GPT", "에러: " + t.getMessage());
                 }
