@@ -68,7 +68,7 @@
     <RelativeLayout
         android:id="@+id/map_container"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="200dp"
         android:layout_below="@id/trip_info_layout">
 
         <!-- 여기에 카카오맵이 표시됨 -->
@@ -101,44 +101,107 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/list_places"
+    <ListView
+        android:id="@+id/place_list_view"
+        android:layout_below="@id/buttonLayout"
+        android:background="#FFF8DC"
         android:layout_width="match_parent"
-        android:layout_height="340dp"
-        android:layout_below="@id/buttonLayout">
+        android:layout_height="250dp"
+        android:paddingBottom="10dp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="340dp"
-            android:background="#FFF8DC"
-            android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/bottom_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:layout_below="@id/place_list_view"
+        android:background="#FFF8DC"
+        android:gravity="center">
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fillViewport="true">
+        <ImageButton
+            android:id="@+id/re_gpt_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/re_gpt_button"
+            android:background="@color/transparent"
+            android:layout_marginEnd="24dp"
+            android:paddingBottom="10dp"/>
 
-                <TextView
-                    android:id="@+id/scheduleTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="20dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="20dp"
-                    android:paddingBottom="20dp"
-                    android:text="날짜별로 일정을 확인해주세요."
-                    android:textColor="@android:color/black"
-                    android:textSize="20sp" />
-            </ScrollView>
-        </LinearLayout>
-    </RelativeLayout>
+        <ImageButton
+            android:id="@+id/revise_plan_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/revise_plan_button"
+            android:background="@color/transparent"
+            android:paddingBottom="10dp"/>
+    </LinearLayout>
+
+
+    <!--    <RelativeLayout-->
+<!--        android:id="@+id/list_places"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="340dp"-->
+<!--        android:layout_below="@id/buttonLayout">-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="340dp"-->
+<!--            android:background="#FFF8DC"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <ScrollView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="250dp"-->
+<!--                android:layout_marginTop="12dp"-->
+<!--                android:fillViewport="true">-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/scheduleTextView"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:paddingStart="20dp"-->
+<!--                    android:paddingTop="10dp"-->
+<!--                    android:paddingEnd="20dp"-->
+<!--                    android:paddingBottom="20dp"-->
+<!--                    android:text="날짜별로 일정을 확인해주세요."-->
+<!--                    android:textColor="@android:color/black"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:layout_marginBottom="200dp"/>-->
+<!--            </ScrollView>-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:gravity="center">-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/re_gpt_button"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:srcCompat="@drawable/re_gpt_button"-->
+<!--                    android:background="@color/transparent"-->
+<!--                    android:paddingTop="10dp"-->
+<!--                    android:layout_marginEnd="24dp" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/revise_plan_button"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:srcCompat="@drawable/revise_plan_button"-->
+<!--                    android:background="@color/transparent"-->
+<!--                    android:paddingTop="10dp"/>-->
+<!--            </LinearLayout>-->
+
+
+<!--        </LinearLayout>-->
+<!--    </RelativeLayout>-->
 
     <ImageButton
         android:id="@+id/ai_plan_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/list_places"
+        android:layout_below="@id/bottom_button"
         android:layout_marginTop="15dp"
         android:layout_centerHorizontal="true"
         android:background="@color/transparent"

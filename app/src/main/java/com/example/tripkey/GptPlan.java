@@ -22,7 +22,7 @@ public class GptPlan {
     }
     public void setDateFromStartDate(String startDate, int dayIndex) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(sdf.parse(startDate)); // 시작 날짜 설정
             calendar.add(Calendar.DATE, dayIndex);  // DAY(i+1)에 맞게 날짜 계산
@@ -48,6 +48,8 @@ public class GptPlan {
         private String category;
         private String transport;
         private String time;
+        private String supply;
+        public Place() {}
 
         public String getDate() {
             return date;
@@ -65,9 +67,7 @@ public class GptPlan {
             return coord;
         }
 
-        public String getCategory() {
-            return category;
-        }
+        public String getCategory() { return category; }
 
         public String getTransport() {
             return transport;
@@ -76,5 +76,7 @@ public class GptPlan {
         public String getTime() {
             return time;
         }
+
+        public String getSupply() { return supply; }
     }
 }

@@ -79,37 +79,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Day 탭 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="#FFFFFF"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_day1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#4CAF50"
-                android:text="Day 1"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/btn_day2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Day 2" />
-
-            <Button
-                android:id="@+id/btn_day3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Day 3" />
-        </LinearLayout>
 
         <!-- 오른쪽 위에 위치한 정산 버튼 -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -141,14 +110,50 @@
             android:src="@drawable/ic_team"
             app:fabSize="normal" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_checklist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="@id/btn_calculate"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/btn_team"
+            android:backgroundTint="@color/dark_green"
+            android:contentDescription="팀 버튼"
+            android:alpha="0.9"
+            android:src="@drawable/ic_checklist"
+            app:fabSize="normal" />
+
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/map_container"
+        android:orientation="vertical"
+        android:padding="2dp">
+
+        <!-- 수평 스크롤 가능한 날짜 버튼들 -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/buttonContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+    </LinearLayout>
+
     <!-- 장소 목록 -->
     <ListView
-        android:id="@+id/list_places"
+        android:id="@+id/place_list_view"
+        android:layout_below="@id/buttonLayout"
+        android:background="#FFF8DC"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/map_container"
-        android:background="#FFF8DC" />
+        android:layout_height="330dp"/>
 </RelativeLayout>
