@@ -58,7 +58,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         // AI Plan Plus 버튼 설정
-        ImageButton aiPlanPlusButton = findViewById(R.id.ai_plan_add);
+        Button aiPlanPlusButton = findViewById(R.id.ai_plan_add);
         aiPlanPlusButton.setOnClickListener(v -> saveToFirebase());
 
 
