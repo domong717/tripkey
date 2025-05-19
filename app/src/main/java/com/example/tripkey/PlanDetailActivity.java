@@ -191,8 +191,8 @@ public class PlanDetailActivity extends AppCompatActivity {
     }
 
     private void loadGptPlan() {
+        Log.d("PlanDetailActivity", "userId: " + userId + ", travelId: " + travelId);
         if (userId != null && travelId != null) {
-
 
             CollectionReference gptPlanRef = db.collection("users")
                     .document(userId)
@@ -204,8 +204,7 @@ public class PlanDetailActivity extends AppCompatActivity {
             gptPlanRef.get()
                     .addOnSuccessListener(gptPlanDocs -> {
 
-
-
+                        Log.d("PlanDetailActivity", "gptPlanDocs: " + gptPlanDocs.isEmpty());
                         if (gptPlanDocs.isEmpty()) {
 
                             Toast.makeText(this, "일정이 없습니다.", Toast.LENGTH_SHORT).show();

@@ -458,7 +458,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 }
                 prompt.append("꼭 가야 하는 장소는 ").append(String.join(", ", places)).append(" 이야.\n");
             }
-            prompt.append("아래와 같은 JSON 배열 형식으로 응답해줘. 설명은 절대 하지 말고 JSON 데이터만 반환해. 형식은 다음과 같아:\n\n");
+            prompt.append("아래와 같은 JSON 배열 형식으로 응답해줘. 전부 한국어로 출력해주고 설명은 절대 하지 말고 JSON 데이터만 반환해. 형식은 다음과 같아:\n\n");
 
             prompt.append("[\n");
             prompt.append("  {\n");
@@ -478,7 +478,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
 
             prompt.append("이런 형식으로 하루하루를 나눠서 JSON 배열로 구성해서 줘. 예시 말고 진짜 데이터를 넣어서, 날짜별로 하루에 5~7개 장소를 넣어줘.\n");
-            prompt.append("식사는 하루 3번 포함되어야 하고, 카페는 하루에 한 번 정도가 좋은 것 같아.\n");
+            prompt.append("식사는 하루 3번 포함되어야 하고, 카페는 하루에 한 번 포함해줘. 모든 가게는 실제로 존재해야돼.\n");
             prompt.append("그리고 전에 갔던 장소를 또 가는 건 원하지 않아.");
             prompt.append("그리고 해당 장소에서 추천하는 준비물도 알려줘. 필요 없는 경우엔 null으로 알려줘도 돼. 예를 들자면 한라산을 방문하기 위해서는 등산화, 편한 옷이 필요하니 supply에 {등산화, 편한옷}을 넣어주면 되고 카페처럼 준비물이 없는 경우 null 값을 넣어줘.");
             prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. \n");

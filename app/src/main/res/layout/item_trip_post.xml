@@ -3,26 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="8dp"
     android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="8dp"
+    app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    android:background="@drawable/card_background"
-    android:backgroundTint="@null">
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/card_background"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- 제목과 아이콘 -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="4dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="4dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -38,24 +38,20 @@
                 android:id="@+id/goto_my_trip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/save"
                 android:background="@android:color/transparent"
                 android:paddingEnd="15dp"
-                >
-            </ImageButton>
+                android:src="@drawable/save"></ImageButton>
 
             <ImageButton
                 android:id="@+id/just_keep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/heart_small"
                 android:background="@android:color/transparent"
                 android:clickable="true"
                 android:focusable="true"
-                >
-
-            </ImageButton>
+                android:src="@drawable/heart_small"></ImageButton>
         </LinearLayout>
+
         <!-- 날짜 -->
         <TextView
             android:id="@+id/tv_date"
@@ -68,35 +64,33 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/mid_green"
-            android:alpha="0.5" />
-
+            android:alpha="0.5"
+            android:background="@color/mid_green" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_place_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
+            android:nestedScrollingEnabled="false"
             android:scrollbars="horizontal" />
-
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/mid_green"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="0dp"
-            android:alpha="0.5" />
+            android:alpha="0.5"
+            android:background="@color/mid_green" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <!-- 왼쪽: 텍스트 묶음 (세로 정렬) -->
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -104,51 +98,48 @@
                 android:orientation="vertical"
                 android:paddingTop="13dp">
 
-                <!-- 여행지 -->
+
                 <TextView
                     android:id="@+id/tv_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="여행지 | 제주도"
-                    android:textStyle="bold"
+                    android:textColor="@color/dark_green"
                     android:textSize="18sp"
-                    android:textColor="@color/dark_green" />
+                    android:textStyle="bold" />
 
-                <!-- 여행 인원 -->
+
                 <TextView
                     android:id="@+id/tv_member_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="여행 인원 | 7인"
-                    android:textStyle="bold"
+                    android:textColor="@color/dark_green"
                     android:textSize="18sp"
-                    android:textColor="@color/dark_green" />
+                    android:textStyle="bold" />
 
-                <!-- 1인당 총 경비 -->
+
                 <TextView
                     android:id="@+id/tv_total_cost_per_person"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1인당 총 경비 | 376,530원"
-                    android:textStyle="bold"
+                    android:textColor="@color/dark_green"
                     android:textSize="18sp"
-                    android:textColor="@color/dark_green" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
 
-            <!-- 오른쪽: 버튼 -->
             <ImageButton
                 android:id="@+id/btn_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/detail"
-                android:backgroundTint="#E2E8E4"
-                android:contentDescription="일정 상세보기"
                 android:layout_marginStart="8dp"
                 android:background="@android:color/transparent"
-                />
+                android:backgroundTint="#E2E8E4"
+                android:contentDescription="일정 상세보기"
+                android:src="@drawable/detail" />
         </LinearLayout>
-
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
