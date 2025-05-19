@@ -215,6 +215,7 @@
                     android:background="@drawable/gray_box_full"
                     android:backgroundTint="@null"
                     android:padding="0dp"
+                    android:textStyle="bold"
                     android:text="혼자"
                     android:textSize="16sp" />
 
@@ -226,6 +227,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
                     android:padding="0dp"
+                    android:textStyle="bold"
                     android:text="연인"
                     android:textSize="16sp" />
 
@@ -237,6 +239,7 @@
                     android:background="@drawable/gray_box_full"
                     android:padding="0dp"
                     android:text="친구"
+                    android:textStyle="bold"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -255,6 +258,7 @@
                     android:backgroundTint="@null"
                     android:padding="0dp"
                     android:text="가족"
+                    android:textStyle="bold"
                     android:textSize="16sp" />
 
                 <Button
@@ -266,6 +270,7 @@
                     android:background="@drawable/gray_box_full"
                     android:padding="0dp"
                     android:text="반려동물"
+                    android:textStyle="bold"
                     android:textSize="16sp" />
 
                 <Button
@@ -276,6 +281,7 @@
                     android:background="@drawable/gray_box_full"
                     android:padding="0dp"
                     android:text="동료"
+                    android:textStyle="bold"
                     android:textSize="16sp" />
 
 
@@ -331,6 +337,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
+                    android:textStyle="bold"
                     android:padding="0dp"
                     android:text="MBTI 유지" />
 
@@ -341,6 +348,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/gray_box_full"
                     android:padding="0dp"
+                    android:textStyle="bold"
                     android:text="분석 다시하기" />
             </LinearLayout>
 
@@ -423,6 +431,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/green_box_full"
+                android:textstyle="bold"
+                android:textColor="@color/white"
                 android:text="AI 일정 짜기"
                 />
         </LinearLayout>
