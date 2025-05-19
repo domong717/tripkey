@@ -431,7 +431,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/green_box_full"
-                android:textstyle="bold"
+                android:textStyle="bold"
                 android:textColor="@color/white"
                 android:text="AI 일정 짜기"
                 />

@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-// ... 패키지, import 동일
 
 public class RegisterMoneyActivity extends AppCompatActivity {
 
@@ -124,8 +123,9 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                                     for (var doc : itemDocs) {
                                         String desc = doc.getString("description");
                                         Long amt = doc.getLong("amount");
+                                        String writerId = doc.getString("userId");
                                         if (desc != null && amt != null) {
-                                            expenses.add(new Expense(desc, amt.intValue()));
+                                            expenses.add(new Expense(desc, amt.intValue(),writerId));
                                         }
                                     }
 
@@ -213,7 +213,7 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                     }
 
                     int amount = Integer.parseInt(amountStr);
-                    Expense expense = new Expense(description, amount);
+                    Expense expense = new Expense(description, amount, userId);
                     addExpenseToDateGroup(selectedDate, expense);
                 })
                 .setNegativeButton("취소", null)
