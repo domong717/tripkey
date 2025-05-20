@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import java.util.List;
 public class PlaceAdapter extends ArrayAdapter<GptPlan.Place> {
     private Context context;
     private List<GptPlan.Place> places;
+
 
     public PlaceAdapter(Context context, List<GptPlan.Place> places) {
         super(context, 0, places);
@@ -34,6 +36,7 @@ public class PlaceAdapter extends ArrayAdapter<GptPlan.Place> {
         TextView category = convertView.findViewById(R.id.place_category);
         TextView transport = convertView.findViewById(R.id.place_transport);
         TextView time = convertView.findViewById(R.id.place_time);
+        ImageButton deleteButton = convertView.findViewById(R.id.delete_button);
 //        ((TextView) convertView.findViewById(R.id.place_supply)).setText("Supply: " + place.supply);
 
         placeName.setText(place.getPlace());
@@ -41,6 +44,11 @@ public class PlaceAdapter extends ArrayAdapter<GptPlan.Place> {
         transport.setText("이동 수단: " + place.getTransport());
         time.setText("예상 소요 시간: " + place.getTime());
 //        supply.setText("준비물 : "+place.getSupply());
+
+        deleteButton.setOnClickListener(v -> {
+            places.remove(position);
+            notifyDataSetChanged();
+        });
 
         return convertView;
     }
