@@ -458,7 +458,7 @@
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="일정 생성중..."
+            android:text="일정을 생성 중입니다.\n잠시만 기다려주세요!"
             android:gravity="center"
             android:textColor="@android:color/black"
             android:textSize="18sp"/>
