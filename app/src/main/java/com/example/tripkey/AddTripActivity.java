@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -378,7 +379,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                     );
 
             // 여행 MBTI에 맞는 스타일 설명
-            String groupMBTIStyle = "";
+            final String groupMBTIStyle;
 
             switch (groupMBTI) {
                 case "IBLF":
@@ -506,10 +507,10 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
                         // GPT 응답을 GptTripPlanActivity로 넘기기
                         Intent intent = new Intent(AddTripActivity.this, GptTripPlanActivity.class);
+                        intent.putExtra("groupMBTIstyle",groupMBTIStyle);
                         intent.putExtra("travelName", travelName);
-                        intent.putExtra("startDate", startDate);
-                        intent.putExtra("endDate", endDate);
                         intent.putExtra("travelId",travelId);
+                        intent.putExtra("travelData", (Serializable) travelData);
                         intent.putExtra("gpt_schedule", gptReply);
                         startActivity(intent);
                     } else {
