@@ -77,17 +77,17 @@
 </androidx.core.widget.NestedScrollView>
 
     <ImageButton
-        android:id="@+id/button_tripmap"
+        android:id="@+id/button_suggestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:background="@color/transparent"
-        android:contentDescription="여행지도 확인하기 버튼"
+        android:contentDescription="여행지 추천 버튼"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button_feedback"
         app:layout_constraintHorizontal_bias="0.5"
-        app:srcCompat="@drawable/tripmap_button" />
+        app:srcCompat="@drawable/suggestion_button" />
 
     <ImageButton
         android:id="@+id/button_feedback"
@@ -96,7 +96,7 @@
         android:layout_marginTop="108dp"
         android:background="@color/transparent"
         android:contentDescription="여행경로 피드백"
-        app:layout_constraintStart_toEndOf="@id/button_tripmap"
+        app:layout_constraintStart_toEndOf="@id/button_suggestion"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/feedback_button" />
