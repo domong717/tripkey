@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MBTIDescriptionActivity extends AppCompatActivity {
-    private TextView yourMbtiTextView, mbtiDescriptionTextView;
+    private TextView yourMbtiTextView, mbtiDescriptionTextView, textYouAre;
     private FirebaseFirestore db;
     private String userId;
 
@@ -51,23 +51,40 @@ public class MBTIDescriptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mbti_description);
 
-        // UI 요소 초기화
-        yourMbtiTextView = findViewById(R.id.your_mbti);
-        mbtiDescriptionTextView = findViewById(R.id.mbti_description);
-        ImageButton backButton = findViewById(R.id.button_back);
-        Button mbtiTestButton = findViewById(R.id.mbti_test_button);
-
-        // Firestore 인스턴스 초기화
         db = FirebaseFirestore.getInstance();
 
         // SharedPreferences에서 로그인한 사용자 ID 가져오기
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         userId = sharedPreferences.getString("userId", null);
 
-        if (userId != null) {
-            loadUserMBTI(); // Firestore에서 MBTI 가져오기
+        Intent intent = getIntent();
+        String from = intent.getStringExtra("from");
+
+        // UI 요소 초기화
+        yourMbtiTextView = findViewById(R.id.your_mbti);
+        textYouAre = findViewById(R.id.text_you_are); // 당신은
+        mbtiDescriptionTextView = findViewById(R.id.mbti_description);
+        ImageButton backButton = findViewById(R.id.button_back);
+        Button mbtiTestButton = findViewById(R.id.mbti_test_button);
+
+        Log.d("MBTI", "from: " + from);
+        if ("profileCard".equals(from)) {
+            Log.d("MBTI", "from: profileCard");
+            mbtiTestButton.setVisibility(View.GONE);
+            String friendUserId = intent.getStringExtra("friendName"); // 친구의 userId가 여기 있다고 가정
+            if (friendUserId != null) {
+                textYouAre.setText(friendUserId + " 은/는 ");
+                loadFriendMBTI(friendUserId); // 친구 ID로 Firestore에서 MBTI 읽어오기
+            } else {
+                textYouAre.setText("ㅇㅇ은");
+            }
         } else {
-            Log.w("MBTI", "로그인한 사용자 ID를 찾을 수 없습니다.");
+            Log.d("MBTI", "from: else");
+            mbtiTestButton.setVisibility(View.VISIBLE);
+            textYouAre.setText("당신은 ");
+            if (userId != null) {
+                loadUserMBTI();
+            }
         }
 
         // 뒤로가기 버튼 클릭 이벤트
@@ -75,8 +92,8 @@ public class MBTIDescriptionActivity extends AppCompatActivity {
 
         // MBTI 테스트 버튼 클릭 이벤트
         mbtiTestButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MBTIDescriptionActivity.this, MBTITestActivity.class);
-            startActivity(intent);
+            Intent intentToTest = new Intent(MBTIDescriptionActivity.this, MBTITestActivity.class);
+            startActivity(intentToTest);
         });
     }
 
@@ -99,4 +116,25 @@ public class MBTIDescriptionActivity extends AppCompatActivity {
             }
         });
     }
+    private void loadFriendMBTI(String friendUserId) {
+        Log.d("MBTI", "friend ID: " + friendUserId);
+        DocumentReference friendRef = db.collection("users").document(friendUserId);
+        friendRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String mbti = document.getString("mbti");
+                    if (mbti != null && !mbti.isEmpty()) {
+                        yourMbtiTextView.setText(mbti);
+                        mbtiDescriptionTextView.setText(travelDescriptions.getOrDefault(mbti, "여행 유형 정보를 찾을 수 없습니다."));
+                    }
+                } else {
+                    Log.d("MBTI", "친구 문서가 존재하지 않습니다.");
+                }
+            } else {
+                Log.w("MBTI", "친구 데이터 가져오기 실패", task.getException());
+            }
+        });
+    }
+
 }

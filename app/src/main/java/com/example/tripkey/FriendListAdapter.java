@@ -1,8 +1,10 @@
 package com.example.tripkey;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -44,6 +46,13 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
         } else {
             holder.profileImageView.setImageResource(R.drawable.profile);
         }
+
+        holder.mbtiButton.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), MBTIDescriptionActivity.class);
+            intent.putExtra("from", "profileCard");
+            intent.putExtra("friendName", friend.getName());
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override
@@ -54,11 +63,15 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nameTextView;
         public ImageView profileImageView;
+        public Button mbtiButton;
+        public Button recordButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             profileImageView = itemView.findViewById(R.id.profileImageView);
+            mbtiButton = itemView.findViewById(R.id.mbtiButton);// mbti 확인하기 버튼
+            recordButton = itemView.findViewById(R.id.recordButton);// 기록 확인하기 버튼
         }
     }
 }

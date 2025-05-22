@@ -94,6 +94,7 @@ public class InfoFragment extends Fragment {
         // 버튼 클릭 이벤트 처리
         binding.mbtiLayout.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), MBTIDescriptionActivity.class);
+            intent.putExtra("from", "info");
             startActivity(intent);
         });
 

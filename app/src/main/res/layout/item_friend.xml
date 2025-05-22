@@ -31,17 +31,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="@color/mid_green"
                 android:layout_marginStart="16dp"/>
 
-            <TextView
-                android:id="@+id/heartCountTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:drawableStart="@drawable/heart"
-                android:drawablePadding="4dp"/>
 
         </LinearLayout>
 
