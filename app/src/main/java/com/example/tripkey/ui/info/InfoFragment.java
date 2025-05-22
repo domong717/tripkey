@@ -9,10 +9,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +76,7 @@ public class InfoFragment extends Fragment {
         if (userId != null) {
             userRef = db.collection("users").document(userId);
             loadUserName();
+            loadAccountInfo();
             loadProfileImage();
         } else {
             showUserIdDialog();
@@ -90,6 +94,9 @@ public class InfoFragment extends Fragment {
                         }
                     }
                 });
+
+        binding.accountEditButton.setOnClickListener(v -> showAccountEditDialog());
+
 
         // 버튼 클릭 이벤트 처리
         binding.mbtiLayout.setOnClickListener(v -> {
@@ -117,6 +124,65 @@ public class InfoFragment extends Fragment {
         binding.logoutButton.setOnClickListener(v -> handleLogout());
 
         return root;
+    }
+
+
+    private void showAccountEditDialog() {
+        Context context = getContext();
+        if (context == null) return;
+
+        android.widget.EditText editText = new android.widget.EditText(context);
+        editText.setHint("계좌번호 입력");
+
+        // EditText 좌우에 15dp padding만 적용
+        int sidePadding = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 15, context.getResources().getDisplayMetrics());
+
+        LinearLayout container = new LinearLayout(context);
+        container.setPadding(sidePadding, 0, sidePadding, 0); // 좌우 패딩
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.addView(editText);
+
+        new android.app.AlertDialog.Builder(context)
+                .setTitle("계좌번호 수정")
+                .setView(container)
+                .setPositiveButton("확인", (dialog, which) -> {
+                    String newAccount = editText.getText().toString().trim();
+                    if (!newAccount.isEmpty()) {
+                        binding.accountText.setText(newAccount); // 텍스트뷰 갱신
+                        saveAccountToFirestore(newAccount); // Firestore에 저장
+                    } else {
+                        Toast.makeText(context, "계좌번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
+
+
+    private void saveAccountToFirestore(String accountNumber) {
+        if (userRef == null) {
+            Toast.makeText(getActivity(), "사용자 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        userRef.update("account", accountNumber)
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(getActivity(), "계좌번호가 저장되었습니다.", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(getActivity(), "계좌번호 저장 실패", Toast.LENGTH_SHORT).show());
+    }
+
+    private void loadAccountInfo() {
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String account = document.getString("account");
+                    binding.accountText.setText(account != null ? account : "");
+                }
+            }
+        });
     }
 
     // 로그아웃 처리 메서드
