@@ -3,6 +3,7 @@ package com.example.tripkey;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,8 @@ public class CalculateActivity extends AppCompatActivity {
 
     private TextView textTotalMoney;
     private TextView textTravelDate;
+    private ImageButton backButton;
+
     private RecyclerView recyclerView;
     private EachMoneyAdapter adapter;
     private List<UserExpense> userExpenseList = new ArrayList<>();
@@ -33,6 +36,8 @@ public class CalculateActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calculate_money);
 
         db = FirebaseFirestore.getInstance();
+
+        backButton = findViewById(R.id.button_back);
 
         // userId 가져오기
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
@@ -48,6 +53,9 @@ public class CalculateActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         loadData();
+
+        // 뒤로 가기 버튼
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void loadData() {

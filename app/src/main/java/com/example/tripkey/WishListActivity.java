@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,8 @@ public class WishListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wishlist); // 적절한 레이아웃 파일로 변경
+
+        ImageButton backButton = findViewById(R.id.button_back);
 
         recyclerView = findViewById(R.id.rv_trip_posts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -71,6 +74,9 @@ public class WishListActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "로그인 상태가 아닙니다.", Toast.LENGTH_SHORT).show();
         }
+
+        // 뒤로 가기 버튼
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void loadWishListTrips() {

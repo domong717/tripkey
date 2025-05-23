@@ -47,6 +47,7 @@ public class RegisterMoneyActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         textTotal = findViewById(R.id.text_total);
         ImageButton buttonAdd = findViewById(R.id.button_add);
+        ImageButton backButton = findViewById(R.id.button_back);
         Button buttonSettleAll = findViewById(R.id.button_settle_all);
 
         adapter = new DateGroupAdapter(this, dateGroups);
@@ -74,6 +75,9 @@ public class RegisterMoneyActivity extends AppCompatActivity {
             intent.putExtra("travelId", travelId); // travelId 전달
             startActivity(intent);
         });
+
+        // 뒤로 가기 버튼
+        backButton.setOnClickListener(v -> finish());
 
     }
 

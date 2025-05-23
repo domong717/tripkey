@@ -46,6 +46,7 @@ public class MoneyDetailActivity extends AppCompatActivity {
         // Firestore
         db = FirebaseFirestore.getInstance();
 
+        ImageButton backButton = findViewById(R.id.button_back);
         recyclerView = findViewById(R.id.recyclerView);
         textTotal = findViewById(R.id.text_total);
 
@@ -59,6 +60,9 @@ public class MoneyDetailActivity extends AppCompatActivity {
         travelId = getIntent().getStringExtra("travelId");
 
         loadExpensesFromFirestore();
+
+        // 뒤로 가기 버튼
+        backButton.setOnClickListener(v -> finish());
 
     }
 
