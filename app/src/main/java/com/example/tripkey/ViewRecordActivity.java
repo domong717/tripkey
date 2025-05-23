@@ -40,7 +40,7 @@ public class ViewRecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_record);
 
-        // 🔹 Intent에서 값 받아오기
+        // Intent에서 값 받아오기
         travelId = getIntent().getStringExtra("travelId");
 
         pastTripsContainer = findViewById(R.id.past_trips_container);

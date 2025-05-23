@@ -66,7 +66,7 @@ public class TripFragment extends Fragment {
         return root;
     }
 
-    private void loadTravelData() {
+    public void loadTravelData() {
         // 사용자 ID가 제대로 로딩되는지 확인
         if (userId == null) {
             Log.e("HomeFragment", "User ID is null");
@@ -114,6 +114,12 @@ public class TripFragment extends Fragment {
     }
 
     private void updateTravelItems() {
+        Context context = getContext();
+        if (context == null) {
+            Log.w("TripFragment", "Context is null, skip updating UI");
+            return;  // Context가 없으면 UI 업데이트하지 마세요
+        }
+
         // LinearLayout에 필터링된 여행 항목들 추가
         for (TravelItem item : travelList) {
             // Yellow Box Layout 생성

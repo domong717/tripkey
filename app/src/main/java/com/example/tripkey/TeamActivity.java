@@ -84,30 +84,55 @@ public class TeamActivity extends AppCompatActivity {
 
     private void setupGetoutButton(String teamId) {
         getoutButton = findViewById(R.id.getout);
+
+        Log.d("Firestore", "members 배열에서 '" + currentUserId + "' 제거 시도");
         getoutButton.setOnClickListener(v -> {
             // 1. 팀 멤버에서 현재 유저 ID 제거
             db.collection("users")
                     .document(currentUserId)
                     .collection("teams")
                     .document(teamId)
-                    .update("members", FieldValue.arrayRemove(currentUserId))
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d("Firestore", "팀에서 성공적으로 나감");
+                    .get()
+                    .addOnSuccessListener(teamDoc -> {
+                        if (teamDoc.exists()) {
+                            List<String> members = (List<String>) teamDoc.get("members");
+                            if (members != null) {
+                                for (String memberId : members) {
+                                    // 각 멤버 문서에서 나간 유저 ID 삭제
+                                    db.collection("users")
+                                            .document(memberId)
+                                            .collection("teams")
+                                            .document(teamId)
+                                            .update("members", FieldValue.arrayRemove(currentUserId))
+                                            .addOnSuccessListener(aVoid -> {
+                                                Log.d("Firestore", "멤버 " + memberId + " 문서에서 " + currentUserId + " 삭제 완료");
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("Firestore", "멤버 " + memberId + " 문서에서 삭제 실패", e);
+                                            });
+                                }
 
-                        // 2. travel 문서 삭제
-                        db.collection("users")
-                                .document(currentUserId)
-                                .collection("travel")
-                                .document(travelId)
-                                .delete()
-                                .addOnSuccessListener(aVoid2 -> {
-                                    Log.d("Firestore", "travel 문서 삭제됨");
-                                    finish(); // 액티비티 종료
-                                })
-                                .addOnFailureListener(e -> Log.e("Firestore", "travel 문서 삭제 실패", e));
-                    })
-                    .addOnFailureListener(e -> Log.e("Firestore", "멤버 삭제 실패", e));
+                                // 그리고 나서 내 travel 문서 삭제
+                                db.collection("users")
+                                        .document(currentUserId)
+                                        .collection("travel")
+                                        .document(travelId)
+                                        .delete()
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "travel 문서 삭제됨");
+
+                                            Intent intent = new Intent(TeamActivity.this, MainActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                            intent.putExtra("selectTab", "home");
+                                            startActivity(intent);
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> Log.e("Firestore", "travel 문서 삭제 실패", e));
+                            }
+                        }
+                    });
         });
+
     }
 
 
