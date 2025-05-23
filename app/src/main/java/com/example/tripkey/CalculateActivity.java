@@ -178,7 +178,7 @@ public class CalculateActivity extends AppCompatActivity {
                         String profileUrl = doc.getString("profileImage");
                         int dividedAmount = userTotalMap.get(uid) / memberCount;
 
-                        userExpenseList.add(new UserExpense(uid, dividedAmount, profileUrl));
+                        userExpenseList.add(new UserExpense(uid, dividedAmount, profileUrl, travelId));
                         loadedCount[0]++;
 
                         if (loadedCount[0] == userIds.size()) {

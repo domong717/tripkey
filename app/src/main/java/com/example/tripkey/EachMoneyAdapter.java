@@ -1,6 +1,7 @@
 package com.example.tripkey;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ public class EachMoneyAdapter extends RecyclerView.Adapter<EachMoneyAdapter.View
             textAmount = view.findViewById(R.id.textAmount);
             profileImage = view.findViewById(R.id.profileImage);
             accountReg = view.findViewById(R.id.account_reg);
+            detail = view.findViewById(R.id.detail);
         }
     }
 
@@ -77,6 +79,14 @@ public class EachMoneyAdapter extends RecyclerView.Adapter<EachMoneyAdapter.View
                     .addOnFailureListener(e ->
                             Toast.makeText(context, "계좌를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show());
         });
+
+        holder.detail.setOnClickListener(v -> {
+            Intent intent = new Intent(context, MoneyDetailActivity.class);
+            intent.putExtra("userId", ue.getUserId());
+            intent.putExtra("travelId", ue.getTravelId());
+            context.startActivity(intent);
+        });
+
     }
 
     private void showAccountDialog(String userId, String account) {
