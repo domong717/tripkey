@@ -62,7 +62,7 @@
             android:exported="true"/>
         <activity android:name=".PlusRecordActivity"
             android:exported="true"/>
-        <activity android:name=".TripmapActivity"
+        <activity android:name=".MapActivity"
             android:exported="true"/>
         <activity android:name=".ViewRecordActivity"
             android:exported="true"/>
@@ -93,6 +93,8 @@
         <activity android:name=".RegisterMoneyActivity"
             android:exported="true"/>
         <activity android:name=".LocationSearchActivity"
+            android:exported="true"/>
+        <activity android:name=".AccomodationSearchActivity"
             android:exported="true"/>
         <activity android:name=".WishListActivity"
             android:exported="true"/>
