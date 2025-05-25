@@ -98,6 +98,12 @@ public class AddTripActivity extends AppCompatActivity {
             startActivityForResult(intent, REQUEST_CODE_LOCATION);
         });
 
+        // 장소
+        ImageButton searchAccomodationBtn = binding.accomodationSearchButton;
+        searchAccomodationBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AccomodationSearchActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_LOCATION);
+        });
 
         startDateInput.setOnClickListener(v -> showDatePickerDialog(true));
         endDateInput.setOnClickListener(v -> showDatePickerDialog(false));
@@ -544,8 +550,12 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_LOCATION && resultCode == RESULT_OK && data != null) {
             String selectedLocation = data.getStringExtra("selected_location");
+            String selectedAccomodation = data.getStringExtra("selected_accomodation");
             if (selectedLocation != null) {
                 binding.locationInput.setText(selectedLocation);
+            }
+            if (selectedAccomodation != null) {
+                binding.placeToStayInput.setText(selectedAccomodation);
             }
         }
     }
