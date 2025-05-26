@@ -53,6 +53,12 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
             intent.putExtra("friendName", friend.getName());
             v.getContext().startActivity(intent);
         });
+
+        holder.recordButton.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), FriendRecordAllActivity.class);
+            intent.putExtra("userId", friend.getName());
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override
