@@ -120,6 +120,7 @@ public class TeamActivity extends AppCompatActivity {
                                         inviteFriendToTravel(selectedFriendId, travelId, currentUserId);
                                     }
                                 }
+                                new android.os.Handler().postDelayed(() -> loadTeamMembers(), 1000);
                             })
                             .setNegativeButton("취소", null)
                             .show();
