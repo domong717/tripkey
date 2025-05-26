@@ -37,7 +37,7 @@ public class PlusRecordActivity extends AppCompatActivity implements PhotoAdapte
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;  // 권한 요청 코드
     private Button plusPhotoBtn;
     private ImageButton backButton;
-    private ImageButton saveRecordButton;
+    private Button saveRecordButton;
     private RecyclerView photoRecyclerView;
     private PhotoAdapter photoAdapter;
     private ArrayList<Uri> photoList = new ArrayList<>(); // 추가한 사진 리스트
