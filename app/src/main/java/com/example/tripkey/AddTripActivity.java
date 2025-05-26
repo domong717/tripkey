@@ -239,12 +239,43 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                     String selectedDate = selectedYear + "-" + formattedMonth + "-" + formattedDay;
                     if (isStartDate) {
                         startDateInput.setText(selectedDate);
-                    } else {
+                    }else {
+                        // startDate와 비교
+                        String startDateText = startDateInput.getText().toString();
+                        if (!startDateText.isEmpty()) {
+                            String[] startDateParts = startDateText.split("-");
+                            int startYear = Integer.parseInt(startDateParts[0]);
+                            int startMonth = Integer.parseInt(startDateParts[1]);
+                            int startDay = Integer.parseInt(startDateParts[2]);
+
+                            // 선택한 날짜가 startDate보다 이전인지 확인
+                            if (selectedYear < startYear ||
+                                    (selectedYear == startYear && selectedMonth + 1 < startMonth) ||
+                                    (selectedYear == startYear && selectedMonth + 1 == startMonth && selectedDayOfMonth < startDay)) {
+                                Toast.makeText(this, "종료 날짜는 시작 날짜 이후여야 합니다.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
                         endDateInput.setText(selectedDate);
                     }
                 },
                 year, month, dayOfMonth
         );
+
+        // endDate 선택 시, startDate 이후 날짜만 가능하도록 제한
+        if (!isStartDate) {
+            String startDateText = startDateInput.getText().toString();
+            if (!startDateText.isEmpty()) {
+                String[] startDateParts = startDateText.split("-");
+                int startYear = Integer.parseInt(startDateParts[0]);
+                int startMonth = Integer.parseInt(startDateParts[1]) - 1; // Calendar에서 0부터 시작
+                int startDay = Integer.parseInt(startDateParts[2]);
+
+                Calendar minDate = Calendar.getInstance();
+                minDate.set(startYear, startMonth, startDay);
+                datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
+            }
+        }
 
         datePickerDialog.show();
     }
