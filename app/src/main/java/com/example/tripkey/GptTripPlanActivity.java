@@ -58,6 +58,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
     private String placeToStay;
     private String teamMBTI;
     private String groupMBTIStyle;
+    private String teamId;
     private String who;
     private Map<String, Object> travelData = new HashMap<>();
     private String travelId;
@@ -84,6 +85,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
         placeToStay = (String) travelData.get("placeToStay");
         teamMBTI = (String) travelData.get("teamMBTI");
         who = (String) travelData.get("who");
+        teamId = (String) travelData.get("teamId");
         String gptScheduleJson = getIntent().getStringExtra("gpt_schedule");
         groupMBTIStyle = getIntent().getStringExtra("groupMBTIStyle");
         travelId = getIntent().getStringExtra("travelId");
@@ -189,15 +191,45 @@ public class GptTripPlanActivity extends AppCompatActivity {
         String travelName = getIntent().getStringExtra("travelName");
         String travelId = getIntent().getStringExtra("travelId");  // 각 여행에 고유한 ID를 사용
         String startDate = getIntent().getStringExtra("startDate");
+        String teamId = getIntent().getStringExtra("teamId");
 
         if (travelName == null || travelId == null) {
             Toast.makeText(this, "여행 정보가 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (teamId == null) {
+            Toast.makeText(this, "팀 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (gptPlanList == null || gptPlanList.isEmpty()) {
             Toast.makeText(this, "저장할 일정이 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        DocumentReference teamRef = db.collection("users")
+                .document(userId)
+                .collection("teams")
+                .document(teamId);
+
+        teamRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                List<String> members = (List<String>) documentSnapshot.get("members");
+
+                if (members != null && !members.isEmpty()) {
+                    for (String memberId : members) {
+                        saveGptPlanToMember(db, memberId, travelId, startDate);  // 아래에서 구현
+                    }
+                } else {
+                    Toast.makeText(this, "팀에 멤버가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "팀 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "팀 멤버 조회 실패", Toast.LENGTH_SHORT).show();
+        });
+
 
         final int totalPlaces = gptPlanList.stream()
                 .mapToInt(plan -> plan.getPlaces() != null ? plan.getPlaces().size() : 0)
@@ -363,4 +395,34 @@ public class GptTripPlanActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void saveGptPlanToMember(FirebaseFirestore db, String userId, String travelId, String startDate) {
+        for (int i = 0; i < gptPlanList.size(); i++) {
+            GptPlan plan = gptPlanList.get(i);
+            plan.setDateFromStartDate(startDate, i);
+            String dateStr = plan.getDate().replace('.', '-');
+
+            List<GptPlan.Place> places = plan.getPlaces();
+            if (places != null) {
+                DocumentReference dateRef = db.collection("users")
+                        .document(userId)
+                        .collection("travel")
+                        .document(travelId)
+                        .collection("gpt_plan")
+                        .document(dateStr);
+
+                dateRef.set(new HashMap<>());
+
+                for (int j = 0; j < places.size(); j++) {
+                    GptPlan.Place place = places.get(j);
+                    place.setDate(plan.getDate());
+
+                    dateRef.collection("places")
+                            .document(String.format("%02d", j))
+                            .set(place);
+                }
+            }
+        }
+    }
+
 }

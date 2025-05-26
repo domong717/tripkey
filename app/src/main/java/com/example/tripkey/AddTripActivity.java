@@ -518,6 +518,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                         intent.putExtra("travelId",travelId);
                         intent.putExtra("travelData", (Serializable) travelData);
                         intent.putExtra("gpt_schedule", gptReply);
+                        intent.putExtra("teamId",teamId);
                         startActivity(intent);
                     } else {
                         Log.e("GPT", "Response error: " + response.code());
