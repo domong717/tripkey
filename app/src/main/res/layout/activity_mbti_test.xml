@@ -126,7 +126,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="편리한 택시"
+                    android:text="편리한 택시 또는 차"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -262,7 +262,7 @@
                     android:layout_height="100dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="직접 운전해서 원하는 곳으로 자유롭게 이동"
+                    android:text="택시나 차를 타고 자유롭게 이동"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -272,7 +272,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="걸으면서 천천히 여유롭게 주변을 탐방"
+                    android:text="대중교통을 타고 여유롭게 주변을 탐방"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -499,6 +499,119 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
+
+            <!-- 질문 13 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="13. 여행 일정을 계획할 때 어떤 방식을 선호하시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q13_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="하루 단위로 여유 있게 움직이기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q13_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="시간 단위로 꼼꼼하게 계획 세우기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 14 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="14. 여행 중 어떤 순간에 가장 만족감을 느끼시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q14_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="예상치 못한 자유로운 경험이 생길 때"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q14_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="계획대로 일정이 척척 진행될 때"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 질문 15 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="15. 하루에 몇 군데의 여행지를 방문하는 걸 선호하시나요?"
+                android:textColor="@color/mid_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/q15_option1"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="3~4곳을 여유롭게 방문하기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/q15_option2"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:text="6~7곳 이상을 꽉 채워서 방문하기"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -17,7 +17,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MBTITestActivity extends AppCompatActivity {
+public class ReMBTITestActivity extends AppCompatActivity {
 
     private int inside = 0; // inside 선택지 카운트
     private int outside = 0; // outside 선택지 카운트
@@ -333,18 +333,23 @@ public class MBTITestActivity extends AppCompatActivity {
 
                 // 각 문항은 두 항목 중 하나만 선택되므로 총 15개가 선택됐는지 확인
                 if (totalSelections < 15) {
-                    Toast.makeText(MBTITestActivity.this, "선택하지 않은 문항이 있어요!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ReMBTITestActivity.this, "선택하지 않은 문항이 있어요!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 String mbtiType = getMBTIResult();
-                Toast.makeText(MBTITestActivity.this, "당신의 MBTI는: " + mbtiType, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ReMBTITestActivity.this, "당신의 MBTI는: " + mbtiType, Toast.LENGTH_SHORT).show();
 
                 saveMBTIResult(mbtiType);
+//
+//                Intent intent = new Intent(ReMBTITestActivity.this, MBTIDescriptionActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(intent);
+//                finish();
 
-                Intent intent = new Intent(MBTITestActivity.this, MBTIDescriptionActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("mbti_result", mbtiType);  // 수정된 부분
+                setResult(RESULT_OK, resultIntent);
                 finish();
             }
         });
@@ -354,8 +359,8 @@ public class MBTITestActivity extends AppCompatActivity {
 
     // 선택지 버튼 클릭 시 색상 변경 함수
     private void onOptionSelected(Button selectedButton, Button unselectedButton) {
-        selectedButton.setBackgroundColor(ContextCompat.getColor(MBTITestActivity.this, R.color.dark_green));  // 선택한 버튼 색상 변경
-        unselectedButton.setBackgroundColor(ContextCompat.getColor(MBTITestActivity.this, R.color.mid_green));  // 선택되지 않은 버튼 원래 색상
+        selectedButton.setBackgroundColor(ContextCompat.getColor(ReMBTITestActivity.this, R.color.dark_green));  // 선택한 버튼 색상 변경
+        unselectedButton.setBackgroundColor(ContextCompat.getColor(ReMBTITestActivity.this, R.color.mid_green));  // 선택되지 않은 버튼 원래 색상
     }
 
     private void saveMBTIResult(String mbtiType) {
