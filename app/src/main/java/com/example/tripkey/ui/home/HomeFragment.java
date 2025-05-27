@@ -98,8 +98,10 @@ public class HomeFragment extends Fragment {
         AutoCompleteTextView mbtiDropdown = rootView.findViewById(R.id.mbti_dropdown);
 
         String[] mbtiList = {
-                "전체", "IBLF", "IBLM", "IBSF", "IBSM", "ITLF", "ITLM", "ITSF", "ITSM",
-                "OBLF", "OBLM", "OBSF", "OBSM", "OTLF", "OTLM", "OTSF", "OTSM"
+                "전체", "IBRFT", "IBRFL", "IBRMT", "IBRML", "IBEFT", "IBEFL", "IBEMT",
+                "IBEML", "ICRFT", "ICRFL", "ICRMT", "ICRML", "ICEFT", "ICEFL", "ICEMT",
+                "ICEML", "OBRFT", "OBRFL", "OBRMT", "OBRML", "OBEFT", "OBEFL", "OBEMT",
+                "OBEML", "OCRFT", "OCRFL", "OCRMT", "OCRML", "OCEFT", "OCEFL", "OCEMT", "OCEML"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
@@ -167,7 +169,7 @@ public class HomeFragment extends Fragment {
                                                         loadTeamMembersAndPlaces(uid, teamId, total, travelId, result -> {
                                                             int peopleCount = result.first;
                                                             String costPerPerson = (total != null && peopleCount > 0)
-                                                                    ? String.format("%,d", total / peopleCount)
+                                                                    ? String.format("%,d 원", total / peopleCount)
                                                                     : "알 수 없음";
 
                                                             TripPost trip = new TripPost(title, date, location, peopleCount, costPerPerson, result.second, teamMBTI,travelId,uid);

@@ -60,10 +60,12 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
         TripPost post = tripPostList.get(position);
 
         holder.tvTitle.setText(post.getTitle());
+        holder.tvOwner.setText("@" + post.getOwnerId());
         holder.tvDate.setText(post.getDate());
         holder.tvLocation.setText("여행지 | " + post.getLocation());
         holder.tvPeople.setText("여행 인원 | " + post.getPeopleCount() + "인");
-        holder.tvCost.setText("1인당 총 경비 | " + post.getCostPerPerson() + "원");
+        holder.tvMBTI.setText("여행 MBTI | " + post.getTeamMBTI());
+        holder.tvCost.setText("1인당 총 경비 | " + post.getCostPerPerson());
 
         holder.btnHeart.setOnClickListener(v -> {
             Log.d("TripPostAdapter", "하트 버튼 클릭됨");
@@ -238,7 +240,7 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
 
 
     static class TripPostViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvDate, tvLocation, tvPeople, tvCost;
+        TextView tvTitle, tvDate, tvLocation, tvPeople, tvCost, tvOwner, tvMBTI;
         RecyclerView rvPlaceList;
         ImageButton btnDetail, btnHeart, btnSaveMyTrip;
 
@@ -249,8 +251,10 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
             tvLocation = itemView.findViewById(R.id.tv_location);
             tvPeople = itemView.findViewById(R.id.tv_member_count);
             tvCost = itemView.findViewById(R.id.tv_total_cost_per_person);
+            tvOwner = itemView.findViewById(R.id.tv_writerid);
             rvPlaceList = itemView.findViewById(R.id.rv_place_list);
             btnDetail = itemView.findViewById(R.id.btn_detail);
+            tvMBTI = itemView.findViewById(R.id.tv_mbti);
             btnHeart = itemView.findViewById(R.id.just_keep); // 하트 찜 버튼
             btnSaveMyTrip = itemView.findViewById(R.id.goto_my_trip); // 여행 담기 버튼
 
