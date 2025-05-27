@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- enabled 상태일 때 흰색 -->
+    <item android:color="@android:color/white" android:state_enabled="true"/>
+    <!-- disabled 상태일 때 회색  -->
+    <item android:color="#888888" android:state_enabled="false"/>
+</selector>
