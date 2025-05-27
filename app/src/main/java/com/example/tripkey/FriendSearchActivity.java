@@ -1,5 +1,6 @@
 package com.example.tripkey;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -160,6 +161,10 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendReq
                                         });
                             });
                 });
+        loadReceivedRequests();
+
+        setResult(RESULT_OK);
+        finish();
     }
 
     @Override
@@ -178,4 +183,5 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendReq
                             });
                 });
     }
+
 }

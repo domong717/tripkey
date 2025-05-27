@@ -41,7 +41,7 @@ public class FriendListActivity extends AppCompatActivity {
         addFriendButton = findViewById(R.id.button_add_friend);
         addFriendButton.setOnClickListener(v -> {
             Intent intent = new Intent(FriendListActivity.this, FriendSearchActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 100);
         });
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -55,6 +55,16 @@ public class FriendListActivity extends AppCompatActivity {
 
         loadFriends();
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            // 새로고침 실행
+            loadFriends(); // 친구 목록 다시 불러오는 메서드
+        }
+    }
+
 
     private void loadFriends() {
         db.collection("users").document(currentUserId)
