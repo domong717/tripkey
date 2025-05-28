@@ -29,6 +29,7 @@ import com.example.tripkey.ChecklistActivity;
 import com.example.tripkey.FriendListActivity;
 import com.example.tripkey.LoginActivity;
 import com.example.tripkey.MBTIDescriptionActivity;
+import com.example.tripkey.MapActivity;
 import com.example.tripkey.RecordActivity;
 import com.example.tripkey.WishListActivity;
 import com.example.tripkey.databinding.FragmentInfoBinding;
@@ -110,8 +111,8 @@ public class InfoFragment extends Fragment {
             startActivity(intent);
         });
 
-        binding.checklistLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ChecklistActivity.class);
+        binding.mapLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MapActivity.class);
             startActivity(intent);
         });
 
