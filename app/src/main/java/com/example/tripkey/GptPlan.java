@@ -45,6 +45,8 @@ public class GptPlan {
         private String date;
         private String place;
         private String coord;
+        private double latitude;
+        private double longitude;
         private String category;
         private String transport;
         private String time;
@@ -78,5 +80,9 @@ public class GptPlan {
         }
 
         public String getSupply() { return supply; }
+        public double getLatitude() { return latitude; }
+        public void setLatitude(double latitude) { this.latitude = latitude; }
+        public double getLongitude() { return longitude; }
+        public void setLongitude(double longitude) { this.longitude = longitude; }
     }
 }

@@ -3,6 +3,7 @@ package com.example.tripkey;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,13 @@ import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapLifeCycleCallback;
 import com.kakao.vectormap.MapView;
+import com.kakao.vectormap.camera.CameraUpdateFactory;
+import com.kakao.vectormap.label.LabelIconStyle;
+import com.kakao.vectormap.label.LabelLayer;
+import com.kakao.vectormap.label.LabelOptions;
+import com.kakao.vectormap.label.LabelStyle;
+import com.kakao.vectormap.label.LabelStyles;
+import com.kakao.vectormap.label.LabelTextStyle;
 
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
@@ -56,6 +64,8 @@ public class PlanDetailActivity extends AppCompatActivity {
 
     private List<GptPlan> planList = new ArrayList<>();
     private LinearLayout dayButtonContainer;
+
+    private List<GptPlan.Place> tempPlaceList = new ArrayList<>();
 
 
 
@@ -108,8 +118,7 @@ public class PlanDetailActivity extends AppCompatActivity {
         }
 
         mapView = findViewById(R.id.map_view);
-
-
+        mapView.start(lifeCycleCallback, readyCallback);
 
         initViews();
         loadGptPlan();
@@ -227,8 +236,23 @@ public class PlanDetailActivity extends AppCompatActivity {
 
                                         for (QueryDocumentSnapshot placeDoc : places) {
                                             GptPlan.Place place = placeDoc.toObject(GptPlan.Place.class);
+                                            // 좌표 파싱 추가 부분
+                                            String coordString = placeDoc.getString("coord");
+                                            if (coordString != null) {
+                                                try {
+                                                    String[] parts = coordString.split(",");
+                                                    place.setLatitude(Double.parseDouble(parts[0].trim()));
+                                                    place.setLongitude(Double.parseDouble(parts[1].trim()));
+                                                } catch (Exception e) {
+                                                    Log.e(TAG, "좌표 파싱 오류: " + coordString);
+                                                }
+                                            }
+
                                             placeList.add(place);
+
                                         }
+
+                                        tempPlaceList = placeList;
 
                                         dateToPlaces.put(dateKey, placeList);
 
@@ -251,6 +275,79 @@ public class PlanDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void createMapMarkers(List<GptPlan.Place> places) {
+        if (kakaoMap == null || places == null) return;
+
+        LabelLayer layer = kakaoMap.getLabelManager().getLayer();
+        LabelStyles styles = kakaoMap.getLabelManager().addLabelStyles(
+                LabelStyles.from(LabelStyle.from(R.drawable.map_pin))
+        );
+
+        for (int i = 0; i < places.size(); i++) {
+            GptPlan.Place place = places.get(i);
+            LatLng position = LatLng.from(place.getLatitude(), place.getLongitude());
+
+            // LabelOptions 생성
+            LabelOptions options = LabelOptions.from(position)
+                    .setStyles(styles);
+
+            layer.addLabel(options); // 마커 추가
+        }
+    }
+
+    // MapReadyCallback 을 통해 지도가 정상적으로 시작된 후에 수신할 수 있다.
+    private KakaoMapReadyCallback readyCallback = new KakaoMapReadyCallback() {
+        @Override
+        public void onMapReady(@NonNull KakaoMap kakaoMap) {
+            PlanDetailActivity.this.kakaoMap = kakaoMap;
+
+            createMapMarkers(tempPlaceList);
+
+            Toast.makeText(getApplicationContext(), "Map Start!", Toast.LENGTH_SHORT).show();
+
+            Log.i("k3f", "startPosition: "
+                    + kakaoMap.getCameraPosition().getPosition().toString());
+            Log.i("k3f", "startZoomLevel: "
+                    + kakaoMap.getZoomLevel());
+        }
+        @NonNull
+        @Override
+        public LatLng getPosition() {
+            return startPosition;
+        }
+
+        @NonNull
+        @Override
+        public int getZoomLevel() {
+            return startZoomLevel;
+        }
+    };
+
+    // MapLifeCycleCallback 을 통해 지도의 LifeCycle 관련 이벤트를 수신할 수 있다.
+    private MapLifeCycleCallback lifeCycleCallback = new MapLifeCycleCallback() {
+
+        @Override
+        public void onMapResumed() {
+            super.onMapResumed();
+        }
+
+        @Override
+        public void onMapPaused() {
+            super.onMapPaused();
+        }
+
+        @Override
+        public void onMapDestroy() {
+            Toast.makeText(getApplicationContext(), "onMapDestroy",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onMapError(Exception error) {
+            Toast.makeText(getApplicationContext(), error.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        }
+    };
 
 
 /*
