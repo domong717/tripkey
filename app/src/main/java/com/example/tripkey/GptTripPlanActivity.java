@@ -367,6 +367,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     String gptReply = response.body().choices.get(0).message.content;
 
+                    Log.d("DEBUG", "teamId before Intent: " + teamId);
                     Intent intent = new Intent(GptTripPlanActivity.this, GptTripPlanActivity.class);
                     intent.putExtra("gpt_schedule", gptReply);
                     intent.putExtra("travelData", (HashMap<String, Object>) travelData);
@@ -379,6 +380,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                     intent.putExtra("teamMBTI", teamMBTI);
                     intent.putExtra("who", who);
                     intent.putExtra("travelId", travelId);
+                    intent.putExtra("teamId",teamId);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     finish();
