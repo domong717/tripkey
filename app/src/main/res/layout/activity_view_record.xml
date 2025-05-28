@@ -28,6 +28,117 @@
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/add_record_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/yellow_box_full"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/textViewTravelPlace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="305dp"
+                android:layout_height="3dp"
+                android:layout_marginVertical="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="center"
+                android:background="@color/dark_green"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewTravelPlace" />
+
+            <TextView
+                android:id="@+id/travel_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="55dp"
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/view_bar2"
+                android:layout_width="305dp"
+                android:layout_height="3dp"
+                android:layout_marginVertical="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center"
+                android:background="@color/dark_green"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/travel_info" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/subplace_scrollview"
+                android:layout_width="360dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="110dp"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_bar2">
+
+                <LinearLayout
+                    android:id="@+id/past_trips_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="25dp">
+
+                    <TextView
+                        android:id="@+id/noRecordsTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:paddingTop="300dp"
+                        android:text="여행 기록이 없습니다.\n여행 기록을 추가해주세요.✈️"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/photoRecyclerView"
+                        android:layout_width="321dp"
+                        android:layout_height="1dp" />
+
+
+                </LinearLayout>
+
+
+            </androidx.core.widget.NestedScrollView>
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
     <ImageButton
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
@@ -41,107 +152,10 @@
         app:srcCompat="@drawable/back_button" />
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        android:layout_marginTop="60dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:srcCompat="@drawable/yellow_box_full2" />
-
-    <TextView
-        android:id="@+id/textViewTravelPlace"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="160dp"
-        android:textColor="@color/black"
-        android:textSize="25dp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/view"
-        android:layout_width="305dp"
-        android:layout_height="3dp"
-        android:layout_marginVertical="8dp"
-        android:layout_marginTop="54dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/dark_green"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTravelPlace" />
-
-    <TextView
-        android:id="@+id/travel_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="55dp"
-        android:layout_marginTop="210dp"
-        android:textColor="@color/black"
-        android:textSize="18dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/view_bar2"
-        android:layout_width="305dp"
-        android:layout_height="3dp"
-        android:layout_marginVertical="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/dark_green"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/travel_info" />
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/subplace_scrollview"
-        android:layout_width="360dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="110dp"
-        android:fillViewport="true"
-        android:overScrollMode="never"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_bar2">
-
-        <LinearLayout
-            android:id="@+id/past_trips_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="25dp">
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/photoRecyclerView"
-                android:layout_width="321dp"
-                android:layout_height="1dp" />
 
 
-        </LinearLayout>
-
-
-    </androidx.core.widget.NestedScrollView>
-
-    <TextView
-        android:id="@+id/noRecordsTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:paddingTop="300dp"
-        android:text="여행 기록이 없습니다.\n여행 기록을 추가해주세요.✈️"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:visibility="gone" />
 
 
     <ImageButton
@@ -153,7 +167,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
         app:srcCompat="@drawable/add_record_button" />
 
 
