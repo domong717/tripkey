@@ -3,17 +3,14 @@ package com.example.tripkey;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
-import android.view.View;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -62,6 +59,11 @@ public class RecordActivity extends AppCompatActivity {
         ImageButton buttonFeedback = findViewById(R.id.button_feedback);
         buttonFeedback.setOnClickListener(v -> {
             Intent intent = new Intent(RecordActivity.this, FeedbackActivity.class);
+            startActivity(intent);
+        });
+        Button buttonSuggestion = findViewById(R.id.suggestion);
+        buttonSuggestion.setOnClickListener(v-> {
+            Intent intent = new Intent(RecordActivity.this, SuggestionTravelDestinationActivity.class);
             startActivity(intent);
         });
     }
