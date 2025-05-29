@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -116,6 +117,9 @@ public class PlanDetailActivity extends AppCompatActivity {
         if (startDate != null && endDate != null) {
             tvTripDate.setText(startDate + " ~ " + endDate);
         }
+        if (startDate != null && endDate == null) {
+            tvTripDate.setText(startDate);
+        }
 
         mapView = findViewById(R.id.map_view);
         mapView.start(lifeCycleCallback, readyCallback);
@@ -130,6 +134,15 @@ public class PlanDetailActivity extends AppCompatActivity {
         btnCalculate = findViewById(R.id.btn_calculate);
         btnTeam = findViewById(R.id.btn_team);
         btnChecklist=findViewById(R.id.btn_checklist);
+
+        // 인텐트에서 "from" 정보 받아오기
+        String from = getIntent().getStringExtra("from");
+        if ("home".equals(from)) {
+            // 홈에서 왔으면 FAB 버튼 숨기기
+            btnCalculate.setVisibility(View.INVISIBLE);
+            btnTeam.setVisibility(View.INVISIBLE);
+            btnChecklist.setVisibility(View.INVISIBLE);
+        }
 
         btnCalculate.setOnClickListener(v -> {
             Intent intent = new Intent(PlanDetailActivity.this, RegisterMoneyActivity.class);

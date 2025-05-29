@@ -2,6 +2,7 @@ package com.example.tripkey;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -76,6 +77,17 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
         holder.btnSaveMyTrip.setOnClickListener(v -> {
             showCopyDialog(context, post);
         });
+
+        holder.btnDetail.setOnClickListener(v -> {
+            Intent intent = new Intent(context, PlanDetailActivity.class);
+            intent.putExtra("from", "home");  // 출처 정보 전달
+            intent.putExtra("travelId", post.getTravelId());
+            intent.putExtra("travelName", post.getTitle());
+            intent.putExtra("startDate", post.getDate());
+            intent.putExtra("ownerId", post.getOwnerId());
+            context.startActivity(intent);
+        });
+
 
         // 내부 RecyclerView 세팅
         PlaceListAdapter placeAdapter = new PlaceListAdapter(post.getPlaceList());
@@ -253,7 +265,7 @@ public class TripPostAdapter extends RecyclerView.Adapter<TripPostAdapter.TripPo
             tvCost = itemView.findViewById(R.id.tv_total_cost_per_person);
             tvOwner = itemView.findViewById(R.id.tv_writerid);
             rvPlaceList = itemView.findViewById(R.id.rv_place_list);
-            btnDetail = itemView.findViewById(R.id.btn_detail);
+            btnDetail = itemView.findViewById(R.id.btn_detail); //일정 보기
             tvMBTI = itemView.findViewById(R.id.tv_mbti);
             btnHeart = itemView.findViewById(R.id.just_keep); // 하트 찜 버튼
             btnSaveMyTrip = itemView.findViewById(R.id.goto_my_trip); // 여행 담기 버튼
