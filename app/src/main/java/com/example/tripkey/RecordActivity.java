@@ -159,6 +159,7 @@ public class RecordActivity extends AppCompatActivity {
         tripLayout.setOnClickListener(v -> {
             Intent intent = new Intent(RecordActivity.this, ViewRecordActivity.class);
             intent.putExtra("travelId", travelId);
+            intent.putExtra("userId", userId);  // userId도 전달
             startActivity(intent);
         });
         // 삭제 버튼 클릭 이벤트

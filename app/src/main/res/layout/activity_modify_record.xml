@@ -147,7 +147,7 @@
 
     <ImageButton
         android:id="@+id/save_record_button"
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
         app:srcCompat="@drawable/save_record_button"

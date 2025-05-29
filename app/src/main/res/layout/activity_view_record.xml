@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ViewRecordActivity">
 
-    <!-- toolbar ~ backbutton 까지 다른 activity에서도 사용 !-->
+    <!-- 상단 툴바 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -14,8 +15,8 @@
         android:background="@color/toolbar"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/toolbarTitle"
@@ -24,11 +25,13 @@
             android:gravity="center"
             android:text="여행 기록"
             android:textColor="@color/black"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
+    <!-- 메인 스크롤 뷰 -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/mainScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
@@ -43,131 +46,129 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/yellow_box_full"
-            android:padding="8dp">
+            android:padding="15dp">
 
-            <TextView
-                android:id="@+id/textViewTravelPlace"
-                android:layout_width="wrap_content"
+            <!-- 여행 요약 정보 -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:textColor="@color/black"
-                android:textSize="25dp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <View
-                android:id="@+id/view"
-                android:layout_width="305dp"
-                android:layout_height="3dp"
-                android:layout_marginVertical="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_gravity="center"
-                android:background="@color/dark_green"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textViewTravelPlace" />
-
-            <TextView
-                android:id="@+id/travel_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="55dp"
-                android:textColor="@color/black"
-                android:textSize="18dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/view_bar2"
-                android:layout_width="305dp"
-                android:layout_height="3dp"
-                android:layout_marginVertical="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="center"
-                android:background="@color/dark_green"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/travel_info" />
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/subplace_scrollview"
-                android:layout_width="360dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="110dp"
-                android:fillViewport="true"
-                android:overScrollMode="never"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/view_bar2">
-
-                <LinearLayout
-                    android:id="@+id/past_trips_container"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/textViewTravelPlace"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="25dp">
+                    android:layout_weight="1"
+                    android:text="여행명"
+                    android:textColor="@color/black"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/noRecordsTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:gravity="center"
-                        android:paddingTop="300dp"
-                        android:text="여행 기록이 없습니다.\n여행 기록을 추가해주세요.✈️"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp"
-                        android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/detailButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/detail"
+                    android:contentDescription="상세보기 버튼" />
+            </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginVertical="8dp"
+                android:background="@color/dark_green" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/photoRecyclerView"
-                        android:layout_width="321dp"
-                        android:layout_height="1dp" />
+            <!-- 여행 세부 정보 -->
+            <TextView
+                android:id="@+id/travel_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="여행 장소"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
+            <TextView
+                android:id="@+id/travel_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="여행 날짜"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
-                </LinearLayout>
+            <TextView
+                android:id="@+id/travel_people"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="인원 수"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
+            <TextView
+                android:id="@+id/travel_one_person_pay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1인당 비용"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
-            </androidx.core.widget.NestedScrollView>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginVertical="8dp"
+                android:background="@color/dark_green" />
+
+            <!-- 여행 기록 리스트 -->
+            <TextView
+                android:id="@+id/noRecordsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="100dp"
+                android:text="여행 기록이 없습니다.\n여행 기록을 추가해주세요.✈️"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recordRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false" />
 
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- 뒤로가기 버튼 -->
     <ImageButton
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
-        android:background="@color/transparent"
-        android:contentDescription="back 버튼"
+        android:background="@android:color/transparent"
+        android:contentDescription="뒤로가기 버튼"
+        app:srcCompat="@drawable/back_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back_button" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-
-
-
-
-
-
-
-    <ImageButton
+    <!-- 기록 추가 버튼 -->
+    <Button
         android:id="@+id/add_record_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@color/transparent"
+        android:layout_margin="15dp"
+        android:background="@drawable/green_box_full"
+        android:text="기록 추가하기"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:srcCompat="@drawable/add_record_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/add_record_button" />
-
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

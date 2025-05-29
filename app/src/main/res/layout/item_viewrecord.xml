@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/record_background"
+    android:layout_marginBottom="15dp"
     android:padding="16dp">
 
     <!-- 장소 + 수정 버튼 가로 레이아웃 -->
@@ -39,7 +40,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photoRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:orientation="horizontal" />
 
