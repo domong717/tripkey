@@ -33,6 +33,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.LatLng;
+import com.kakao.vectormap.LatLngBounds;
 import com.kakao.vectormap.MapLifeCycleCallback;
 import com.kakao.vectormap.MapView;
 import com.kakao.vectormap.camera.CameraUpdateFactory;
@@ -41,6 +42,7 @@ import com.kakao.vectormap.label.LabelLayer;
 import com.kakao.vectormap.label.LabelOptions;
 import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
+import com.kakao.vectormap.label.LabelTextBuilder;
 import com.kakao.vectormap.label.LabelTextStyle;
 
 import java.text.SimpleDateFormat;
@@ -201,6 +203,8 @@ public class PlanDetailActivity extends AppCompatActivity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                         android.R.layout.simple_list_item_1, placeInfoList);
                 listPlaces.setAdapter(adapter);
+
+                createMapMarkers(placesForDate);
             });
 
             dayButtonContainer.addView(dayButton);
@@ -251,6 +255,7 @@ public class PlanDetailActivity extends AppCompatActivity {
                                             GptPlan.Place place = placeDoc.toObject(GptPlan.Place.class);
                                             // 좌표 파싱 추가 부분
                                             String coordString = placeDoc.getString("coord");
+                                            Log.d("coord", coordString);
                                             if (coordString != null) {
                                                 try {
                                                     String[] parts = coordString.split(",");
@@ -266,6 +271,8 @@ public class PlanDetailActivity extends AppCompatActivity {
                                         }
 
                                         tempPlaceList = placeList;
+
+                                        createMapMarkers(tempPlaceList);
 
                                         dateToPlaces.put(dateKey, placeList);
 
@@ -292,19 +299,39 @@ public class PlanDetailActivity extends AppCompatActivity {
         if (kakaoMap == null || places == null) return;
 
         LabelLayer layer = kakaoMap.getLabelManager().getLayer();
+        layer.removeAll();
+
         LabelStyles styles = kakaoMap.getLabelManager().addLabelStyles(
-                LabelStyles.from(LabelStyle.from(R.drawable.map_pin))
+                LabelStyles.from(LabelStyle.from(R.drawable.big_map_pin)
+                        .setTextStyles(LabelTextStyle.from(20, Color.BLACK, 1, Color.WHITE)))
         );
+
+        // 1. LatLngBounds 계산
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
         for (int i = 0; i < places.size(); i++) {
             GptPlan.Place place = places.get(i);
             LatLng position = LatLng.from(place.getLatitude(), place.getLongitude());
+            boundsBuilder.include(position);
 
+            LabelTextBuilder textBuilder = new LabelTextBuilder().setTexts(place.getPlace());
             // LabelOptions 생성
             LabelOptions options = LabelOptions.from(position)
-                    .setStyles(styles);
+                    .setStyles(styles)
+                    .setTexts(textBuilder);
 
             layer.addLabel(options); // 마커 추가
+        }
+
+        // 첫 번째 위치로 지도 이동
+        if (!places.isEmpty()) {
+            // 2. 모든 라벨이 보이게 카메라 이동
+            LatLngBounds bounds = boundsBuilder.build();
+            int padding = 100; // 화면 여백(px), 필요에 따라 조정
+
+            kakaoMap.moveCamera(CameraUpdateFactory.fitMapPoints(
+                    bounds, padding
+            ));
         }
     }
 
@@ -313,8 +340,6 @@ public class PlanDetailActivity extends AppCompatActivity {
         @Override
         public void onMapReady(@NonNull KakaoMap kakaoMap) {
             PlanDetailActivity.this.kakaoMap = kakaoMap;
-
-            createMapMarkers(tempPlaceList);
 
             Toast.makeText(getApplicationContext(), "Map Start!", Toast.LENGTH_SHORT).show();
 
