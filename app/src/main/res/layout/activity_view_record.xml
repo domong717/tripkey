@@ -66,6 +66,16 @@
                     android:textStyle="bold" />
 
                 <ImageButton
+                    android:id="@+id/btn_calculate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/calculate_green"
+                    android:background="@android:color/transparent"
+                    android:paddingEnd="5dp"
+                    android:contentDescription="상세보기 버튼" />
+
+
+                <ImageButton
                     android:id="@+id/detailButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"

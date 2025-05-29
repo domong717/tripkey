@@ -57,6 +57,14 @@ public class ViewRecordActivity extends AppCompatActivity {
         recordRecyclerView = findViewById(R.id.recordRecyclerView);
         Button addRecordButton = findViewById(R.id.add_record_button);
         ImageButton backButton = findViewById(R.id.button_back);
+        ImageButton calculateButton = findViewById(R.id.btn_calculate);
+        ImageButton detailButton = findViewById(R.id.detailButton);
+
+        calculateButton.setOnClickListener(v -> {
+            Intent c_intent = new Intent(ViewRecordActivity.this, RegisterMoneyActivity.class);
+            c_intent.putExtra("travelId", travelId);
+            startActivity(c_intent);
+        });
 
         // 리사이클러뷰 설정
         recordAdapter = new ViewRecordAdapter(
