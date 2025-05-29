@@ -112,14 +112,40 @@ public class ViewRecordActivity extends AppCompatActivity {
                         String location = documentSnapshot.getString("location");
                         String startDate = documentSnapshot.getString("startDate");
                         String endDate = documentSnapshot.getString("endDate");
-                        String who = documentSnapshot.getString("who");
+                        String teamId = documentSnapshot.getString("teamId");
                         Long total = documentSnapshot.getLong("total");
 
                         textViewTravelPlace.setText(travelName);
                         travel_place.setText("장소: " + location);
                         travel_date.setText("날짜: " + startDate + " ~ " + endDate);
-                        travel_people.setText("여행 인원: " + who);
-                        travel_one_person_pay.setText("1인당 비용: "+ total);
+
+                        // teamId로 팀 정보 가져오기
+                        db.collection("users")
+                                .document(userId)
+                                .collection("teams")
+                                .document(teamId)
+                                .get()
+                                .addOnSuccessListener(teamSnapshot -> {
+                                    if (teamSnapshot.exists()) {
+                                        ArrayList<String> members = (ArrayList<String>) teamSnapshot.get("members");
+                                        int memberCount = (members != null) ? members.size() : 0;
+
+                                        travel_people.setText("여행 인원: " + memberCount + "명");
+
+                                        if (total != null && memberCount > 0) {
+                                            long perPerson = total / memberCount;
+                                            travel_one_person_pay.setText("1인당 비용: " + perPerson + "원");
+                                        } else {
+                                            travel_one_person_pay.setText("1인당 비용: 정산 정보 없음");
+                                        }
+                                    } else {
+                                        travel_people.setText("여행 인원: 알 수 없음");
+                                        travel_one_person_pay.setText("1인당 비용: 정산 정보 없음");
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "팀 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
                     }
                 })
                 .addOnFailureListener(e -> {
