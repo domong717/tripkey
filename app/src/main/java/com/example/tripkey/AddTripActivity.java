@@ -294,7 +294,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 .addOnSuccessListener(documentSnapshot -> {
                     currentUserMBTI[0] = documentSnapshot.getString("mbti");
                     if (currentUserMBTI[0] == null || currentUserMBTI[0].length() != 5) {
-                        currentUserMBTI[0] = "INFPT"; // fallback
+                        currentUserMBTI[0] = "분석필요"; // fallback
                     }
 
                     Map<Character, Integer> mbtiCount = new HashMap<>();
