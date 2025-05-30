@@ -18,8 +18,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ChecklistActivity extends AppCompatActivity {
 
@@ -29,6 +31,7 @@ public class ChecklistActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;              // Firestore 인스턴스
     private CollectionReference checklistRef;  // Firestore 컬렉션 참조
+    private RecyclerView recommendedRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,12 @@ public class ChecklistActivity extends AppCompatActivity {
 
         // SharedPreferences에서 사용자 ID 가져오기
         String userId = getSharedPreferences("UserPrefs", MODE_PRIVATE).getString("userId", "");
-        checklistRef = db.collection("users").document(userId).collection("checklist");
+        String travelId = getIntent().getStringExtra("travelId");
+        checklistRef = db.collection("users")
+                .document(userId)
+                .collection("travel")
+                .document(travelId)
+                .collection("checklist");
 
         // UI 초기화
         newItemEditText = findViewById(R.id.newItemEditText);
@@ -52,6 +60,10 @@ public class ChecklistActivity extends AppCompatActivity {
         adapter = new ChecklistAdapter(checklistItems, checklistRef);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        // 추천 준비물 RecyclerView 설정
+        recommendedRecyclerView = findViewById(R.id.recommendedRecyclerView);
+        loadRecommendedSupplies(); // 메서드 호출 추가
 
         // Firestore에서 데이터 로드
         loadChecklistItems();
@@ -116,5 +128,58 @@ public class ChecklistActivity extends AppCompatActivity {
             checklistRef.document(item.getId()).update("isChecked", false);
         }
         adapter.notifyDataSetChanged();
+    }
+
+    // ChecklistActivity 클래스 내부
+    private void loadRecommendedSupplies() {
+        String userId = getSharedPreferences("UserPrefs", MODE_PRIVATE).getString("userId", "");
+        String travelId = getIntent().getStringExtra("travelId");
+
+        // GPT 계획 참조
+        CollectionReference gptPlanRef = db.collection("users")
+                .document(userId)
+                .collection("travel")
+                .document(travelId)
+                .collection("gpt_plan");
+
+        gptPlanRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            Set<String> uniqueSupplies = new HashSet<>(); // 중복 제거용 Set
+
+            for (QueryDocumentSnapshot dateDoc : queryDocumentSnapshots) {
+                // 각 날짜의 places 컬렉션 가져오기
+                CollectionReference placesRef = dateDoc.getReference().collection("places");
+                placesRef.get().addOnSuccessListener(placeSnapshots -> {
+                    for (QueryDocumentSnapshot placeDoc : placeSnapshots) {
+                        // supply 배열 필드 추출
+                        // 수정된 부분: 타입 체크 후 처리
+                        Object supplyObj = placeDoc.get("supply");
+                        List<String> supplies = new ArrayList<>();
+
+                        if (supplyObj instanceof List) {
+                            supplies.addAll((List<String>) supplyObj);
+                        } else if (supplyObj instanceof String) {
+                            supplies.add((String) supplyObj);
+                        }
+
+                        if (!supplies.isEmpty()) {
+                            uniqueSupplies.addAll(supplies);
+                        }
+                    }
+                    // UI에 추천 준비물 표시
+                    showRecommendedSupplies(new ArrayList<>(uniqueSupplies));
+                });
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "추천 준비물 로드 실패", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void showRecommendedSupplies(List<String> supplies) {
+        SupplyAdapter adapter = new SupplyAdapter(supplies, supply -> {
+            // "+" 버튼 클릭 시 체크리스트에 추가
+            addChecklistItem(supply);
+            Toast.makeText(this, supply + " 추가됨", Toast.LENGTH_SHORT).show();
+        });
+        recommendedRecyclerView.setAdapter(adapter);
     }
 }
