@@ -377,7 +377,7 @@ public class ReMBTITestActivity extends AppCompatActivity {
 
         // Firestore에 저장할 데이터 생성
         Map<String, Object> data = new HashMap<>();
-        data.put("mbti", mbtiType);
+        data.put("teamMbti", mbtiType); // 팀 mbti 바꾸기
 
         // Firestore의 "users" 컬렉션에서 해당 userName 문서 업데이트 (없으면 생성)
         db.collection("users").document(userName)
