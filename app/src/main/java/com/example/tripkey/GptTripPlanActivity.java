@@ -187,6 +187,13 @@ public class GptTripPlanActivity extends AppCompatActivity {
         // FirebaseFirestore 인스턴스 가져오기
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // travelData 저장
+        db.collection("users").document(userId)
+                .collection("travel").document(travelId)
+                .set(travelData)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "기본 여행 정보 저장 완료"))
+                .addOnFailureListener(e -> Log.e(TAG, "기본 여행 정보 저장 실패", e));
+
         // travelName, travelId를 Intent에서 받기
         String travelName = getIntent().getStringExtra("travelName");
         String travelId = getIntent().getStringExtra("travelId");  // 각 여행에 고유한 ID를 사용
@@ -206,6 +213,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
             Toast.makeText(this, "저장할 일정이 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+
+
 
         DocumentReference teamRef = db.collection("users")
                 .document(userId)

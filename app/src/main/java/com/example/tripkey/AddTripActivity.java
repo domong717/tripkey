@@ -48,6 +48,7 @@ public class AddTripActivity extends AppCompatActivity {
     private static final String TAG = "AddTripActivity";
     private static final int REQUEST_CODE_LOCATION = 1001;
     private LinearLayout loadingLayout;
+    private String seletedFriendsIds;
 
     private ActivityResultLauncher<Intent> mbtiResultLauncher;
 
@@ -399,6 +400,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             travelData.put("teamId", teamId);
             travelData.put("creatorId", userId); // 누가 만든 여행인지 명시
             travelData.put("placeToStay",placeToStay);
+            travelData.put("selectedFriendsIds",selectedFriendsIds);
 
 
             for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
@@ -412,29 +414,29 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 }
             }
 
-            // 나의 travel 경로에 저장
-            db.collection("users").document(userId)
-                    .collection("travel").document(travelId)
-                    .set(travelData)
-                    .addOnSuccessListener(aVoid -> {
-                        // 2. 친구들 travel 경로에도 동일하게 저장
-                        if (selectedFriendsIds != null && !selectedFriendsIds.isEmpty()) {
-                            for (String friendId : selectedFriendsIds) {
-                                db.collection("users").document(friendId)
-                                        .collection("travel").document(travelId)
-                                        .set(travelData);
-                            }
-                        }
+//            // 나의 travel 경로에 저장
+//            db.collection("users").document(userId)
+//                    .collection("travel").document(travelId)
+//                    .set(travelData)
+//                    .addOnSuccessListener(aVoid -> {
+//                        // 2. 친구들 travel 경로에도 동일하게 저장
+//                        if (selectedFriendsIds != null && !selectedFriendsIds.isEmpty()) {
+//                            for (String friendId : selectedFriendsIds) {
+//                                db.collection("users").document(friendId)
+//                                        .collection("travel").document(travelId)
+//                                        .set(travelData);
+//                            }
+//                        }
 
 //                        Toast.makeText(this, "여행 일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
 //                        Intent intent = new Intent(this, MainActivity.class);
 //                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 //                        startActivity(intent);
 //                        finish();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
+//                    })
+//                    .addOnFailureListener(e ->
+//                            Toast.makeText(this, "저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+//                    );
 
             // 여행 MBTI에 맞는 스타일 설명
             final String groupMBTIStyle;
@@ -638,6 +640,9 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                         intent.putExtra("travelData", (Serializable) travelData);
                         intent.putExtra("gpt_schedule", gptReply);
                         intent.putExtra("teamId",teamId);
+                        intent.putExtra("startDate", startDate);
+                        intent.putExtra("endDate", endDate);
+                        intent.putExtra("selectedFriendsIds",selectedFriendsIds);
                         startActivity(intent);
                     } else {
                         Log.e("GPT", "Response error: " + response.code());
