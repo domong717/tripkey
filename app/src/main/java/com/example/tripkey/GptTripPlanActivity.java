@@ -351,7 +351,6 @@ public class GptTripPlanActivity extends AppCompatActivity {
         prompt.append("        \"coord\": \"위도,경도\",\n");
         prompt.append("        \"category\": \"관광지, 음식점, 카페 등\",\n");
         prompt.append("        \"transport\": \"도보, 택시, 버스 등\",\n");
-        prompt.append("        \"time\": \"이전 장소에서 해당 장소를 가는데 예상 이동 시간\",\n");
         prompt.append("         \"supply\" : \"해당 장소에서 꼭 필요한 준비물\"");
         prompt.append("      }\n");
         prompt.append("    ]\n");
@@ -361,7 +360,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
         prompt.append("하루하루를 나눠서 JSON 배열로 구성. 진짜 데이터를 넣어서 날짜별로 장소 생성.\n");
         prompt.append(teamMBTI).append("의 맨 마지막이 T인 경우엔 날마다 7곳의 일정 생성, L인 경우엔 날마다 4곳의 일정 생성.");
-ㅇ
+
         prompt.append(teamMBTI).append("에 F 있으면 카페 1곳, M 있으면 카페 추천 금지.");
         prompt.append("식사는 날마다 2곳. 카페 및 음식점 추천 리스트에서 groupMBTI에 따라 추천하여 추가.\n");
         prompt.append("식사/카페 제외 관광지와 쇼핑몰, 자연경관 등을 추천하여 일정에 추가 필수\n");
