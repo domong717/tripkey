@@ -162,8 +162,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                         for (GptPlan.Place place : places) {
                             daySchedule.append("📍 ").append(place.getPlace()).append("\n")
                                     .append("  ∘ 카테고리: ").append(place.getCategory()).append("\n")
-                                    .append("  ∘ 이동 수단: ").append(place.getTransport()).append("\n")
-                                    .append("  ∘ 예상 소요 시간: ").append(place.getTime()).append("\n\n");
+                                    .append("  ∘ 이동 수단: ").append(place.getTransport()).append("\n");
                         }
 
                         PlaceAdapter adapter = new PlaceAdapter(this, places);
@@ -362,7 +361,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
         prompt.append("하루하루를 나눠서 JSON 배열로 구성. 진짜 데이터를 넣어서 날짜별로 장소 생성.\n");
         prompt.append(teamMBTI).append("의 맨 마지막이 T인 경우엔 날마다 7곳의 일정 생성, L인 경우엔 날마다 4곳의 일정 생성.");
-
+ㅇ
         prompt.append(teamMBTI).append("에 F 있으면 카페 1곳, M 있으면 카페 추천 금지.");
         prompt.append("식사는 날마다 2곳. 카페 및 음식점 추천 리스트에서 groupMBTI에 따라 추천하여 추가.\n");
         prompt.append("식사/카페 제외 관광지와 쇼핑몰, 자연경관 등을 추천하여 일정에 추가 필수\n");

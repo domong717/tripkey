@@ -468,7 +468,6 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             prompt.append("        \"coord\": \"위도,경도\",\n");
             prompt.append("        \"category\": \"관광지, 음식점, 카페 등\",\n");
             prompt.append("        \"transport\": \"도보, 택시, 버스 등\",\n");
-            prompt.append("        \"time\": \"이전 장소에서 해당 장소를 가는데 예상 이동 시간\",\n");
             prompt.append("         \"supply\" : \"해당 장소에서 꼭 필요한 준비물\"");
             prompt.append("      }\n");
             prompt.append("    ]\n");
