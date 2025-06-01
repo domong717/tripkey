@@ -69,6 +69,13 @@ dependencies {
 
     implementation("com.kakao.maps.open:android:2.12.8")
 
+    // Retrofit & Gson Converter
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // OkHttp (Retrofit 내부에서 사용)
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 

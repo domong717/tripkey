@@ -68,12 +68,22 @@ public class AccomodationSearchActivity extends AppCompatActivity {
 
         // 리스트에서 선택 시 결과 반환
         resultListView.setOnItemClickListener((parent, view, position, id) -> {
-            String selected = placeList.get(position);
+            String selected = placeList.get(position); // "장소명|위도|경도"
+            String[] parts = selected.split("\\|");
+            String placeName = parts[0];
+            String latitude = parts.length > 1 ? parts[1] : "";
+            String longitude = parts.length > 2 ? parts[2] : "";
+
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("selected_accomodation", selected);
+            resultIntent.putExtra("selected_accomodation", placeName);
+            if (!latitude.isEmpty() && !longitude.isEmpty()) {
+                resultIntent.putExtra("latitude", Double.parseDouble(latitude));
+                resultIntent.putExtra("longitude", Double.parseDouble(longitude));
+            }
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
         });
+
     }
 
     private void searchPlace(String query) {
@@ -101,6 +111,8 @@ public class AccomodationSearchActivity extends AppCompatActivity {
                                 String roadAddress = doc.optString("road_address_name"); // 도로명 주소
                                 String address = doc.optString("address_name"); // 지번 주소
                                 String phone = doc.optString("phone"); // 전화번호
+                                String latitude = doc.optString("y"); // 위도
+                                String longitude = doc.optString("x"); // 경도
 
                                 String display = placeName;
                                 if (!roadAddress.isEmpty()) display += "\n" + roadAddress;
@@ -109,7 +121,7 @@ public class AccomodationSearchActivity extends AppCompatActivity {
 
                                 if (!resultList.contains(display)) {
                                     resultList.add(display);
-                                    placeList.add(placeName);
+                                    placeList.add(placeName + "|" + latitude + "|" + longitude);
                                 }
                             }
                         } catch (Exception e) {
