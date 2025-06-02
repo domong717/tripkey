@@ -87,7 +87,6 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:layout_marginVertical="8dp"
                 android:background="@color/dark_green" />
 
             <!-- 여행 세부 정보 -->
@@ -121,6 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1인당 비용"
+                android:layout_marginEnd="8dp"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 

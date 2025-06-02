@@ -70,16 +70,12 @@ public class PlanDetailActivity extends AppCompatActivity {
 
     private List<GptPlan.Place> tempPlaceList = new ArrayList<>();
 
-
-
     private ListView listPlaces;
     private TextView tvTripTitle, tvTripDate;
     private FloatingActionButton btnCalculate, btnTeam,btnChecklist;
 
     //private Map<Integer, List<TripPlace>> dayPlaces = new HashMap<>();
     private int currentDay = 1;
-
-
 
     private final int startZoomLevel = 15;
     private final LatLng startPosition = LatLng.from(37.394660, 127.111182);   // 판교역 기본 위치
@@ -91,18 +87,17 @@ public class PlanDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_detail);
 
-
         tvTripTitle = findViewById(R.id.tv_trip_title);
         tvTripDate = findViewById(R.id.tv_trip_date);
-
 
         // Intent 및 SharedPreferences에서 데이터 가져오기
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         userId = sharedPreferences.getString("userId", null);
         travelId = getIntent().getStringExtra("travelId");
-        Log.d(TAG, "travelId 값: " + travelId);
+
         dayButtonContainer = findViewById(R.id.buttonContainer);
         listPlaces=findViewById(R.id.place_list_view);
+
         db = FirebaseFirestore.getInstance();
 
         String travelName = getIntent().getStringExtra("travelName");
@@ -139,12 +134,12 @@ public class PlanDetailActivity extends AppCompatActivity {
 
         // 인텐트에서 "from" 정보 받아오기
         String from = getIntent().getStringExtra("from");
-        if ("home".equals(from)) {
-            // 홈에서 왔으면 FAB 버튼 숨기기
+        if ("home".equals(from) || "detail".equals(from)) {
             btnCalculate.setVisibility(View.INVISIBLE);
             btnTeam.setVisibility(View.INVISIBLE);
             btnChecklist.setVisibility(View.INVISIBLE);
         }
+
 
         btnCalculate.setOnClickListener(v -> {
             Intent intent = new Intent(PlanDetailActivity.this, RegisterMoneyActivity.class);

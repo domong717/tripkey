@@ -26,6 +26,8 @@ public class ViewRecordActivity extends AppCompatActivity {
     private ViewRecordAdapter recordAdapter;
     private ArrayList<RecordItem> recordList = new ArrayList<>();
 
+    private String travelName, startDate, endDate;
+
     private String travelId;
     private String userId;
 
@@ -90,6 +92,16 @@ public class ViewRecordActivity extends AppCompatActivity {
         // 여행 기록 불러오기
         loadRecordList();
 
+        detailButton.setOnClickListener(v -> {
+            Intent d_intent = new Intent(ViewRecordActivity.this, PlanDetailActivity.class);
+            d_intent.putExtra("travelId", travelId);  // travelId 꼭 넣어야 하니까
+            d_intent.putExtra("from", "detail");      // "detail"이라는 플래그를 같이 넘김
+            d_intent.putExtra("travelName", textViewTravelPlace.getText().toString());
+            d_intent.putExtra("startDate", startDate);  // loadTravelInfo에서 변수에 따로 저장해두면 됨
+            d_intent.putExtra("endDate", endDate);
+
+            startActivity(d_intent);
+        });
         // 버튼 리스너
         backButton.setOnClickListener(v -> finish());
 
@@ -108,10 +120,10 @@ public class ViewRecordActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        String travelName = documentSnapshot.getString("travelName");
+                        travelName = documentSnapshot.getString("travelName");
                         String location = documentSnapshot.getString("location");
-                        String startDate = documentSnapshot.getString("startDate");
-                        String endDate = documentSnapshot.getString("endDate");
+                        startDate = documentSnapshot.getString("startDate");
+                        endDate = documentSnapshot.getString("endDate");
                         String teamId = documentSnapshot.getString("teamId");
                         Long total = documentSnapshot.getLong("total");
 
