@@ -89,17 +89,14 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                 .document(userId)
                 .collection("travel")
                 .document(travelId)
-                .get()
-                .addOnSuccessListener(travelDoc -> {
-                    if (travelDoc.exists()) {
-                        Long total = travelDoc.getLong("total");
-                        totalMoney = (total != null) ? total.intValue() : 0;
-                        textTotal.setText("총 사용금액 : " + totalMoney + "원");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "총합 불러오기 실패", Toast.LENGTH_SHORT).show();
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null || snapshot == null || !snapshot.exists()) return;
+
+                    Long total = snapshot.getLong("total");
+                    totalMoney = (total != null) ? total.intValue() : 0;
+                    runOnUiThread(() -> textTotal.setText("총 사용금액 : " + totalMoney + "원"));
                 });
+
 
         // 날짜별 지출 불러오기
         db.collection("users")
@@ -129,7 +126,7 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                                         Long amt = doc.getLong("amount");
                                         String writerId = doc.getString("userId");
                                         if (desc != null && amt != null) {
-                                            expenses.add(new Expense(desc, amt.intValue(),writerId));
+                                            expenses.add(new Expense(desc, amt.intValue(),writerId, travelId, date));
                                         }
                                     }
 
@@ -217,7 +214,7 @@ public class RegisterMoneyActivity extends AppCompatActivity {
                     }
 
                     int amount = Integer.parseInt(amountStr);
-                    Expense expense = new Expense(description, amount, userId);
+                    Expense expense = new Expense(description, amount, userId, travelId, selectedDate);
                     addExpenseToDateGroup(selectedDate, expense);
                 })
                 .setNegativeButton("취소", null)

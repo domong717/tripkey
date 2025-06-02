@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +22,11 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     private List<Expense> expenses;
 
     private FirebaseFirestore db;
+    private OnExpenseDeletedListener listener;
+
+    public void setOnExpenseDeletedListener(OnExpenseDeletedListener listener) {
+        this.listener = listener;
+    }
 
     public ExpenseAdapter(Context context, List<Expense> expenses) {
         this.context = context;
@@ -60,6 +66,80 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
                         }
                     }
                 });
+        holder.buttonDelete.setOnClickListener(v -> {
+            String travelId = item.getTravelId();
+            String date = item.getDate();
+            int amount = item.getAmount();
+            String description = item.getDescription();
+            String writerUserId = item.getUserId();
+
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(writerUserId)
+                    .collection("travel")
+                    .document(travelId)
+                    .get()
+                    .addOnSuccessListener(travelDoc -> {
+                        if (travelDoc.exists()) {
+                            String teamId = travelDoc.getString("teamId");
+                            if (teamId == null) {
+                                Log.e("DeleteExpense", "teamId is null");
+                                return;
+                            }
+
+                            // 팀 멤버 목록 불러오기
+                            FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(writerUserId)
+                                    .collection("teams")
+                                    .document(teamId)
+                                    .get()
+                                    .addOnSuccessListener(teamDoc -> {
+                                        List<String> members = (List<String>) teamDoc.get("members");
+                                        if (members == null) return;
+
+                                        for (String memberId : members) {
+                                            FirebaseFirestore.getInstance()
+                                                    .collection("users")
+                                                    .document(memberId)
+                                                    .collection("travel")
+                                                    .document(travelId)
+                                                    .collection("expenses")
+                                                    .document(date)
+                                                    .collection("items")
+                                                    .whereEqualTo("description", description)
+                                                    .whereEqualTo("amount", amount)
+                                                    .get()
+                                                    .addOnSuccessListener(querySnapshot -> {
+                                                        for (var doc : querySnapshot.getDocuments()) {
+                                                            doc.getReference().delete();
+                                                        }
+                                                    });
+
+                                            // total 차감
+                                            FirebaseFirestore.getInstance()
+                                                    .collection("users")
+                                                    .document(memberId)
+                                                    .collection("travel")
+                                                    .document(travelId)
+                                                    .update("total", com.google.firebase.firestore.FieldValue.increment(-amount));
+                                        }
+
+                                        // 어댑터에서 제거
+                                        expenses.remove(position);
+                                        notifyItemRemoved(position);
+                                        notifyItemRangeChanged(position, expenses.size());
+
+                                        if (listener != null) {
+                                            listener.onExpenseDeleted(amount);
+                                        }
+
+                                    });
+                        }
+                    });
+        });
+
+
     }
 
     @Override
@@ -70,13 +150,20 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     class ExpenseViewHolder extends RecyclerView.ViewHolder {
         TextView textDesc, textAmount;
         ImageView profileImage;
+        ImageButton buttonDelete;
 
         ExpenseViewHolder(View itemView) {
             super(itemView);
             textDesc = itemView.findViewById(R.id.text_desc);
             textAmount = itemView.findViewById(R.id.text_amount);
             profileImage = itemView.findViewById(R.id.profileImage);
-
+            buttonDelete = itemView.findViewById(R.id.button_delete);
         }
     }
+
+    // ExpenseAdapter 내부에 interface 추가
+    public interface OnExpenseDeletedListener {
+        void onExpenseDeleted(int amountChanged); // 삭제된 금액을 알려줌
+    }
+
 }

@@ -102,7 +102,7 @@ public class MoneyDetailActivity extends AppCompatActivity {
 
                                         if (desc != null && amt != null && userId.equals(writerId)) {
                                             int amount = amt.intValue();
-                                            expenses.add(new Expense(desc, amount, writerId));
+                                            expenses.add(new Expense(desc, amount, writerId, travelId, date));
                                             totalMoney += amount; // ✅ 총합에 추가
                                         }
                                     }
