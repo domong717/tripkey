@@ -77,9 +77,6 @@ public class PlanDetailActivity extends AppCompatActivity {
     //private Map<Integer, List<TripPlace>> dayPlaces = new HashMap<>();
     private int currentDay = 1;
 
-    private final int startZoomLevel = 15;
-    private final LatLng startPosition = LatLng.from(37.394660, 127.111182);   // 판교역 기본 위치
-
     private String selectedDate = ""; // 선택된 날짜 변수 필요
 
     @Override
@@ -342,17 +339,6 @@ public class PlanDetailActivity extends AppCompatActivity {
                     + kakaoMap.getCameraPosition().getPosition().toString());
             Log.i("k3f", "startZoomLevel: "
                     + kakaoMap.getZoomLevel());
-        }
-        @NonNull
-        @Override
-        public LatLng getPosition() {
-            return startPosition;
-        }
-
-        @NonNull
-        @Override
-        public int getZoomLevel() {
-            return startZoomLevel;
         }
     };
 

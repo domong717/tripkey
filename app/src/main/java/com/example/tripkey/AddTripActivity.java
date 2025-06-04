@@ -4,12 +4,15 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -228,12 +231,36 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
         ));
         newPlaceField.setHint("장소 입력");
 
+        // 🔍 돋보기(검색) 버튼 추가
+        ImageButton searchButton = new ImageButton(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, getResources().getDisplayMetrics()),
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, getResources().getDisplayMetrics())
+        );
+        searchButton.setLayoutParams(params);
+        searchButton.setImageResource(R.drawable.search);
+        searchButton.setBackgroundColor(Color.TRANSPARENT);
+        searchButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        searchButton.setPadding(4, 4, 4, 4);
+
         ImageButton deleteButton = new ImageButton(this);
         deleteButton.setImageResource(R.drawable.delete);
         deleteButton.setBackground(null);
         deleteButton.setOnClickListener(v -> mustVisitContainer.removeView(newFieldLayout));
 
+        // 🔍 검색 버튼 클릭 이벤트
+        searchButton.setOnClickListener(v -> {
+            // 장소 검색 액티비티 호출 (requestCode를 동적으로 관리해야 함)
+            Intent intent = new Intent(this, PlaceSearchActivity.class);
+            // 각 입력란마다 구분이 필요하다면 태그 등으로 구분
+            startActivityForResult(intent, REQUEST_CODE_LOCATION + newFieldLayout.hashCode());
+            // hashCode 등으로 각 입력란을 구분할 수 있음
+            newPlaceField.setTag("place_field_" + newFieldLayout.hashCode());
+            newFieldLayout.setTag("field_layout_" + newFieldLayout.hashCode());
+        });
+
         newFieldLayout.addView(newPlaceField);
+        newFieldLayout.addView(searchButton);  // ← 돋보기 버튼 추가
         newFieldLayout.addView(deleteButton);
 
         mustVisitContainer.addView(newFieldLayout);
@@ -655,6 +682,20 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             }
             if (selectedAccomodation != null) {
                 binding.placeToStayInput.setText(selectedAccomodation);
+            }
+            // mustVisitContainer의 각 자식 레이아웃을 순회하며 requestCode와 매칭
+            for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
+                View child = mustVisitContainer.getChildAt(i);
+                if (child instanceof LinearLayout) {
+                    String tag = (String) child.getTag();
+                    if (tag != null && requestCode == REQUEST_CODE_LOCATION + child.hashCode()) {
+                        EditText placeInput = (EditText) ((LinearLayout) child).getChildAt(0);
+                        String selectedPlace = data.getStringExtra("selected_place_name");
+                        if (selectedPlace != null) {
+                            placeInput.setText(selectedPlace);
+                        }
+                    }
+                }
             }
 
             // 위도, 경도 받아서 멤버 변수에 저장
