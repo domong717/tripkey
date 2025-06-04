@@ -14,7 +14,7 @@
         android:id="@+id/navigation_plus"
         android:name="com.example.tripkey.ui.trip.TripFragment"
         android:label="@string/title_plus"
-        tools:layout="@layout/activity_add_trip" />
+        tools:layout="@layout/fragment_trip" />
 
     <fragment
         android:id="@+id/navigation_info"
