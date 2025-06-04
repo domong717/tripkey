@@ -42,7 +42,7 @@ public class PlaceAdapter extends ArrayAdapter<GptPlan.Place> {
         placeName.setText(place.getPlace());
         category.setText("카테고리: " + place.getCategory());
         transport.setText("이동 수단: " + place.getTransport());
-        time.setText("예상 소요 시간: " + place.getTime());
+        //time.setText("예상 소요 시간: " + place.getTime());
 //        supply.setText("준비물 : "+place.getSupply());
 
         deleteButton.setOnClickListener(v -> {
