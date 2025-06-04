@@ -72,6 +72,7 @@ public class LocationSearchActivity extends AppCompatActivity {
             String selected = resultList.get(position);
             Intent resultIntent = new Intent();
             resultIntent.putExtra("selected_location", selected);
+            resultIntent.putExtra("result_type", "location");
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
         });

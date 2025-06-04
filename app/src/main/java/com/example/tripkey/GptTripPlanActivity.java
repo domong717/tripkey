@@ -543,24 +543,29 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
         for (int i = 0; i < places.size(); i++) {
             GptPlan.Place place = places.get(i);
-            // coord: "위도,경도" 문자열 파싱
             String coord = place.getCoord();
             if (coord == null) continue;
+
             String[] parts = coord.split(",");
             if (parts.length != 2) continue;
 
-            double lat = Double.parseDouble(parts[0].trim());
-            double lng = Double.parseDouble(parts[1].trim());
-            LatLng position = LatLng.from(lat, lng);
-            boundsBuilder.include(position);
+            try {
+                double lat = Double.parseDouble(parts[0].trim());
+                double lng = Double.parseDouble(parts[1].trim());
+                LatLng position = LatLng.from(lat, lng);
+                boundsBuilder.include(position);
 
-            LabelTextBuilder textBuilder = new LabelTextBuilder().setTexts(place.getPlace());
-            // LabelOptions 생성
-            LabelOptions options = LabelOptions.from(position)
-                    .setStyles(styles)
-                    .setTexts(textBuilder);
+                LabelTextBuilder textBuilder = new LabelTextBuilder().setTexts(place.getPlace());
 
-            layer.addLabel(options); // 마커 추가
+                LabelOptions options = LabelOptions.from(position)
+                        .setStyles(styles)
+                        .setTexts(textBuilder);
+
+                layer.addLabel(options); // 마커 추가
+            } catch (NumberFormatException e) {
+                Log.e("createMapMarkers", "잘못된 좌표 형식: " + coord, e);
+                continue; // 좌표가 이상하면 그 마커는 건너뜀
+            }
         }
 
         // 첫 번째 위치로 지도 이동

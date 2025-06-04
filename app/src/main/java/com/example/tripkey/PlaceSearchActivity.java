@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -76,10 +77,13 @@ public class PlaceSearchActivity extends AppCompatActivity {
         resultListView.setOnItemClickListener((parent, view, position, id) -> {
             PlaceResult selectedPlace = placeResultList.get(position);
             Intent resultIntent = new Intent();
+            resultIntent.putExtra("result_type", "must_visit");
             resultIntent.putExtra("selected_place_name", selectedPlace.placeName);
             resultIntent.putExtra("selected_address", selectedPlace.addressName);
             resultIntent.putExtra("latitude", selectedPlace.latitude);
             resultIntent.putExtra("longitude", selectedPlace.longitude);
+            Log.d("Place", "위도" + selectedPlace.latitude + "경도" + selectedPlace.longitude);
+            resultIntent.putExtra("field_index", getIntent().getIntExtra("field_index", -1));
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
         });
