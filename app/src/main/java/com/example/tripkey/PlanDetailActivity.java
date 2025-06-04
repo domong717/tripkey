@@ -90,6 +90,12 @@ public class PlanDetailActivity extends AppCompatActivity {
         // Intent 및 SharedPreferences에서 데이터 가져오기
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         userId = sharedPreferences.getString("userId", null);
+
+        String from = getIntent().getStringExtra("from");
+        if ("home".equals(from)) {
+            userId = getIntent().getStringExtra("ownerId");
+        }
+
         travelId = getIntent().getStringExtra("travelId");
 
         dayButtonContainer = findViewById(R.id.buttonContainer);
