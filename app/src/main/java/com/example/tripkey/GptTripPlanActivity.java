@@ -185,7 +185,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                         }
 
 
-                        PlaceAdapter adapter = new PlaceAdapter(this, places);
+                        PlaceAdapter adapter = new PlaceAdapter(this, places, false, null, null, null);
                         planListView.setAdapter(adapter);
 
                         // 지도 준비 여부 체크
@@ -311,8 +311,11 @@ public class GptTripPlanActivity extends AppCompatActivity {
                     GptPlan.Place place = places.get(j);
                     place.setDate(plan.getDate());
 
+                    String placeId = String.format("%02d", j);
+                    place.setPlaceId(placeId);
+
                     dateRef.collection("places")
-                            .document(String.format("%02d", j))
+                            .document(placeId)
                             .set(place)
                             .addOnSuccessListener(aVoid -> {
                                 successCount[0]++;

@@ -187,13 +187,11 @@ public class PlanDetailActivity extends AppCompatActivity {
                 for (GptPlan.Place place : placesForDate) {
                     placeInfoList.add("📍 " + place.getPlace() + "\n" +
                             "  ∘ 카테고리: " + place.getCategory() + "\n" +
-                            "  ∘ 이동수단: " + place.getTransport() + "\n" +
-                            "  ∘ 예상 소요 시간: " + place.getTime());
+                            "  ∘ 이동수단: " + place.getTransport());
 
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                        android.R.layout.simple_list_item_1, placeInfoList);
+                PlaceAdapter adapter = new PlaceAdapter(this, placesForDate, true, userId, travelId, date);
                 listPlaces.setAdapter(adapter);
 
                 createMapMarkers(placesForDate);

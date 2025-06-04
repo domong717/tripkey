@@ -42,6 +42,7 @@ public class GptPlan {
 
 
     public static class Place {
+        private String placeId;
         private String date;
         private String place;
         private String coord;
@@ -51,6 +52,7 @@ public class GptPlan {
         private String transport;
         private String time;
         private String supply;
+
         public Place() {}
 
         public String getDate() {
@@ -84,5 +86,9 @@ public class GptPlan {
         public void setLatitude(double latitude) { this.latitude = latitude; }
         public double getLongitude() { return longitude; }
         public void setLongitude(double longitude) { this.longitude = longitude; }
+
+        public String getPlaceId() { return placeId; }
+        public void setPlaceId(String placeId) { this.placeId = placeId; }
+
     }
 }
