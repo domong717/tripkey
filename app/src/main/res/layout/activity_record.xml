@@ -101,14 +101,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/feedback_button" />
 
-    <Button
-        android:id="@+id/suggestion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
-        android:layout_marginEnd="88dp"
-        android:text="여행지 추천 받기 버튼"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
