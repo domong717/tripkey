@@ -7,6 +7,7 @@ import static com.example.tripkey.network.ApiClient.getRetrofit;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
@@ -36,6 +38,19 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kakao.vectormap.KakaoMap;
+import com.kakao.vectormap.KakaoMapReadyCallback;
+import com.kakao.vectormap.LatLng;
+import com.kakao.vectormap.LatLngBounds;
+import com.kakao.vectormap.MapLifeCycleCallback;
+import com.kakao.vectormap.MapView;
+import com.kakao.vectormap.camera.CameraUpdateFactory;
+import com.kakao.vectormap.label.LabelLayer;
+import com.kakao.vectormap.label.LabelOptions;
+import com.kakao.vectormap.label.LabelStyle;
+import com.kakao.vectormap.label.LabelStyles;
+import com.kakao.vectormap.label.LabelTextBuilder;
+import com.kakao.vectormap.label.LabelTextStyle;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -62,6 +77,10 @@ public class GptTripPlanActivity extends AppCompatActivity {
     private String who;
     private Map<String, Object> travelData = new HashMap<>();
     private String travelId;
+
+    private MapView mapView;
+    private KakaoMap kakaoMap;
+    private List<GptPlan.Place> pendingPlaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,8 +184,17 @@ public class GptTripPlanActivity extends AppCompatActivity {
                                     .append("  ∘ 이동 수단: ").append(place.getTransport()).append("\n");
                         }
 
+
                         PlaceAdapter adapter = new PlaceAdapter(this, places);
                         planListView.setAdapter(adapter);
+
+                        // 지도 준비 여부 체크
+                        if (kakaoMap != null) {
+                            createMapMarkers(places);
+                        } else {
+                            // 지도 준비 전이면, 변수에 저장해뒀다가 readyCallback에서 마커 찍기
+                            pendingPlaces = places; // pendingPlaces는 멤버 변수로 선언
+                        }
 
                     });
 
@@ -181,6 +209,9 @@ public class GptTripPlanActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "일정 데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
+
+        mapView = findViewById(R.id.map_view);
+        mapView.start(lifeCycleCallback, readyCallback);
     }
 
     private void saveToFirebase() {
@@ -446,4 +477,98 @@ public class GptTripPlanActivity extends AppCompatActivity {
         }
     }
 
+    // MapReadyCallback 을 통해 지도가 정상적으로 시작된 후에 수신할 수 있다.
+    private KakaoMapReadyCallback readyCallback = new KakaoMapReadyCallback() {
+        @Override
+        public void onMapReady(@NonNull KakaoMap kakaoMap) {
+            GptTripPlanActivity.this.kakaoMap = kakaoMap;
+
+            Toast.makeText(getApplicationContext(), "Map Start!", Toast.LENGTH_SHORT).show();
+
+            Log.i("k3f", "startPosition: "
+                    + kakaoMap.getCameraPosition().getPosition().toString());
+            Log.i("k3f", "startZoomLevel: "
+                    + kakaoMap.getZoomLevel());
+
+            // 만약 pendingPlaces가 있으면 마커 찍기
+            if (pendingPlaces != null) {
+                createMapMarkers(pendingPlaces);
+                pendingPlaces = null;
+            }
+        }
+    };
+
+    // MapLifeCycleCallback 을 통해 지도의 LifeCycle 관련 이벤트를 수신할 수 있다.
+    private MapLifeCycleCallback lifeCycleCallback = new MapLifeCycleCallback() {
+
+        @Override
+        public void onMapResumed() {
+            super.onMapResumed();
+        }
+
+        @Override
+        public void onMapPaused() {
+            super.onMapPaused();
+        }
+
+        @Override
+        public void onMapDestroy() {
+            Toast.makeText(getApplicationContext(), "onMapDestroy",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onMapError(Exception error) {
+            Toast.makeText(getApplicationContext(), error.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private void createMapMarkers(List<GptPlan.Place> places) {
+        if (kakaoMap == null || places == null) return;
+
+        LabelLayer layer = kakaoMap.getLabelManager().getLayer();
+        layer.removeAll();
+
+        LabelStyles styles = kakaoMap.getLabelManager().addLabelStyles(
+                LabelStyles.from(LabelStyle.from(R.drawable.big_map_pin)
+                        .setTextStyles(LabelTextStyle.from(20, Color.BLACK, 1, Color.WHITE)))
+        );
+
+        // 1. LatLngBounds 계산
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+
+        for (int i = 0; i < places.size(); i++) {
+            GptPlan.Place place = places.get(i);
+            // coord: "위도,경도" 문자열 파싱
+            String coord = place.getCoord();
+            if (coord == null) continue;
+            String[] parts = coord.split(",");
+            if (parts.length != 2) continue;
+
+            double lat = Double.parseDouble(parts[0].trim());
+            double lng = Double.parseDouble(parts[1].trim());
+            LatLng position = LatLng.from(lat, lng);
+            boundsBuilder.include(position);
+
+            LabelTextBuilder textBuilder = new LabelTextBuilder().setTexts(place.getPlace());
+            // LabelOptions 생성
+            LabelOptions options = LabelOptions.from(position)
+                    .setStyles(styles)
+                    .setTexts(textBuilder);
+
+            layer.addLabel(options); // 마커 추가
+        }
+
+        // 첫 번째 위치로 지도 이동
+        if (!places.isEmpty()) {
+            // 2. 모든 라벨이 보이게 카메라 이동
+            LatLngBounds bounds = boundsBuilder.build();
+            int padding = 100; // 화면 여백(px), 필요에 따라 조정
+
+            kakaoMap.moveCamera(CameraUpdateFactory.fitMapPoints(
+                    bounds, padding
+            ));
+        }
+    }
 }
