@@ -190,15 +190,32 @@ public class PlanDetailActivity extends AppCompatActivity {
                 for (GptPlan.Place place : placesForDate) {
                     placeInfoList.add("📍 " + place.getPlace() + "\n" +
                             "  ∘ 카테고리: " + place.getCategory() + "\n" +
-                            "  ∘ 이동수단: " + place.getTransport() + "\n" +
-                            "  ∘ 예상 소요 시간: " + place.getTime());
+                            "  ∘ 이동수단: " + place.getTransport());
 
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                        android.R.layout.simple_list_item_1, placeInfoList);
-                listPlaces.setAdapter(adapter);
+                final PlaceAdapter[] adapter = new PlaceAdapter[1];
+                adapter[0] = new PlaceAdapter(this, placesForDate, (int position) -> {
+                    GptPlan.Place placeToDelete = placesForDate.get(position);
+                    String dateKey = date;
 
+                    db.collection("users").document(userId)
+                            .collection("travel").document(travelId)
+                            .collection("gpt_plan").document(dateKey)
+                            .collection("places")
+                            .document(String.format("%02d", position))
+                            .delete()
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this, "장소가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                                placesForDate.remove(position);
+                                adapter[0].notifyDataSetChanged();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                });
+
+                listPlaces.setAdapter(adapter[0]);
                 createMapMarkers(placesForDate);
             });
 

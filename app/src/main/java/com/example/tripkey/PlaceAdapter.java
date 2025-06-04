@@ -15,12 +15,24 @@ import java.util.List;
 public class PlaceAdapter extends ArrayAdapter<GptPlan.Place> {
     private Context context;
     private List<GptPlan.Place> places;
+    private OnDeleteListener deleteListener;
+
+    public interface OnDeleteListener {
+        void onDelete(int position);
+    }
 
 
     public PlaceAdapter(Context context, List<GptPlan.Place> places) {
         super(context, 0, places);
         this.context = context;
         this.places = places;
+    }
+
+    public PlaceAdapter(Context context, List<GptPlan.Place> places, OnDeleteListener listener) {
+        super(context, 0, places);
+        this.context = context;
+        this.places = places;
+        this.deleteListener = listener;
     }
 
     @NonNull
