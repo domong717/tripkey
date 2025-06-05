@@ -55,9 +55,11 @@ import com.kakao.vectormap.label.LabelTextStyle;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class GptTripPlanActivity extends AppCompatActivity {
@@ -145,6 +147,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
                 Type listType = new TypeToken<List<GptPlan>>() {}.getType();
                 gptPlanList = gson.fromJson(gptScheduleJson, listType);
                 Log.d("DEBUG", "gptPlanList: " + gptPlanList);
+
+                updateAllCoordsFromKakao(gptPlanList);
 
                 if (gptPlanList == null || gptPlanList.isEmpty()) {
                     throw new IllegalAccessException("일정이 비어있습니다.");
@@ -579,4 +583,67 @@ public class GptTripPlanActivity extends AppCompatActivity {
             ));
         }
     }
+
+    private void updateAllCoordsFromKakao(List<GptPlan> planList) {
+        KakaoApiService api = KakaoApiClient.getRetrofitInstance().create(KakaoApiService.class);
+        String kakaoKey = "KakaoAK 42d61720c6096d7a9ec5e7c8d0950740";
+
+        // 실패한 장소 저장용 리스트 (동기화 필요할 수 있음)
+        List<GptPlan.Place> failedPlaces = Collections.synchronizedList(new ArrayList<>());
+
+        int totalPlacesCount = 0;
+        for (GptPlan plan : planList) {
+            for (GptPlan.Place place : plan.getPlaces()) {
+                if (place.getPlace() != null && !place.getPlace().isEmpty()) {
+                    totalPlacesCount++;
+                }
+            }
+        }
+        final int totalPlaces = totalPlacesCount;  // final 변수로
+
+        AtomicInteger processedCount = new AtomicInteger(0);
+
+        for (GptPlan plan : planList) {
+            for (GptPlan.Place place : plan.getPlaces()) {
+                String placeName = place.getPlace();
+                if (placeName == null || placeName.isEmpty()) continue;
+
+                Call<KakaoSearchResponse> call = api.searchKeyword(kakaoKey, placeName);
+                call.enqueue(new Callback<KakaoSearchResponse>() {
+                    @Override
+                    public void onResponse(Call<KakaoSearchResponse> call, Response<KakaoSearchResponse> response) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().documents.isEmpty()) {
+                            KakaoSearchResponse.Document doc = response.body().documents.get(0);
+                            String coord = doc.y + "," + doc.x;
+                            place.setCoord(coord);
+                            Log.d("CoordUpdate", "✔ " + placeName + " → " + coord);
+                        } else {
+                            Log.w("CoordUpdate", "✖ " + placeName + " 검색 실패");
+                            failedPlaces.add(place);
+                        }
+                        if (processedCount.incrementAndGet() == totalPlaces) {
+                            removeFailedPlaces();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<KakaoSearchResponse> call, Throwable t) {
+                        Log.e("CoordUpdate", "API 실패: " + placeName, t);
+                        failedPlaces.add(place);
+                        if (processedCount.incrementAndGet() == totalPlaces) {
+                            removeFailedPlaces();
+                        }
+                    }
+
+                    private void removeFailedPlaces() {
+                        for (GptPlan plan : planList) {
+                            plan.getPlaces().removeAll(failedPlaces);
+                        }
+                        Log.d("CoordUpdate", "실패한 장소 제거 완료. 현재 남은 장소 수: " + planList.stream().mapToInt(p -> p.getPlaces().size()).sum());
+                    }
+                });
+            }
+        }
+    }
+
 }

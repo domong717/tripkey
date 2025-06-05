@@ -17,4 +17,10 @@ public interface KakaoApiService {
             @Query("size") int size
     );
 
+    @GET("v2/local/search/keyword.json")
+    Call<KakaoSearchResponse> searchKeyword(
+            @Header("Authorization") String auth,
+            @Query("query") String query
+    );
+
 }

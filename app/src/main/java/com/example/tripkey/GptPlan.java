@@ -70,6 +70,8 @@ public class GptPlan {
         public String getCoord() {
             return coord;
         }
+        public void setCoord(String coord) { this.coord = coord; }
+
 
         public String getCategory() { return category; }
 
