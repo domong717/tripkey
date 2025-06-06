@@ -51,7 +51,7 @@ public class RecordActivity extends AppCompatActivity {
         // 여행지도 확인하기 클릭 이벤트
         ImageButton buttonTripmap = findViewById(R.id.button_suggestion);
         buttonTripmap.setOnClickListener(v -> {
-            Intent intent = new Intent(RecordActivity.this, MapActivity.class);
+            Intent intent = new Intent(RecordActivity.this, SuggestionTravelDestinationActivity.class);
             startActivity(intent);
         });
 
@@ -61,11 +61,7 @@ public class RecordActivity extends AppCompatActivity {
             Intent intent = new Intent(RecordActivity.this, FeedbackActivity.class);
             startActivity(intent);
         });
-        Button buttonSuggestion = findViewById(R.id.suggestion);
-        buttonSuggestion.setOnClickListener(v-> {
-            Intent intent = new Intent(RecordActivity.this, SuggestionTravelDestinationActivity.class);
-            startActivity(intent);
-        });
+
     }
 
     private void loadPastTrips() {

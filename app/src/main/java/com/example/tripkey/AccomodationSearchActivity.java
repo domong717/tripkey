@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -73,12 +74,15 @@ public class AccomodationSearchActivity extends AppCompatActivity {
             String placeName = parts[0];
             String latitude = parts.length > 1 ? parts[1] : "";
             String longitude = parts.length > 2 ? parts[2] : "";
+            Log.d("AccomodationSearchActivity", "위도: " + latitude + ", 경도: " + longitude);
 
             Intent resultIntent = new Intent();
             resultIntent.putExtra("selected_accomodation", placeName);
+            resultIntent.putExtra("result_type", "accommodation");
             if (!latitude.isEmpty() && !longitude.isEmpty()) {
                 resultIntent.putExtra("latitude", Double.parseDouble(latitude));
                 resultIntent.putExtra("longitude", Double.parseDouble(longitude));
+                Log.d("AccomodationSearchActivity", "위도: " + latitude + ", 경도: " + longitude);
             }
             setResult(Activity.RESULT_OK, resultIntent);
             finish();

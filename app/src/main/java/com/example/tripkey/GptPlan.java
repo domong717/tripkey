@@ -42,6 +42,7 @@ public class GptPlan {
 
 
     public static class Place {
+        private String placeId;
         private String date;
         private String place;
         private String coord;
@@ -51,6 +52,7 @@ public class GptPlan {
         private String transport;
         private String time;
         private String supply;
+
         public Place() {}
 
         public String getDate() {
@@ -68,6 +70,8 @@ public class GptPlan {
         public String getCoord() {
             return coord;
         }
+        public void setCoord(String coord) { this.coord = coord; }
+
 
         public String getCategory() { return category; }
 
@@ -96,5 +100,8 @@ public class GptPlan {
         public void setCategory(String category) {
             this.category = category;
         }
+
+        public String getPlaceId() { return placeId; }
+        public void setPlaceId(String placeId) { this.placeId = placeId; }
     }
 }

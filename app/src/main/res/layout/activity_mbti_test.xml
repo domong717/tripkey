@@ -126,7 +126,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="편리한 택시 또는 차"
+                    android:text="택시 또는 차"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -383,7 +383,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="바깥에서 다양한 활동하며 즐기기"
+                    android:text="바깥에서 다양한 활동하기"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -457,7 +457,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="하루 뿐일지라도 지나치게 비싼 건 싫다"
+                    android:text="하루라도 지나치게 비싼 건 싫다"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -558,7 +558,7 @@
                     android:layout_height="100dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="예상치 못한 자유로운 경험이 생길 때"
+                    android:text="예상치 못한 경험이 생길 때"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />

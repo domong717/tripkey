@@ -56,6 +56,7 @@ public class AddTripActivity extends AppCompatActivity {
     private String seletedFriendsIds;
     private double accommodationLatitude = 37.5665;   // 기본값
     private double accommodationLongitude = 126.9780; // 기본값
+    private boolean OneDay = false; // 당일치기
 
     private ActivityResultLauncher<Intent> mbtiResultLauncher;
 
@@ -107,6 +108,7 @@ public class AddTripActivity extends AppCompatActivity {
         ImageButton searchLocationBtn = binding.locationSearchButton;
         searchLocationBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, LocationSearchActivity.class);
+            intent.putExtra("result_type", "location");
             startActivityForResult(intent, REQUEST_CODE_LOCATION);
         });
 
@@ -114,6 +116,7 @@ public class AddTripActivity extends AppCompatActivity {
         ImageButton searchAccomodationBtn = binding.accomodationSearchButton;
         searchAccomodationBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, AccomodationSearchActivity.class);
+            intent.putExtra("result_type", "accommodation");
             startActivityForResult(intent, REQUEST_CODE_LOCATION);
         });
 
@@ -123,36 +126,36 @@ public class AddTripActivity extends AppCompatActivity {
         whoAloneButton.setOnClickListener(v -> {
             resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoAloneButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="혼자";
+            selectedWho = "혼자";
         });
 
         whoCoupleButton.setOnClickListener(v -> {
             resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoCoupleButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="연인";
+            selectedWho = "연인";
         });
 
         whoFriendButton.setOnClickListener(v -> {
             resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoFriendButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="친구";
+            selectedWho = "친구";
         });
         whoFamilyButton.setOnClickListener(v -> {
             resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoFamilyButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="가족";
+            selectedWho = "가족";
         });
 
         whoCoworkerButton.setOnClickListener(v -> {
             resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoCoworkerButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="동료";
+            selectedWho = "동료";
         });
 
         whoPetButton.setOnClickListener(v -> {
             resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
             whoPetButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho="반려동물";
+            selectedWho = "반려동물";
         });
 
 
@@ -182,7 +185,7 @@ public class AddTripActivity extends AppCompatActivity {
             styleAnalyzeButton.setBackgroundResource(R.drawable.green_button);
             selectedStyle = "다시 분석";
 
-            // 🔽 ReMBTITestActivity로 이동
+            // ReMBTITestActivity로 이동
             Intent intent = new Intent(this, ReMBTITestActivity.class);
             mbtiResultLauncher.launch(intent);
         });
@@ -190,6 +193,7 @@ public class AddTripActivity extends AppCompatActivity {
         binding.aiScheduleButton.setOnClickListener(v -> {
             int radius = 19999; // 20km 반경
 
+            Log.d("GPTActivity", "기준 위도경도" + accommodationLatitude + "," + accommodationLongitude);
             searchPlacesFromKakaoByCategory("FD6", accommodationLongitude, accommodationLatitude, radius);
             searchPlacesFromKakaoByCategory("CE7", accommodationLongitude, accommodationLatitude, radius);
 
@@ -200,21 +204,21 @@ public class AddTripActivity extends AppCompatActivity {
     }
 
 
+    private void resetWhoButtons(Button whoAloneButton, Button whoCoupleButton, Button whoFriendButton, Button whoFamilyButton, Button whoParentButton, Button whoChildButton) {
+        whoAloneButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoCoupleButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoFriendButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoFamilyButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoParentButton.setBackgroundResource(R.drawable.gray_box_full);
+        whoChildButton.setBackgroundResource(R.drawable.gray_box_full);
 
-private void resetWhoButtons(Button whoAloneButton, Button whoCoupleButton, Button whoFriendButton,Button whoFamilyButton, Button whoParentButton, Button whoChildButton) {
-    whoAloneButton.setBackgroundResource(R.drawable.gray_box_full);
-    whoCoupleButton.setBackgroundResource(R.drawable.gray_box_full);
-    whoFriendButton.setBackgroundResource(R.drawable.gray_box_full);
-    whoFamilyButton.setBackgroundResource(R.drawable.gray_box_full);
-    whoParentButton.setBackgroundResource(R.drawable.gray_box_full);
-    whoChildButton.setBackgroundResource(R.drawable.gray_box_full);
+    }
 
-}
+    private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton) {
+        styleKeepButton.setBackgroundResource(R.drawable.gray_box_full);
+        styleAnalyzeButton.setBackgroundResource(R.drawable.gray_box_full);
+    }
 
-private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton) {
-    styleKeepButton.setBackgroundResource(R.drawable.gray_box_full);
-    styleAnalyzeButton.setBackgroundResource(R.drawable.gray_box_full);
-}
     private void addNewPlaceField() {
         LinearLayout newFieldLayout = new LinearLayout(this);
         newFieldLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -234,7 +238,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
         // 🔍 돋보기(검색) 버튼 추가
         ImageButton searchButton = new ImageButton(this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, getResources().getDisplayMetrics()),
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, getResources().getDisplayMetrics()),
                 (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, getResources().getDisplayMetrics())
         );
         searchButton.setLayoutParams(params);
@@ -252,11 +256,11 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
         searchButton.setOnClickListener(v -> {
             // 장소 검색 액티비티 호출 (requestCode를 동적으로 관리해야 함)
             Intent intent = new Intent(this, PlaceSearchActivity.class);
-            // 각 입력란마다 구분이 필요하다면 태그 등으로 구분
-            startActivityForResult(intent, REQUEST_CODE_LOCATION + newFieldLayout.hashCode());
-            // hashCode 등으로 각 입력란을 구분할 수 있음
-            newPlaceField.setTag("place_field_" + newFieldLayout.hashCode());
-            newFieldLayout.setTag("field_layout_" + newFieldLayout.hashCode());
+
+            int fieldIndex = mustVisitContainer.indexOfChild(newFieldLayout);
+            intent.putExtra("result_type", "must_visit");
+            intent.putExtra("field_index", fieldIndex);
+            startActivityForResult(intent, REQUEST_CODE_LOCATION);
         });
 
         newFieldLayout.addView(newPlaceField);
@@ -277,12 +281,12 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
                     String formattedMonth = String.format("%02d", selectedMonth + 1);
                     String formattedDay = String.format("%02d", selectedDayOfMonth);
-
                     String selectedDate = selectedYear + "-" + formattedMonth + "-" + formattedDay;
+
                     if (isStartDate) {
                         startDateInput.setText(selectedDate);
-                    }else {
-                        // startDate와 비교
+                        OneDay = false; // 시작 날짜 선택 시 초기화
+                    } else {
                         String startDateText = startDateInput.getText().toString();
                         if (!startDateText.isEmpty()) {
                             String[] startDateParts = startDateText.split("-");
@@ -297,7 +301,17 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                                 Toast.makeText(this, "종료 날짜는 시작 날짜 이후여야 합니다.", Toast.LENGTH_SHORT).show();
                                 return;
                             }
+
+                            // 당일치기 여부 확인
+                            if (selectedYear == startYear &&
+                                    (selectedMonth + 1) == startMonth &&
+                                    selectedDayOfMonth == startDay) {
+                                OneDay = true;
+                            } else {
+                                OneDay = false;
+                            }
                         }
+
                         endDateInput.setText(selectedDate);
                     }
                 },
@@ -321,6 +335,8 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
         datePickerDialog.show();
     }
+
+
     private void calculateGroupMBTI(ArrayList<String> selectedFriendsIds, OnMBTICalculatedListener listener) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userId = sharedPreferences.getString("userId", null);
@@ -370,9 +386,8 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
     }
 
 
-
     private String determineGroupMBTI(Map<Character, Integer> mbtiCount, String currentUserMBTI) {
-        char[] mbtiPositions = {'I', 'O', 'B', 'C', 'R', 'E', 'M', 'F','T','L'};
+        char[] mbtiPositions = {'I', 'O', 'B', 'C', 'R', 'E', 'M', 'F', 'T', 'L'};
         StringBuilder groupMBTI = new StringBuilder();
 
         for (int i = 0; i < 5; i++) {
@@ -400,18 +415,57 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
         void onMBTICalculated(String teamMBTI);
     }
 
+    private boolean hasAtLeastOneMustVisit() {
+        for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
+            View child = mustVisitContainer.getChildAt(i);
+            if (child instanceof LinearLayout) {
+                LinearLayout layout = (LinearLayout) child;
+                for (int j = 0; j < layout.getChildCount(); j++) {
+                    View subChild = layout.getChildAt(j);
+                    if (subChild instanceof EditText) {
+                        EditText editText = (EditText) subChild;
+                        if (!editText.getText().toString().trim().isEmpty()) {
+                            return true;  // 유효한 장소 1개 이상 있음
+                        }
+                    }
+                }
+            }
+        }
+        return false;  // 입력된 장소 없음
+    }
+
+
     private void saveTripData() {
         String travelName = binding.travelNameInput.getText().toString().trim();
         String location = binding.locationInput.getText().toString().trim();
-        String placeToStay=binding.placeToStayInput.getText().toString().trim();
+        String placeToStay = binding.placeToStayInput.getText().toString().trim();
         String startDate = startDateInput.getText().toString().trim();
         String endDate = endDateInput.getText().toString().trim();
         String groupMBTI = currentMBTI.getText().toString().trim();
         String who = selectedWho;
+        int mustCount = mustVisitContainer.getChildCount();
 
-        if (travelName.isEmpty() || location.isEmpty() || placeToStay.isEmpty()|| startDate.isEmpty() || endDate.isEmpty() || selectedWho.isEmpty() || selectedStyle.isEmpty()) {
+        Log.d("OneDay", "MustCount: " + mustCount);
+        Log.d("OneDay", "당일치기" + OneDay);
+        // 기본 필수 항목 검사
+        if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || selectedWho.isEmpty() || selectedStyle.isEmpty()) {
             Toast.makeText(this, "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        // 당일치기일 경우 필수 조건 검사
+        if (OneDay) {
+            if (!hasAtLeastOneMustVisit()) {
+                Toast.makeText(this, "당일치기 여행은 반드시 방문 장소를 1개 이상 추가해야 합니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        else {
+            // 일반 여행일 경우 숙소도 필수
+            if (placeToStay.isEmpty()) {
+                Toast.makeText(this, "숙소 정보를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
@@ -440,8 +494,8 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
             travelData.put("teamMBTI", teamMBTI);
             travelData.put("teamId", teamId);
             travelData.put("creatorId", userId); // 누가 만든 여행인지 명시
-            travelData.put("placeToStay",placeToStay);
-            travelData.put("selectedFriendsIds",selectedFriendsIds);
+            travelData.put("placeToStay", placeToStay);
+            travelData.put("selectedFriendsIds", selectedFriendsIds);
 
 
             for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
@@ -515,7 +569,7 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
                         .append("\n");
             }
             prompt.append(groupMBTI).append("에 F 있으면 카페 1곳, M 있으면 카페 추천 금지.");
-            prompt.append("식사는 날마다 2곳. 카페 및 음식점 추천 리스트에서 groupMBTI에 따라 추천하여 추가.\n");
+            prompt.append("must가 있더라도 음식점은 날마다 2곳 추가하여 일정 생성 필수. 카페 및 음식점 추천 리스트에서 여행 스타일에 따라 추천.\n");
             prompt.append("식사/카페 제외 관광지와 쇼핑몰, 자연경관 등을 추천하여 일정에 추가 필수\n");
             prompt.append("중복 장소 추천 금지");
             prompt.append("해당 장소에서 추천하는 준비물도 알려줘. 필요 없는 경우엔 null으로 알려줘도 돼. 예를 들자면 한라산을 방문하기 위해서는 등산화, 편한 옷이 필요하니 supply에 {등산화, 편한옷}을 넣어주면 되고 카페처럼 준비물이 없는 경우 null 값을 넣어줘.");
@@ -545,15 +599,15 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
 
                         // GPT 응답을 GptTripPlanActivity로 넘기기
                         Intent intent = new Intent(AddTripActivity.this, GptTripPlanActivity.class);
-                        intent.putExtra("groupMBTIstyle",groupMBTIStyle);
+                        intent.putExtra("groupMBTIstyle", groupMBTIStyle);
                         intent.putExtra("travelName", travelName);
-                        intent.putExtra("travelId",travelId);
+                        intent.putExtra("travelId", travelId);
                         intent.putExtra("travelData", (Serializable) travelData);
                         intent.putExtra("gpt_schedule", gptReply);
-                        intent.putExtra("teamId",teamId);
+                        intent.putExtra("teamId", teamId);
                         intent.putExtra("startDate", startDate);
                         intent.putExtra("endDate", endDate);
-                        intent.putExtra("selectedFriendsIds",selectedFriendsIds);
+                        intent.putExtra("selectedFriendsIds", selectedFriendsIds);
                         startActivity(intent);
                     } else {
                         Log.e("GPT", "Response error: " + response.code());
@@ -668,41 +722,59 @@ private void resetStyleButtons(Button styleKeepButton, Button styleAnalyzeButton
     }
 
 
-
     // 장소가 올바르게 선택
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE_LOCATION && resultCode == RESULT_OK && data != null) {
-            String selectedLocation = data.getStringExtra("selected_location");
-            String selectedAccomodation = data.getStringExtra("selected_accomodation");
-            if (selectedLocation != null) {
-                binding.locationInput.setText(selectedLocation);
-            }
-            if (selectedAccomodation != null) {
-                binding.placeToStayInput.setText(selectedAccomodation);
-            }
-            // mustVisitContainer의 각 자식 레이아웃을 순회하며 requestCode와 매칭
-            for (int i = 0; i < mustVisitContainer.getChildCount(); i++) {
-                View child = mustVisitContainer.getChildAt(i);
-                if (child instanceof LinearLayout) {
-                    String tag = (String) child.getTag();
-                    if (tag != null && requestCode == REQUEST_CODE_LOCATION + child.hashCode()) {
-                        EditText placeInput = (EditText) ((LinearLayout) child).getChildAt(0);
-                        String selectedPlace = data.getStringExtra("selected_place_name");
-                        if (selectedPlace != null) {
+            String resultType = data.getStringExtra("result_type");
+
+            switch (resultType) {
+                case "location": {
+                    String selectedLocation = data.getStringExtra("selected_location");
+                    if (selectedLocation != null) {
+                        binding.locationInput.setText(selectedLocation);
+                    }
+                    break;
+                }
+                case "accommodation": {
+                    String selectedAccomodation = data.getStringExtra("selected_accomodation");
+                    if (selectedAccomodation != null) {
+                        binding.placeToStayInput.setText(selectedAccomodation);
+                    }
+
+                    if (data.hasExtra("latitude") && data.hasExtra("longitude")) {
+                        accommodationLatitude = data.getDoubleExtra("latitude", 37.5665);
+                        accommodationLongitude = data.getDoubleExtra("longitude", 126.9780);
+                        Log.d("AddTripActivity", "숙소 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
+                    }
+                    break;
+                }
+                case "must_visit": {
+                    int fieldIndex = data.getIntExtra("field_index", -1);
+                    String selectedPlace = data.getStringExtra("selected_place_name");
+
+                    if (fieldIndex >= 0 && selectedPlace != null &&
+                            fieldIndex < mustVisitContainer.getChildCount()) {
+
+                        View child = mustVisitContainer.getChildAt(fieldIndex);
+                        if (child instanceof LinearLayout) {
+                            EditText placeInput = (EditText) ((LinearLayout) child).getChildAt(0);
                             placeInput.setText(selectedPlace);
                         }
                     }
+                    Log.d("DEBUG", "fieldIndex: " + fieldIndex + ", selectedPlace: " + selectedPlace);
+                    Log.d("DEBUg", "data.hasExtra" + data.hasExtra("latitude") + ", " + data.hasExtra("longitude"));
+                    if (OneDay) {
+                        if (fieldIndex == 1 && data.hasExtra("latitude") && data.hasExtra("longitude")) {
+                            accommodationLatitude = data.getDoubleExtra("latitude", 37.5665);
+                            accommodationLongitude = data.getDoubleExtra("longitude", 126.9780);
+                            Log.d("AddTripActivity", "당일치기: 숙소 대신 첫 장소 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
+                        }
+                    }
+                    break;
                 }
-            }
-
-            // 위도, 경도 받아서 멤버 변수에 저장
-            if (data.hasExtra("latitude") && data.hasExtra("longitude")) {
-                accommodationLatitude = data.getDoubleExtra("latitude", 37.5665);
-                accommodationLongitude = data.getDoubleExtra("longitude", 126.9780);
-                Log.d("AddTripActivity", "숙소 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
             }
         }
     }

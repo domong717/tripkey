@@ -2,9 +2,11 @@ package com.example.tripkey;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,6 +30,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.AbsoluteSizeSpan;
+
 public class SuggestionTravelDestinationActivity extends AppCompatActivity {
 
     private TextView resultView;
@@ -48,6 +54,12 @@ public class SuggestionTravelDestinationActivity extends AppCompatActivity {
         // 뒤로가기 버튼 설정
         ImageButton backButton = findViewById(R.id.button_back);
         backButton.setOnClickListener(v -> finish());
+
+        Button addButton = findViewById(R.id.add_button);
+        addButton.setOnClickListener(v -> {
+            Intent intent = new Intent(SuggestionTravelDestinationActivity.this, AddTripActivity.class);
+            startActivity(intent);
+        });
     }
 
     // 기존 메서드들(필드 context 대신 this 사용, resultView는 위에서 초기화된 멤버변수 사용)
@@ -87,8 +99,8 @@ public class SuggestionTravelDestinationActivity extends AppCompatActivity {
         String prompt = "사용자의 여행 MBTI는 " + mbti + " (" + mbtiDescription + ")야.\n\n" +
                 "이 성향을 고려해서 아래 형식에 꼭 맞춰서 국내 여행지를 추천해줘.제주도만 있는 게 아니니까 국내에 있는 다른 여행지도 추천해줘. 한번에 한 여행지만 추천해줘.\n\n" +
                 "출력 형식:\n" +
-                "{사용자의 mbti 설명을 보고 좋아하는 것을 너가 적어}을 좋아하는 당신!\n"+"\n"+"[{여행지}] 여행은 어떠신가요?\n\n"+
-                "⛸ 액티비티 : n/5\n설명\n\n\uD83E\uDD58 맛집 : n/5\n설명\n\n\uD83D\uDDFC 관광지 : n/5\n설명\n\n\uD83D\uDE0A 분위기 : n/5\n설명"+"내용은 꼭 위 형식으로만 작성해줘.";
+                "{사용자의 mbti 설명을 보고 좋아하는 것을 너가 적어}을 좋아하는 당신!\n"+"\n"+"[{여행지}]  여행은 어떠신가요?\n\n"+
+                "⛸ 액티비티 : n/5\n설명\n\n\uD83E\uDD58 맛집 : n/5\n설명\n\n\uD83D\uDDFC 관광지 : n/5\n설명\n\n\uD83D\uDE0A 분위기 : n/5\n설명\n\n"+"내용은 꼭 위 형식으로만 작성해줘.";
 
         List<Message> messages = new ArrayList<>();
         messages.add(new Message("user", prompt));
@@ -103,7 +115,16 @@ public class SuggestionTravelDestinationActivity extends AppCompatActivity {
                     loadingProgressBar.setVisibility(View.GONE);
                     if (response.isSuccessful() && response.body() != null && !response.body().choices.isEmpty()) {
                         String content = response.body().choices.get(0).message.content;
-                        resultView.setText(content);
+                        int start = content.indexOf("[");
+                        int end = content.indexOf("]");
+
+                        if (start != -1 && end != -1 && end > start) {
+                            SpannableString spannable = new SpannableString(content);
+                            spannable.setSpan(new AbsoluteSizeSpan(25, true), start, end + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            resultView.setText(spannable);
+                        } else {
+                            resultView.setText(content);
+                        }
                     } else {
                         Toast.makeText(SuggestionTravelDestinationActivity.this,
                                 "추천 결과를 받아오지 못했습니다.", Toast.LENGTH_SHORT).show();

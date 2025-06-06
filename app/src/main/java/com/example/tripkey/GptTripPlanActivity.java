@@ -55,9 +55,11 @@ import com.kakao.vectormap.label.LabelTextStyle;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class GptTripPlanActivity extends AppCompatActivity {
@@ -157,6 +159,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
                 gptPlanList = gson.fromJson(gptScheduleJson, listType);
                 Log.d("DEBUG", "gptPlanList: " + gptPlanList);
 
+                updateAllCoordsFromKakao(gptPlanList);
+
                 if (gptPlanList == null || gptPlanList.isEmpty()) {
                     throw new IllegalAccessException("일정이 비어있습니다.");
                 }
@@ -197,7 +201,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                         }
 
 
-                        PlaceAdapter adapter = new PlaceAdapter(this, places);
+                        PlaceAdapter adapter = new PlaceAdapter(this, places, false, null, null, null);
                         planListView.setAdapter(adapter);
 
                         // 지도 준비 여부 체크
@@ -323,8 +327,11 @@ public class GptTripPlanActivity extends AppCompatActivity {
                     GptPlan.Place place = places.get(j);
                     place.setDate(plan.getDate());
 
+                    String placeId = String.format("%02d", j);
+                    place.setPlaceId(placeId);
+
                     dateRef.collection("places")
-                            .document(String.format("%02d", j))
+                            .document(placeId)
                             .set(place)
                             .addOnSuccessListener(aVoid -> {
                                 successCount[0]++;
@@ -552,24 +559,29 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
         for (int i = 0; i < places.size(); i++) {
             GptPlan.Place place = places.get(i);
-            // coord: "위도,경도" 문자열 파싱
             String coord = place.getCoord();
             if (coord == null) continue;
+
             String[] parts = coord.split(",");
             if (parts.length != 2) continue;
 
-            double lat = Double.parseDouble(parts[0].trim());
-            double lng = Double.parseDouble(parts[1].trim());
-            LatLng position = LatLng.from(lat, lng);
-            boundsBuilder.include(position);
+            try {
+                double lat = Double.parseDouble(parts[0].trim());
+                double lng = Double.parseDouble(parts[1].trim());
+                LatLng position = LatLng.from(lat, lng);
+                boundsBuilder.include(position);
 
-            LabelTextBuilder textBuilder = new LabelTextBuilder().setTexts(place.getPlace());
-            // LabelOptions 생성
-            LabelOptions options = LabelOptions.from(position)
-                    .setStyles(styles)
-                    .setTexts(textBuilder);
+                LabelTextBuilder textBuilder = new LabelTextBuilder().setTexts(place.getPlace());
 
-            layer.addLabel(options); // 마커 추가
+                LabelOptions options = LabelOptions.from(position)
+                        .setStyles(styles)
+                        .setTexts(textBuilder);
+
+                layer.addLabel(options); // 마커 추가
+            } catch (NumberFormatException e) {
+                Log.e("createMapMarkers", "잘못된 좌표 형식: " + coord, e);
+                continue; // 좌표가 이상하면 그 마커는 건너뜀
+            }
         }
 
         // 첫 번째 위치로 지도 이동
@@ -583,6 +595,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
             ));
         }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -626,4 +639,67 @@ public class GptTripPlanActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void updateAllCoordsFromKakao(List<GptPlan> planList) {
+        KakaoApiService api = KakaoApiClient.getRetrofitInstance().create(KakaoApiService.class);
+        String kakaoKey = "KakaoAK 42d61720c6096d7a9ec5e7c8d0950740";
+
+        // 실패한 장소 저장용 리스트 (동기화 필요할 수 있음)
+        List<GptPlan.Place> failedPlaces = Collections.synchronizedList(new ArrayList<>());
+
+        int totalPlacesCount = 0;
+        for (GptPlan plan : planList) {
+            for (GptPlan.Place place : plan.getPlaces()) {
+                if (place.getPlace() != null && !place.getPlace().isEmpty()) {
+                    totalPlacesCount++;
+                }
+            }
+        }
+        final int totalPlaces = totalPlacesCount;  // final 변수로
+
+        AtomicInteger processedCount = new AtomicInteger(0);
+
+        for (GptPlan plan : planList) {
+            for (GptPlan.Place place : plan.getPlaces()) {
+                String placeName = place.getPlace();
+                if (placeName == null || placeName.isEmpty()) continue;
+
+                Call<KakaoSearchResponse> call = api.searchKeyword(kakaoKey, placeName);
+                call.enqueue(new Callback<KakaoSearchResponse>() {
+                    @Override
+                    public void onResponse(Call<KakaoSearchResponse> call, Response<KakaoSearchResponse> response) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().documents.isEmpty()) {
+                            KakaoSearchResponse.Document doc = response.body().documents.get(0);
+                            String coord = doc.y + "," + doc.x;
+                            place.setCoord(coord);
+                            Log.d("CoordUpdate", "✔ " + placeName + " → " + coord);
+                        } else {
+                            Log.w("CoordUpdate", "✖ " + placeName + " 검색 실패");
+                            failedPlaces.add(place);
+                        }
+                        if (processedCount.incrementAndGet() == totalPlaces) {
+                            removeFailedPlaces();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<KakaoSearchResponse> call, Throwable t) {
+                        Log.e("CoordUpdate", "API 실패: " + placeName, t);
+                        failedPlaces.add(place);
+                        if (processedCount.incrementAndGet() == totalPlaces) {
+                            removeFailedPlaces();
+                        }
+                    }
+
+                    private void removeFailedPlaces() {
+                        for (GptPlan plan : planList) {
+                            plan.getPlaces().removeAll(failedPlaces);
+                        }
+                        Log.d("CoordUpdate", "실패한 장소 제거 완료. 현재 남은 장소 수: " + planList.stream().mapToInt(p -> p.getPlaces().size()).sum());
+                    }
+                });
+            }
+        }
+    }
+
 }
