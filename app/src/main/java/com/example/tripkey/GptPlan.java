@@ -84,5 +84,17 @@ public class GptPlan {
         public void setLatitude(double latitude) { this.latitude = latitude; }
         public double getLongitude() { return longitude; }
         public void setLongitude(double longitude) { this.longitude = longitude; }
+
+        public void setPlace(String place) {
+            this.place = place;
+        }
+
+        public void setCoord(String coord) {
+            this.coord = coord;
+        }
+
+        public void setCategory(String category) {
+            this.category = category;
+        }
     }
 }

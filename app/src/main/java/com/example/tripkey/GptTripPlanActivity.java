@@ -81,6 +81,9 @@ public class GptTripPlanActivity extends AppCompatActivity {
     private MapView mapView;
     private KakaoMap kakaoMap;
     private List<GptPlan.Place> pendingPlaces;
+    private static final int REQUEST_CODE_PLACE_SEARCH = 1001;
+    private int selectedDayIndex = 0; // 현재 선택된 Day 인덱스
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +121,14 @@ public class GptTripPlanActivity extends AppCompatActivity {
         // reGpt 버튼 설정
         Button reGptButton = findViewById(R.id.re_gpt_button);
         reGptButton.setOnClickListener(v->requestGptResponse());
+
+        // add plan 버튼 설정
+        Button addPlan = findViewById(R.id.add_plan_button);
+        addPlan.setOnClickListener(v -> {
+            Intent intent = new Intent(this, PlaceSearchActivity.class);
+            startActivityForResult(intent, 1001);
+        });
+
 
         // TextView에 값 설정
         if (travelName != null) {
@@ -166,6 +177,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                     dayButton.setLayoutParams(params);
 
                     dayButton.setOnClickListener(v -> {
+                        selectedDayIndex = indexCopy;
                         if (previouslySelectedButton != null) {
                             previouslySelectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.mid_green));
                         }
@@ -569,6 +581,49 @@ public class GptTripPlanActivity extends AppCompatActivity {
             kakaoMap.moveCamera(CameraUpdateFactory.fitMapPoints(
                     bounds, padding
             ));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_PLACE_SEARCH && resultCode == RESULT_OK && data != null) {
+            // 1. 인텐트에서 장소 정보 꺼내기
+            String placeName = data.getStringExtra("place_name");
+            Double latitude = data.getDoubleExtra("latitude", 0);
+            Double longitude = data.getDoubleExtra("longitude", 0);
+            String category = data.getStringExtra("category");
+            String transport = data.getStringExtra("transport"); // 필요시
+            String supply = data.getStringExtra("supply"); // 필요시
+
+            // 2. GptPlan.Place 객체 생성 및 값 세팅
+            GptPlan.Place newPlace = new GptPlan.Place();
+            newPlace.setPlace(placeName);
+            newPlace.setLatitude(latitude);
+            newPlace.setLongitude(longitude);
+            newPlace.setCategory(category);
+            newPlace.setCoord(String.valueOf(latitude)+","+String.valueOf(longitude));
+//            newPlace.setTransport(transport);
+//            newPlace.setSupply(supply);
+
+            // 3. 현재 선택된 Day의 places 리스트에 추가
+            if (selectedDayIndex < 0 || selectedDayIndex >= gptPlanList.size()) {
+                Toast.makeText(this, "Day 선택 오류", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            gptPlanList.get(selectedDayIndex).getPlaces().add(newPlace);
+
+            // 4. 리스트뷰 갱신
+            PlaceAdapter adapter = new PlaceAdapter(this, gptPlanList.get(selectedDayIndex).getPlaces());
+            planListView.setAdapter(adapter);
+
+            // 5. 지도 마커 갱신
+            if (kakaoMap != null) {
+                createMapMarkers(gptPlanList.get(selectedDayIndex).getPlaces());
+            } else {
+                pendingPlaces = gptPlanList.get(selectedDayIndex).getPlaces();
+            }
         }
     }
 }
