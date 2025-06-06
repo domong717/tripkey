@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -82,8 +83,12 @@ public class PlaceSearchActivity extends AppCompatActivity {
             resultIntent.putExtra("selected_address", selectedPlace.addressName);
             resultIntent.putExtra("latitude", selectedPlace.latitude);
             resultIntent.putExtra("longitude", selectedPlace.longitude);
+            resultIntent.putExtra("place_name", selectedPlace.placeName);
+            resultIntent.putExtra("category", selectedPlace.categoryName);
+
             Log.d("Place", "위도" + selectedPlace.latitude + "경도" + selectedPlace.longitude);
             resultIntent.putExtra("field_index", getIntent().getIntExtra("field_index", -1));
+          
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
         });
@@ -113,6 +118,11 @@ public class PlaceSearchActivity extends AppCompatActivity {
                             JSONArray documents = json.getJSONArray("documents");
                             for (int i = 0; i < documents.length(); i++) {
                                 JSONObject doc = documents.getJSONObject(i);
+
+                                // 카테고리 코드 추출
+                                String categoryCode = doc.optString("category_group_code");
+                                String categoryName = CATEGORY_MAP.getOrDefault(categoryCode, "기타");
+
                                 String placeName = doc.optString("place_name");
                                 String address = doc.optString("address_name");
                                 String roadAddress = doc.optString("road_address_name");
@@ -128,7 +138,7 @@ public class PlaceSearchActivity extends AppCompatActivity {
                                     latitude = Double.parseDouble(y);
                                 } catch (Exception ignore) {}
 
-                                placeResultList.add(new PlaceResult(placeName, address, latitude, longitude));
+                                placeResultList.add(new PlaceResult(placeName, address, latitude, longitude, categoryName));
                             }
                         } catch (Exception e) {
                             runOnUiThread(() -> Toast.makeText(PlaceSearchActivity.this, "파싱 오류", Toast.LENGTH_SHORT).show());
@@ -155,11 +165,34 @@ public class PlaceSearchActivity extends AppCompatActivity {
         String addressName;
         double latitude;
         double longitude;
-        PlaceResult(String placeName, String addressName, double latitude, double longitude) {
+        String categoryName;
+        PlaceResult(String placeName, String addressName, double latitude, double longitude, String categoryName) {
             this.placeName = placeName;
             this.addressName = addressName;
             this.latitude = latitude;
             this.longitude = longitude;
+            this.categoryName = categoryName;
         }
     }
+
+    private static final HashMap<String, String> CATEGORY_MAP = new HashMap<String, String>() {{
+        put("MT1", "대형마트");
+        put("CS2", "편의점");
+        put("PS3", "어린이/유아");
+        put("SC4", "학교");
+        put("AC5", "학원");
+        put("PK6", "주차장");
+        put("OL7", "주유소");
+        put("SW8", "지하철역");
+        put("BK9", "은행");
+        put("CT1", "문화시설");
+        put("AG2", "중개업소");
+        put("PO3", "공공기관");
+        put("AT4", "관광명소");
+        put("AD5", "숙박");
+        put("FD6", "음식점");
+        put("CE7", "카페");
+        put("HP8", "병원");
+        put("PM9", "약국");
+    }};
 }
