@@ -180,7 +180,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:background="#99FFF8DE"
+        android:background="#CCE9E9A4"
         android:visibility="gone"
         >
 
