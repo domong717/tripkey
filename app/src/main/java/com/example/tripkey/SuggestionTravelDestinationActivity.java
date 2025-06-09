@@ -57,7 +57,7 @@ public class SuggestionTravelDestinationActivity extends AppCompatActivity {
 
         Button addButton = findViewById(R.id.add_button);
         addButton.setOnClickListener(v -> {
-            Intent intent = new Intent(SuggestionTravelDestinationActivity.this, AddTripActivity.class);
+            Intent intent = new Intent(SuggestionTravelDestinationActivity.this, MakeTeamActivity.class);
             startActivity(intent);
         });
     }
