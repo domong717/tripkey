@@ -25,8 +25,10 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import com.google.firebase.firestore.QuerySnapshot;
@@ -55,6 +57,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class PlanDetailActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE_PLACE_SEARCH = 1001;
 
     private static final String TAG = "PlanDetailActivity";
 
@@ -72,7 +75,7 @@ public class PlanDetailActivity extends AppCompatActivity {
 
     private ListView listPlaces;
     private TextView tvTripTitle, tvTripDate;
-    private FloatingActionButton btnCalculate, btnTeam,btnChecklist;
+    private FloatingActionButton btnCalculate, btnTeam,btnChecklist, btnAddPlan;
 
     //private Map<Integer, List<TripPlace>> dayPlaces = new HashMap<>();
     private int currentDay = 1;
@@ -134,6 +137,7 @@ public class PlanDetailActivity extends AppCompatActivity {
         btnCalculate = findViewById(R.id.btn_calculate);
         btnTeam = findViewById(R.id.btn_team);
         btnChecklist=findViewById(R.id.btn_checklist);
+        btnAddPlan=findViewById(R.id.btn_plus);
 
         // 인텐트에서 "from" 정보 받아오기
         String from = getIntent().getStringExtra("from");
@@ -141,6 +145,7 @@ public class PlanDetailActivity extends AppCompatActivity {
             btnCalculate.setVisibility(View.INVISIBLE);
             btnTeam.setVisibility(View.INVISIBLE);
             btnChecklist.setVisibility(View.INVISIBLE);
+            btnAddPlan.setVisibility(View.INVISIBLE);
         }
 
 
@@ -160,8 +165,15 @@ public class PlanDetailActivity extends AppCompatActivity {
             intent.putExtra("travelId",travelId); // travelId마다 checkList 제공하기에 travelId 필요..
             startActivity(intent);
         });
+        btnAddPlan.setOnClickListener(v->{
+            Intent e_intent = new Intent(PlanDetailActivity.this, PlaceSearchActivity.class);
+            startActivityForResult(e_intent, 1001);
+        });
     }
     private void createDayButtons(Map<String, List<GptPlan.Place>> dateToPlaces) {
+        // 기존 버튼 삭제
+        dayButtonContainer.removeAllViews();
+
         final Button[] previouslySelectedButton = {null};
 
         int dayNumber = 1;
@@ -179,6 +191,7 @@ public class PlanDetailActivity extends AppCompatActivity {
             List<GptPlan.Place> placesForDate = dateToPlaces.get(date);
 
             dayButton.setOnClickListener(v -> {
+                selectedDate = date;
                 if (previouslySelectedButton[0] != null) {
                     previouslySelectedButton[0].setBackgroundColor(ContextCompat.getColor(this, R.color.mid_green));
                 }
@@ -372,31 +385,64 @@ public class PlanDetailActivity extends AppCompatActivity {
         }
     };
 
-
-/*
     @Override
-    protected void onResume() {
-        super.onResume();
-        mapView.resume();
-    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mapView.pause();
-    }
+        if (requestCode == REQUEST_CODE_PLACE_SEARCH && resultCode == RESULT_OK && data != null) {
+            String placeName = data.getStringExtra("place_name");
+            Double latitude = data.getDoubleExtra("latitude", 0);
+            Double longitude = data.getDoubleExtra("longitude", 0);
+            String category = data.getStringExtra("category");
+            String transport = data.getStringExtra("transport");
+            String supply = data.getStringExtra("supply");
 
-    static class TripPlace {
-        String name;
-        double latitude;
-        double longitude;
+            GptPlan.Place newPlace = new GptPlan.Place();
+            newPlace.setPlace(placeName);
+            newPlace.setLatitude(latitude);
+            newPlace.setLongitude(longitude);
+            newPlace.setCategory(category);
+            newPlace.setCoord(latitude + "," + longitude);
+            // newPlace.setTransport(transport); // 필요시
+            // newPlace.setSupply(supply); // 필요시
 
-        TripPlace(String name, double latitude, double longitude) {
-            this.name = name;
-            this.latitude = latitude;
-            this.longitude = longitude;
+            // Firebase에 저장
+            DocumentReference dateRef = db.collection("users")
+                    .document(userId)
+                    .collection("travel")
+                    .document(travelId)
+                    .collection("gpt_plan")
+                    .document(selectedDate);
+
+            // 날짜별 places 컬렉션 참조
+            CollectionReference placesRef = db.collection("users")
+                    .document(userId)
+                    .collection("travel")
+                    .document(travelId)
+                    .collection("gpt_plan")
+                    .document(selectedDate)
+                    .collection("places");
+            // places 컬렉션에서 id 순으로 내림차순 정렬, 1개만 가져오기
+            placesRef.orderBy("id", Query.Direction.DESCENDING).limit(1).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        String newId;
+                        if (queryDocumentSnapshots.isEmpty()) {
+                            newId = "01"; // 첫 번째 장소라면 01로 시작
+                        } else {
+                            DocumentSnapshot lastDoc = queryDocumentSnapshots.getDocuments().get(0);
+                            String lastId = lastDoc.getId(); // 또는 lastDoc.getString("id")로 필드값 사용
+                            // 숫자로 변환 후 1 증가
+                            int nextId = Integer.parseInt(lastId) + 1;
+                            newId = String.format("%02d", nextId); // 2자리로 맞춤
+                        }
+                        // newId로 저장
+                        placesRef.document(newId).set(newPlace)
+                                .addOnSuccessListener(aVoid -> {
+                                    // 저장 성공 시 처리
+                                    loadGptPlan(); // 전체 데이터 다시 불러오기
+                                });
+                    });
         }
     }
 
- */
 }
