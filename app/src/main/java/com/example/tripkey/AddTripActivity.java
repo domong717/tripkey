@@ -89,7 +89,7 @@ public class AddTripActivity extends AppCompatActivity {
         Button whoCoupleButton = binding.whoCoupleButton;
         Button whoFriendButton = binding.whoFriendButton;
         Button whoFamilyButton = binding.whoFamilyButton;
-        Button whoCoworkerButton = binding.whoCoworkerButton;
+        Button whoChildButton = binding.whoChildButton;
         Button whoPetButton = binding.whoPetButton;
 
         Button styleKeepButton = binding.styleKeepButton;
@@ -124,36 +124,36 @@ public class AddTripActivity extends AppCompatActivity {
         endDateInput.setOnClickListener(v -> showDatePickerDialog(false));
 
         whoAloneButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoChildButton, whoPetButton);
             whoAloneButton.setBackgroundResource(R.drawable.green_button);
             selectedWho = "혼자";
         });
 
         whoCoupleButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoChildButton, whoPetButton);
             whoCoupleButton.setBackgroundResource(R.drawable.green_button);
             selectedWho = "연인";
         });
 
         whoFriendButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoChildButton, whoPetButton);
             whoFriendButton.setBackgroundResource(R.drawable.green_button);
             selectedWho = "친구";
         });
         whoFamilyButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoChildButton, whoPetButton);
             whoFamilyButton.setBackgroundResource(R.drawable.green_button);
             selectedWho = "가족";
         });
 
-        whoCoworkerButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
-            whoCoworkerButton.setBackgroundResource(R.drawable.green_button);
-            selectedWho = "동료";
+        whoChildButton.setOnClickListener(v -> {
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoChildButton, whoPetButton);
+            whoChildButton.setBackgroundResource(R.drawable.green_button);
+            selectedWho = "아이";
         });
 
         whoPetButton.setOnClickListener(v -> {
-            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoCoworkerButton, whoPetButton);
+            resetWhoButtons(whoAloneButton, whoCoupleButton, whoFriendButton, whoFamilyButton, whoChildButton, whoPetButton);
             whoPetButton.setBackgroundResource(R.drawable.green_button);
             selectedWho = "반려동물";
         });
