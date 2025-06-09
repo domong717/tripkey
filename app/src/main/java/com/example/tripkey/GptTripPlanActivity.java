@@ -151,12 +151,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
             gptScheduleJson = gptScheduleJson.trim();
 
-            if (gptScheduleJson.startsWith("```json")) {
-                gptScheduleJson = gptScheduleJson.substring("```json".length()).trim();
-            }
-            if (gptScheduleJson.endsWith("```")) {
-                gptScheduleJson = gptScheduleJson.substring(0, gptScheduleJson.length() - 3).trim();
-            }
+            gptScheduleJson = gptScheduleJson.replaceAll("(?s)^\\s*```json\\s*", "");
+            gptScheduleJson = gptScheduleJson.replaceAll("(?s)\\s*```\\s*$", "");
 
             try {
                 //JSON 문자열을 GptPlan 리스트로 파싱
