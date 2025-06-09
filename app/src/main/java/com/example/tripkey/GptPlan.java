@@ -93,7 +93,6 @@ public class GptPlan {
             this.place = place;
         }
 
-
         public void setCategory(String category) {
             this.category = category;
         }
