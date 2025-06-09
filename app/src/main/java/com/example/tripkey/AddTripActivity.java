@@ -608,6 +608,8 @@ public class AddTripActivity extends AppCompatActivity {
                         intent.putExtra("startDate", startDate);
                         intent.putExtra("endDate", endDate);
                         intent.putExtra("selectedFriendsIds", selectedFriendsIds);
+                        intent.putExtra("accommodation_latitude", accommodationLatitude);
+                        intent.putExtra("accommodation_longitude", accommodationLongitude);
                         startActivity(intent);
                     } else {
                         Log.e("GPT", "Response error: " + response.code());

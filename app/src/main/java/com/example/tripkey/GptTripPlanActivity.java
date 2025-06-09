@@ -112,6 +112,12 @@ public class GptTripPlanActivity extends AppCompatActivity {
         groupMBTIStyle = getIntent().getStringExtra("groupMBTIStyle");
         travelId = getIntent().getStringExtra("travelId");
 
+        Intent intent = getIntent();
+        double accommodationLatitude = intent.getDoubleExtra("accommodationLatitude", 37.5665);
+        double accommodationLongitude = intent.getDoubleExtra("accommodation_longitude", 126.9780);
+        Log.d("GptTripPlanActivity", "숙소 위치 - 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
+
+
         // 뒤로가기 버튼 설정
         ImageButton backButton = findViewById(R.id.button_back);
         backButton.setOnClickListener(v -> finish());
@@ -127,8 +133,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
         // add plan 버튼 설정
         Button addPlan = findViewById(R.id.add_plan_button);
         addPlan.setOnClickListener(v -> {
-            Intent intent = new Intent(this, PlaceSearchActivity.class);
-            startActivityForResult(intent, 1001);
+            Intent e_intent = new Intent(this, PlaceSearchActivity.class);
+            startActivityForResult(e_intent, 1001);
         });
 
 
@@ -230,6 +236,18 @@ public class GptTripPlanActivity extends AppCompatActivity {
         mapView.start(lifeCycleCallback, readyCallback);
     }
 
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // 지구 반지름 (km)
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
     private void saveToFirebase() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userId = sharedPreferences.getString("userId", null);
@@ -237,28 +255,21 @@ public class GptTripPlanActivity extends AppCompatActivity {
             Toast.makeText(this, "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-        // FirebaseFirestore 인스턴스 가져오기
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // travelData 저장
-        db.collection("users").document(userId)
-                .collection("travel").document(travelId)
-                .set(travelData)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "기본 여행 정보 저장 완료"))
-                .addOnFailureListener(e -> Log.e(TAG, "기본 여행 정보 저장 실패", e));
+        // 인텐트로부터 값 추출
+        Intent intent = getIntent();
+        String travelName = intent.getStringExtra("travelName");
+        String travelId = intent.getStringExtra("travelId");
+        String startDate = intent.getStringExtra("startDate");
+        String teamId = intent.getStringExtra("teamId");
 
-        // travelName, travelId를 Intent에서 받기
-        String travelName = getIntent().getStringExtra("travelName");
-        String travelId = getIntent().getStringExtra("travelId");  // 각 여행에 고유한 ID를 사용
-        String startDate = getIntent().getStringExtra("startDate");
-        String teamId = getIntent().getStringExtra("teamId");
+        double accommodationLatitude = intent.getDoubleExtra("accommodation_latitude", 37.5665);
+        double accommodationLongitude = intent.getDoubleExtra("accommodation_longitude", 126.9780);
 
-        if (travelName == null || travelId == null) {
-            Toast.makeText(this, "여행 정보가 없습니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (teamId == null) {
-            Toast.makeText(this, "팀 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+        if (travelName == null || travelId == null || teamId == null) {
+            Toast.makeText(this, "여행 정보 또는 팀 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -267,39 +278,58 @@ public class GptTripPlanActivity extends AppCompatActivity {
             return;
         }
 
+        // travelData 저장
+        db.collection("users").document(userId)
+                .collection("travel").document(travelId)
+                .set(travelData)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "기본 여행 정보 저장 완료"))
+                .addOnFailureListener(e -> Log.e(TAG, "기본 여행 정보 저장 실패", e));
 
-
-        DocumentReference teamRef = db.collection("users")
-                .document(userId)
-                .collection("teams")
-                .document(teamId);
-
-        teamRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                List<String> members = (List<String>) documentSnapshot.get("members");
-
-                if (members != null && !members.isEmpty()) {
-                    for (String memberId : members) {
-                        saveGptPlanToMember(db, memberId, travelId, startDate);  // 아래에서 구현
+        // 팀 멤버들한테 gpt plan 저장
+        db.collection("users").document(userId)
+                .collection("teams").document(teamId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        List<String> members = (List<String>) documentSnapshot.get("members");
+                        if (members != null && !members.isEmpty()) {
+                            for (String memberId : members) {
+                                saveGptPlanToMember(db, memberId, travelId, startDate, accommodationLatitude, accommodationLongitude);
+                            }
+                        }
                     }
-                } else {
-                    Toast.makeText(this, "팀에 멤버가 없습니다.", Toast.LENGTH_SHORT).show();
+                });
+
+        // 👉 필터링된 장소 기준으로 totalPlaces 계산
+        List<GptPlan.Place> allFilteredPlaces = new ArrayList<>();
+        for (GptPlan plan : gptPlanList) {
+            List<GptPlan.Place> originalPlaces = plan.getPlaces();
+            if (originalPlaces != null) {
+                for (GptPlan.Place place : originalPlaces) {
+                    String[] coord = place.getCoord().split(",");
+                    if (coord.length == 2) {
+                        try {
+                            double lat = Double.parseDouble(coord[0].trim());
+                            double lon = Double.parseDouble(coord[1].trim());
+                            double distance = calculateDistance(accommodationLatitude, accommodationLongitude, lat, lon);
+                            if (distance <= 20.0) {
+                                allFilteredPlaces.add(place);
+                            }
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "좌표 파싱 오류: " + place.getCoord(), e);
+                        }
+                    }
                 }
-            } else {
-                Toast.makeText(this, "팀 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
             }
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "팀 멤버 조회 실패", Toast.LENGTH_SHORT).show();
-        });
+        }
 
+        final int totalPlaces = allFilteredPlaces.size();
 
-        final int totalPlaces = gptPlanList.stream()
-                .mapToInt(plan -> plan.getPlaces() != null ? plan.getPlaces().size() : 0)
-                .sum();
         if (totalPlaces == 0) {
             Toast.makeText(this, "저장할 장소가 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+
         final int[] successCount = {0};
         final int[] failureCount = {0};
 
@@ -308,43 +338,62 @@ public class GptTripPlanActivity extends AppCompatActivity {
             plan.setDateFromStartDate(startDate, i);
             String dateStr = plan.getDate().replace('.', '-');
 
-            List<GptPlan.Place> places = plan.getPlaces();
-            if (places != null) {
-                DocumentReference dateRef = db.collection("users")
-                        .document(userId)
-                        .collection("travel")
-                        .document(travelId)
-                        .collection("gpt_plan")
-                        .document(dateStr);
+            List<GptPlan.Place> originalPlaces = plan.getPlaces();
+            List<GptPlan.Place> filteredPlaces = new ArrayList<>();
 
+            if (originalPlaces != null) {
+                for (GptPlan.Place place : originalPlaces) {
+                    String[] coord = place.getCoord().split(",");
+                    if (coord.length == 2) {
+                        try {
+                            double lat = Double.parseDouble(coord[0].trim());
+                            double lon = Double.parseDouble(coord[1].trim());
+                            double distance = calculateDistance(accommodationLatitude, accommodationLongitude, lat, lon);
 
-                dateRef.set(new HashMap<>())
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "날짜 문서 생성 " + dateStr))
-                        .addOnFailureListener(e -> Log.e(TAG, "날짜 문서 생성 실패", e));
+                            if (distance <= 20.0) {
+                                filteredPlaces.add(place);
+                            } else {
+                                Log.w(TAG, "20km 초과 장소 제외: " + place.getPlace() + " (" + distance + "km)");
+                            }
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "좌표 파싱 오류: " + place.getCoord(), e);
+                        }
+                    }
+                }
 
+                if (!filteredPlaces.isEmpty()) {
+                    DocumentReference dateRef = db.collection("users")
+                            .document(userId)
+                            .collection("travel")
+                            .document(travelId)
+                            .collection("gpt_plan")
+                            .document(dateStr);
 
-                for (int j = 0; j < places.size(); j++) {
-                    GptPlan.Place place = places.get(j);
-                    place.setDate(plan.getDate());
+                    dateRef.set(new HashMap<>());
 
-                    String placeId = String.format("%02d", j);
-                    place.setPlaceId(placeId);
+                    for (int j = 0; j < filteredPlaces.size(); j++) {
+                        GptPlan.Place place = filteredPlaces.get(j);
+                        place.setDate(plan.getDate());
+                        String placeId = String.format("%02d", j);
+                        place.setPlaceId(placeId);
 
-                    dateRef.collection("places")
-                            .document(placeId)
-                            .set(place)
-                            .addOnSuccessListener(aVoid -> {
-                                successCount[0]++;
-                                checkCompletion(totalPlaces, successCount[0], failureCount[0]);
-                            })
-                            .addOnFailureListener(e -> {
-                                failureCount[0]++;
-                                checkCompletion(totalPlaces, successCount[0], failureCount[0]);
-                            });
+                        dateRef.collection("places")
+                                .document(placeId)
+                                .set(place)
+                                .addOnSuccessListener(aVoid -> {
+                                    successCount[0]++;
+                                    checkCompletion(totalPlaces, successCount[0], failureCount[0]);
+                                })
+                                .addOnFailureListener(e -> {
+                                    failureCount[0]++;
+                                    checkCompletion(totalPlaces, successCount[0], failureCount[0]);
+                                });
+                    }
                 }
             }
         }
     }
+
 
     private void checkCompletion(int total, int success, int failure) {
         if (success + failure == total) {
@@ -467,34 +516,58 @@ public class GptTripPlanActivity extends AppCompatActivity {
         });
     }
 
-    private void saveGptPlanToMember(FirebaseFirestore db, String userId, String travelId, String startDate) {
+    private void saveGptPlanToMember(FirebaseFirestore db, String userId, String travelId, String startDate, double accommodationLatitude, double accommodationLongitude) {
         for (int i = 0; i < gptPlanList.size(); i++) {
             GptPlan plan = gptPlanList.get(i);
             plan.setDateFromStartDate(startDate, i);
             String dateStr = plan.getDate().replace('.', '-');
 
-            List<GptPlan.Place> places = plan.getPlaces();
-            if (places != null) {
-                DocumentReference dateRef = db.collection("users")
-                        .document(userId)
-                        .collection("travel")
-                        .document(travelId)
-                        .collection("gpt_plan")
-                        .document(dateStr);
+            List<GptPlan.Place> originalPlaces = plan.getPlaces();
+            List<GptPlan.Place> filteredPlaces = new ArrayList<>();
 
-                dateRef.set(new HashMap<>());
+            if (originalPlaces != null) {
+                for (GptPlan.Place place : originalPlaces) {
+                    String[] coord = place.getCoord().split(",");
+                    if (coord.length == 2) {
+                        try {
+                            double lat = Double.parseDouble(coord[0].trim());
+                            double lon = Double.parseDouble(coord[1].trim());
+                            double distance = calculateDistance(accommodationLatitude, accommodationLongitude, lat, lon);
 
-                for (int j = 0; j < places.size(); j++) {
-                    GptPlan.Place place = places.get(j);
-                    place.setDate(plan.getDate());
+                            if (distance <= 20.0) {
+                                filteredPlaces.add(place);
+                            } else {
+                                Log.w(TAG, "[팀 복사 제외] 20km 초과 장소: " + place.getPlace() + " (" + distance + "km)");
+                            }
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "[팀 복사 오류] 좌표 파싱 실패: " + place.getCoord(), e);
+                        }
+                    }
+                }
 
-                    dateRef.collection("places")
-                            .document(String.format("%02d", j))
-                            .set(place);
+                if (!filteredPlaces.isEmpty()) {
+                    DocumentReference dateRef = db.collection("users")
+                            .document(userId)
+                            .collection("travel")
+                            .document(travelId)
+                            .collection("gpt_plan")
+                            .document(dateStr);
+
+                    dateRef.set(new HashMap<>());
+
+                    for (int j = 0; j < filteredPlaces.size(); j++) {
+                        GptPlan.Place place = filteredPlaces.get(j);
+                        place.setDate(plan.getDate());
+
+                        dateRef.collection("places")
+                                .document(String.format("%02d", j))
+                                .set(place);
+                    }
                 }
             }
         }
     }
+
 
     // MapReadyCallback 을 통해 지도가 정상적으로 시작된 후에 수신할 수 있다.
     private KakaoMapReadyCallback readyCallback = new KakaoMapReadyCallback() {
