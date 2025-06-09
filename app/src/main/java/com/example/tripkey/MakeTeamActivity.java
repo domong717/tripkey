@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +49,7 @@ public class MakeTeamActivity extends AppCompatActivity {
             return;
         }
 
+        final String suggestedDestination = getIntent().getStringExtra("suggestedDestination");
 
         friendsRecyclerView = findViewById(R.id.friendsRecyclerView);
         selectedRecyclerView = findViewById(R.id.selectedRecyclerView);
@@ -79,6 +81,11 @@ public class MakeTeamActivity extends AppCompatActivity {
             // 팀 생성 후 -> AddTripActivity로 이동
             createTeamInFirestore(selectedFriendsList, teamId -> {
                 Intent intent = new Intent(MakeTeamActivity.this, AddTripActivity.class);
+
+                intent.putExtra("teamId", teamId); // 팀 ID 추가
+                if (suggestedDestination != null) {
+                    intent.putExtra("suggestedDestination", suggestedDestination); // 여행지 이름 전달
+                }
 
                 // 친구 목록 ID
                 ArrayList<String> selectedFriendsIds = new ArrayList<>();

@@ -70,6 +70,12 @@ public class AddTripActivity extends AppCompatActivity {
 
         teamId = getIntent().getStringExtra("teamId");
 
+        String suggestedDestination = getIntent().getStringExtra("suggestedDestination");
+        if (suggestedDestination != null) {
+            EditText destinationInput = findViewById(R.id.location_input); // 예시 id
+            destinationInput.setText(suggestedDestination);
+        }
+
         // 선택된 친구들의 ID 리스트 받기
         ArrayList<String> selectedFriendsIds = getIntent().getStringArrayListExtra("selectedFriendsIds");
         if (selectedFriendsIds != null) {
@@ -643,7 +649,7 @@ public class AddTripActivity extends AppCompatActivity {
 
         Log.d("KakaoMap", "Authorization: " + authorization);
 
-        Call<KakaoSearchResponse> call = apiService.searchPlacesByCategory(authorization, categoryCode, longitude, latitude, radius, 7);
+        Call<KakaoSearchResponse> call = apiService.searchPlacesByCategory(authorization, categoryCode, longitude, latitude, radius, 15);
 
         call.enqueue(new retrofit2.Callback<KakaoSearchResponse>() {
             @Override

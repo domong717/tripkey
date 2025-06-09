@@ -55,6 +55,8 @@ public class SuggestionTravelDestinationActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.button_back);
         backButton.setOnClickListener(v -> finish());
 
+        String finalDestinationName;
+
         Button addButton = findViewById(R.id.add_button);
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(SuggestionTravelDestinationActivity.this, MakeTeamActivity.class);
@@ -118,13 +120,26 @@ public class SuggestionTravelDestinationActivity extends AppCompatActivity {
                         int start = content.indexOf("[");
                         int end = content.indexOf("]");
 
+                        String destinationName = null;
                         if (start != -1 && end != -1 && end > start) {
                             SpannableString spannable = new SpannableString(content);
                             spannable.setSpan(new AbsoluteSizeSpan(25, true), start, end + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             resultView.setText(spannable);
+
+                            destinationName = content.substring(start + 1, end);
                         } else {
                             resultView.setText(content);
                         }
+                        // "여행 추가" 버튼 클릭 시 destination 전달
+                        String finalDestinationName = destinationName; // effectively final
+                        Button addButton = findViewById(R.id.add_button);
+                        addButton.setOnClickListener(v -> {
+                            Intent intent = new Intent(SuggestionTravelDestinationActivity.this, MakeTeamActivity.class);
+                            if (finalDestinationName != null) {
+                                intent.putExtra("suggestedDestination", finalDestinationName);
+                            }
+                            startActivity(intent);
+                        });
                     } else {
                         Toast.makeText(SuggestionTravelDestinationActivity.this,
                                 "추천 결과를 받아오지 못했습니다.", Toast.LENGTH_SHORT).show();
