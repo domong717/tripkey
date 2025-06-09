@@ -628,7 +628,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
             gptPlanList.get(selectedDayIndex).getPlaces().add(newPlace);
 
             // 4. 리스트뷰 갱신
-            PlaceAdapter adapter = new PlaceAdapter(this, gptPlanList.get(selectedDayIndex).getPlaces());
+            PlaceAdapter adapter = new PlaceAdapter(this, gptPlanList.get(selectedDayIndex).getPlaces(),
+                    false, null, null, null);
             planListView.setAdapter(adapter);
 
             // 5. 지도 마커 갱신

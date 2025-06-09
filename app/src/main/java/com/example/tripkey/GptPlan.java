@@ -93,9 +93,6 @@ public class GptPlan {
             this.place = place;
         }
 
-        public void setCoord(String coord) {
-            this.coord = coord;
-        }
 
         public void setCategory(String category) {
             this.category = category;
