@@ -196,16 +196,7 @@ public class AddTripActivity extends AppCompatActivity {
             mbtiResultLauncher.launch(intent);
         });
 
-        binding.aiScheduleButton.setOnClickListener(v -> {
-            int radius = 19999; // 20km 반경
 
-            Log.d("GPTActivity", "기준 위도경도" + accommodationLatitude + "," + accommodationLongitude);
-            searchPlacesFromKakaoByCategory("FD6", accommodationLongitude, accommodationLatitude, radius);
-            searchPlacesFromKakaoByCategory("CE7", accommodationLongitude, accommodationLatitude, radius);
-
-            Log.d("GPTActivity", "카페/음식점: " + cafeFoodList);
-            saveTripData();
-        });
 
     }
 
@@ -453,6 +444,7 @@ public class AddTripActivity extends AppCompatActivity {
 
         Log.d("OneDay", "MustCount: " + mustCount);
         Log.d("OneDay", "당일치기" + OneDay);
+        Log.d("GPTsend", "Latitude: " + accommodationLatitude + ", Longitude: " + accommodationLongitude);
         // 기본 필수 항목 검사
         if (travelName.isEmpty() || location.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || selectedWho.isEmpty() || selectedStyle.isEmpty()) {
             Toast.makeText(this, "모든 항목을 채워주세요!", Toast.LENGTH_SHORT).show();
@@ -616,6 +608,7 @@ public class AddTripActivity extends AppCompatActivity {
                         intent.putExtra("selectedFriendsIds", selectedFriendsIds);
                         intent.putExtra("accommodation_latitude", accommodationLatitude);
                         intent.putExtra("accommodation_longitude", accommodationLongitude);
+                        Log.d("GPTsend", "Latitude: " + accommodationLatitude + ", Longitude: " + accommodationLongitude);
                         startActivity(intent);
                     } else {
                         Log.e("GPT", "Response error: " + response.code());
@@ -708,7 +701,7 @@ public class AddTripActivity extends AppCompatActivity {
 
         // 5 글자: 일정 개수
         char scheduleCount = groupMBTI.charAt(4);
-        String scheduleDesc = (scheduleCount == 'T') ? "일정은 딱 7개" : (scheduleCount == 'L') ? "일정은 딱 4개" : "";
+        String scheduleDesc = (scheduleCount == 'T') ? "일정은 딱 8개" : (scheduleCount == 'L') ? "일정은 딱 5개" : "";
 
         return String.format("%s, %s, %s, %s, %s", indoorOutdoor, transport, financeDesc, foodDesc, scheduleDesc);
     }
@@ -757,6 +750,7 @@ public class AddTripActivity extends AppCompatActivity {
                         accommodationLongitude = data.getDoubleExtra("longitude", 126.9780);
                         Log.d("AddTripActivity", "숙소 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
                     }
+                    Log.d("AddTripActivity", "숙소 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
                     break;
                 }
                 case "must_visit": {
@@ -785,5 +779,16 @@ public class AddTripActivity extends AppCompatActivity {
                 }
             }
         }
+
+        binding.aiScheduleButton.setOnClickListener(v -> {
+            int radius = 19999; // 20km 반경
+
+            Log.d("GPTActivity", "기준 위도경도" + accommodationLatitude + "," + accommodationLongitude);
+            searchPlacesFromKakaoByCategory("FD6", accommodationLongitude, accommodationLatitude, radius);
+            searchPlacesFromKakaoByCategory("CE7", accommodationLongitude, accommodationLatitude, radius);
+
+            Log.d("GPTActivity", "카페/음식점: " + cafeFoodList);
+            saveTripData();
+        });
     }
 }

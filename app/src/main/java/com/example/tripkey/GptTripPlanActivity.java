@@ -75,6 +75,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
     private String placeToStay;
     private String teamMBTI;
     private String groupMBTIStyle;
+    private double accommodationLatitude;
+    private double accommodationLongitude;
     private String teamId;
     private String who;
     private Map<String, Object> travelData = new HashMap<>();
@@ -111,10 +113,9 @@ public class GptTripPlanActivity extends AppCompatActivity {
         String gptScheduleJson = getIntent().getStringExtra("gpt_schedule");
         groupMBTIStyle = getIntent().getStringExtra("groupMBTIStyle");
         travelId = getIntent().getStringExtra("travelId");
+        accommodationLatitude = getIntent().getDoubleExtra("accommodation_latitude", 37.5665);
+        accommodationLongitude = getIntent().getDoubleExtra("accommodation_longitude", 126.9780);
 
-        Intent intent = getIntent();
-        double accommodationLatitude = intent.getDoubleExtra("accommodationLatitude", 37.5665);
-        double accommodationLongitude = intent.getDoubleExtra("accommodation_longitude", 126.9780);
         Log.d("GptTripPlanActivity", "숙소 위치 - 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
 
 
