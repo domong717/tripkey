@@ -20,6 +20,9 @@ public class GptPlan {
     public List<Place> getPlaces() {
         return places;
     }
+
+    public void setPlaces(List<Place> places) { this.places = places;}
+
     public void setDateFromStartDate(String startDate, int dayIndex) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -66,7 +69,6 @@ public class GptPlan {
         public String getPlace() {
             return place;
         }
-
         public String getCoord() {
             return coord;
         }
@@ -82,7 +84,6 @@ public class GptPlan {
         public String getTime() {
             return time;
         }
-
         public String getSupply() { return supply; }
         public double getLatitude() { return latitude; }
         public void setLatitude(double latitude) { this.latitude = latitude; }

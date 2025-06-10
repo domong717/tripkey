@@ -161,6 +161,36 @@ public class GptTripPlanActivity extends AppCompatActivity {
                 gptPlanList = gson.fromJson(gptScheduleJson, listType);
                 Log.d("DEBUG", "gptPlanList: " + gptPlanList);
 
+                List<GptPlan> filteredPlanList = new ArrayList<>();
+
+                for (GptPlan plan : gptPlanList) {
+                    List<GptPlan.Place> filteredPlaces = new ArrayList<>();
+                    for (GptPlan.Place place : plan.getPlaces()) {
+                        String[] coord = place.getCoord().split(",");
+                        if (coord.length == 2) {
+                            try {
+                                double lat = Double.parseDouble(coord[0].trim());
+                                double lon = Double.parseDouble(coord[1].trim());
+                                double distance = calculateDistance(accommodationLatitude, accommodationLongitude, lat, lon);
+                                Log.d("DEBUG", "장소: " + place.getPlace() + ", 거리: " + distance);
+                                if (distance <= 20.0) {
+                                    filteredPlaces.add(place);
+                                }
+                            } catch (NumberFormatException e) {
+                                Log.e("DEBUG", "좌표 파싱 오류: " + place.getCoord(), e);
+                            }
+                        }
+                    }
+
+                    if (!filteredPlaces.isEmpty()) {
+                        plan.setPlaces(filteredPlaces);
+                        filteredPlanList.add(plan);
+                    }
+                }
+
+                gptPlanList = filteredPlanList;
+
+
                 updateAllCoordsFromKakao(gptPlanList);
 
                 if (gptPlanList == null || gptPlanList.isEmpty()) {
