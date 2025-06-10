@@ -14,7 +14,7 @@
         app:itemIconSize="50dp"
         app:itemIconTint="@drawable/bottom_navigation_color"
         app:itemTextColor="@drawable/bottom_navigation_color"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"

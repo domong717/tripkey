@@ -171,7 +171,6 @@
         android:id="@+id/add_record_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
         android:background="@drawable/green_box_full"
         android:text="기록 추가하기"
         android:textColor="@color/white"
@@ -179,6 +178,10 @@
         app:srcCompat="@drawable/add_record_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

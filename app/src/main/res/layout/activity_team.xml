@@ -75,7 +75,7 @@
     <!-- 모임 나가기 버튼 (항상 하단 고정) -->
     <Button
         android:id="@+id/getout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="모임 나가기"
         android:textSize="24sp"
@@ -89,6 +89,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="?actionBarSize" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

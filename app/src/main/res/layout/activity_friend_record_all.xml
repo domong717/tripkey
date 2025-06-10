@@ -52,6 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:clipChildren="false"
         android:clipToPadding="false"
-        tools:listitem="@layout/item_trip_post" />
+        tools:listitem="@layout/item_trip_post"
+        android:layout_marginBottom="?attr/actionBarSize"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

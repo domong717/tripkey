@@ -168,7 +168,7 @@
         android:background="@drawable/green_box_full"
         android:text="일정에 담기"
         android:textColor="@color/white"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="?actionBarSize"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

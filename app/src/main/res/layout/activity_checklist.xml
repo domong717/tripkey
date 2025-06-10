@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -105,7 +104,7 @@
         android:background="@drawable/yellow_box_full"
         android:orientation="vertical"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@id/resetButtonContainer"
+        app:layout_constraintBottom_toTopOf="@id/resetButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recommendedRecyclerView">
@@ -117,24 +116,22 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-    <!-- 초기화 버튼 -->
-    <LinearLayout
-        android:id="@+id/resetButtonContainer"
-        android:layout_width="match_parent"
+
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:background="@drawable/green_box_full"
+        android:contentDescription="초기화 버튼"
+        android:text="✓ 초기화하기"
+        android:textColor="@color/white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageButton
-            android:id="@+id/resetButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:contentDescription="초기화 버튼"
-            android:layout_marginBottom="64dp"
-            app:srcCompat="@drawable/reset" />
-    </LinearLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/reset" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

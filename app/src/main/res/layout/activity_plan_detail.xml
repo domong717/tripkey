@@ -169,5 +169,6 @@
         android:layout_below="@id/buttonLayout"
         android:background="@color/yellow"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="?actionBarSize"/>
 </RelativeLayout>

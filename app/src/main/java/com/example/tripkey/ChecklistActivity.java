@@ -53,7 +53,7 @@ public class ChecklistActivity extends AppCompatActivity {
         // UI 초기화
         newItemEditText = findViewById(R.id.newItemEditText);
         Button addButton = findViewById(R.id.addButton);
-        ImageButton resetButton = findViewById(R.id.resetButton);
+        Button resetButton = findViewById(R.id.resetButton);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
         checklistItems = new ArrayList<>();

@@ -89,7 +89,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="자연경관 찾아가기"
+                    android:text="아름다운 자연경관 찾아가기"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -199,7 +199,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="역사와 문화를 배울 수 있는 박물관 탐방"
+                    android:text="문화를 배울 수 있는 박물관 탐방"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -225,7 +225,7 @@
                     android:layout_height="100dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="스파 즐기고 카페가기"
+                    android:text="따뜻한 스파 즐기고 카페가기"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -235,7 +235,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="드라이브 즐기기"
+                    android:text="드라이브 즐기며 바깥 공기 쐬기"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -272,7 +272,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="대중교통을 타고 여유롭게 주변을 탐방"
+                    android:text="대중교통을 타고 여유롭게 이동"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -383,7 +383,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="바깥에서 다양한 활동하기"
+                    android:text="바깥에서 다양하고 새로운 활동하기"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -457,7 +457,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="하루라도 지나치게 비싼 건 싫다"
+                    android:text="아무리 여행이지만 지나치게 비싼 건 싫다"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -521,7 +521,7 @@
                     android:layout_height="100dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="하루 단위로 여유 있게 움직이기"
+                    android:text="여행은 곧 휴식이니 여유 있게 천천히 움직이자"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -531,7 +531,7 @@
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:text="시간 단위로 꼼꼼하게 계획 세우기"
+                    android:text="시간 단위로 꼼꼼하게 계획 세워서 다니자"
                     android:textColor="@color/yellow"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -622,14 +622,17 @@
         android:id="@+id/mbtiButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
         android:background="@drawable/green_box_full"
         android:text="MBTI 분석하기"
         android:textColor="@color/white"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
