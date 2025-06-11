@@ -47,6 +47,9 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private ImageButton friendsButton;
+    private String selectedMBTI = "전체";
+    private String selectedLocation = "전체";
+
 
     private RecyclerView recyclerView;
     private TripPostAdapter tripPostAdapter;
@@ -97,11 +100,15 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(tripPostAdapter);
         AutoCompleteTextView mbtiDropdown = rootView.findViewById(R.id.mbti_dropdown);
 
+        AutoCompleteTextView locationDropdown = rootView.findViewById(R.id.location_dropdown);
         String[] mbtiList = {
                 "전체", "IBRFT", "IBRFL", "IBRMT", "IBRML", "IBEFT", "IBEFL", "IBEMT",
                 "IBEML", "ICRFT", "ICRFL", "ICRMT", "ICRML", "ICEFT", "ICEFL", "ICEMT",
                 "ICEML", "OBRFT", "OBRFL", "OBRMT", "OBRML", "OBEFT", "OBEFL", "OBEMT",
                 "OBEML", "OCRFT", "OCRFL", "OCRMT", "OCRML", "OCEFT", "OCEFL", "OCEMT", "OCEML"
+        };
+        String[] locationList = {
+                "전체", "서울", "경기","인천", "강원", "부산", "울산", "대구", "대전", "광주", "충북", "충남", "전북", "전남", "경북","제주"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
@@ -109,10 +116,22 @@ public class HomeFragment extends Fragment {
                 mbtiList);
         mbtiDropdown.setAdapter(adapter);
 
+        ArrayAdapter<String> l_adapter = new ArrayAdapter<>(
+                requireContext(),
+                R.layout.item_location_dropdown,
+                locationList);
+        locationDropdown.setAdapter(l_adapter);
+
         mbtiDropdown.setOnItemClickListener((parent, view1, position, id) -> {
-            String selectedMBTI = parent.getItemAtPosition(position).toString();
-            filterTripPostsByMBTI(selectedMBTI); // 필터링 메서드 호출
+            selectedMBTI = parent.getItemAtPosition(position).toString();
+            applyCombinedFilters(); // AND 조건 적용
         });
+
+        locationDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            selectedLocation = parent.getItemAtPosition(position).toString();
+            applyCombinedFilters(); // AND 조건 적용
+        });
+
 
         // userId 가져오기
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
@@ -237,21 +256,25 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    private void filterTripPostsByMBTI(String selectedMBTI) {
+
+    private void applyCombinedFilters() {
         filteredList.clear();
 
-        if (selectedMBTI.equals("전체")) {
-            filteredList.addAll(tripList);
-        } else {
-            for (TripPost trip : tripList) {
-                if (trip.getTeamMBTI() != null && trip.getTeamMBTI().equals(selectedMBTI)) {
-                    filteredList.add(trip);
-                }
+        for (TripPost trip : tripList) {
+            boolean mbtiMatches = selectedMBTI.equals("전체") ||
+                    (trip.getTeamMBTI() != null && trip.getTeamMBTI().equals(selectedMBTI));
+
+            boolean locationMatches = selectedLocation.equals("전체") ||
+                    (trip.getLocation() != null && trip.getLocation().contains(selectedLocation));
+
+            if (mbtiMatches && locationMatches) {
+                filteredList.add(trip);
             }
         }
 
         tripPostAdapter.updateList(filteredList);
     }
+
 
 
 }
