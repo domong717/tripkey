@@ -118,7 +118,7 @@
         android:background="#FFF8DC"
         app:layout_constraintBottom_toTopOf="@id/bottom_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintHeight_percent="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/buttonLayout" />
 
@@ -130,6 +130,7 @@
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/place_list_view"
         app:layout_constraintBottom_toTopOf="@id/ai_plan_add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -137,7 +138,7 @@
         <Button
             android:id="@+id/re_gpt_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="10dp"
             android:layout_weight="1"

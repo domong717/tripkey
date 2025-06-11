@@ -517,10 +517,10 @@ public class AddTripActivity extends AppCompatActivity {
             prompt.append("여행을 계획해줘.");
             prompt.append("여행기간 :").append(startDate).append("~").append(endDate);
             prompt.append("장소 : ").append(location);
-            prompt.append("숙소 : ").append(placeToStay).append("숙소 위치를 중심으로 반경 20km까지만,동선을 고려해서 일정 생성.\n");
+            prompt.append("숙소 이름, 위도, 경도: ").append(placeToStay).append(accommodationLatitude).append(accommodationLongitude).append("숙소 중심으로 반경 20km의 장소들로 여행 생성. 동선을 고려하는 게 가장 중요.\n");
             prompt.append("여행 스타일: ").append(groupMBTIStyle);
-            prompt.append("여행 스타일을 무조건 반영하여 일정 생성.");
-            prompt.append(who).append("와(과) 함께 여행\n");
+            prompt.append("여행 스타일을 무조건 반영하여 동선이 좋은 일정 생성하는 것이 핵심.");
+            prompt.append(who).append("와(과) 함께 여행\n").append("추천 장소에 꼭 반영할 것. 아이와일 경우 키즈카페 포함");
 
             if (!travelData.isEmpty()) {
                 List<String> places = new ArrayList<>();
@@ -555,7 +555,6 @@ public class AddTripActivity extends AppCompatActivity {
 
 
             prompt.append("하루하루를 나눠서 JSON 배열로 구성. 진짜 데이터를 넣어서 날짜별로 장소 생성.\n");
-            prompt.append(groupMBTI).append("의 맨 마지막이 T인 경우엔 날마다 7곳의 일정 생성, L인 경우엔 날마다 4곳의 일정 생성.");
             if (cafeFoodList != null && !cafeFoodList.isEmpty()) {
                 Log.d("GPTActivity", "cafefoodlist: " + cafeFoodList);
 
@@ -566,9 +565,10 @@ public class AddTripActivity extends AppCompatActivity {
                         .append(placeListStr)
                         .append("\n");
             }
-            prompt.append(groupMBTI).append("에 F 있으면 카페 1곳, M 있으면 카페 추천 금지.");
-            prompt.append("must가 있더라도 음식점은 날마다 2곳 추가하여 일정 생성 필수. 카페 및 음식점 추천 리스트에서 여행 스타일에 따라 추천.\n");
+            prompt.append(teamMBTI).append("에 I 있으면 쇼핑몰, 박물관, 실내 위주 추천, O있으면 자연경관, 야외, 바다와 같은 야외 위주 추천");
             prompt.append("식사/카페 제외 관광지와 쇼핑몰, 자연경관 등을 추천하여 일정에 추가 필수\n");
+            prompt.append(teamMBTI).append("에 F 있으면 날마다 카페 2곳 추가, M 있으면 카페이름 넘기기 절대 금지.");
+            prompt.append("식사는 날마다 2곳 추가.\n");
             prompt.append("중복 장소 추천 금지");
             prompt.append("해당 장소에서 추천하는 준비물도 알려줘. 필요 없는 경우엔 null으로 알려줘도 돼. 예를 들자면 한라산을 방문하기 위해서는 등산화, 편한 옷이 필요하니 supply에 {등산화, 편한옷}을 넣어주면 되고 카페처럼 준비물이 없는 경우 null 값을 넣어줘.");
             prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. \n");
@@ -697,11 +697,11 @@ public class AddTripActivity extends AppCompatActivity {
 
         // 4 글자: 음식 취향
         char food = groupMBTI.charAt(3);
-        String foodDesc = (food == 'F') ? "미식가라서 음식 중요" : "음식보다 자연이나 박물관 관람이 중요";
+        String foodDesc = (food == 'F') ? "미식가라서 음식 중요" : "음식보다 쇼핑몰, 자연경관, 박물관 관람이 중요";
 
         // 5 글자: 일정 개수
         char scheduleCount = groupMBTI.charAt(4);
-        String scheduleDesc = (scheduleCount == 'T') ? "일정은 딱 8개" : (scheduleCount == 'L') ? "일정은 딱 5개" : "";
+        String scheduleDesc = (scheduleCount == 'T') ? "일정은 8개" : (scheduleCount == 'L') ? "일정은 딱 4개" : "";
 
         return String.format("%s, %s, %s, %s, %s", indoorOutdoor, transport, financeDesc, foodDesc, scheduleDesc);
     }

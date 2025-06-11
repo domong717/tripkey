@@ -251,12 +251,12 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
                 }
             } catch (Exception e) {
-                Toast.makeText(this, "일정 데이터를 파싱하는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "GPT 응답 실패.", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
 
         } else {
-            Toast.makeText(this, "일정 데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "GPT 응답 실패", Toast.LENGTH_SHORT).show();
         }
 
         mapView = findViewById(R.id.map_view);
@@ -321,6 +321,10 @@ public class GptTripPlanActivity extends AppCompatActivity {
                         List<String> members = (List<String>) documentSnapshot.get("members");
                         if (members != null && !members.isEmpty()) {
                             for (String memberId : members) {
+                                db.collection("users").document(memberId)
+                                        .collection("travel").document(travelId).set(travelData)
+                                        .addOnSuccessListener(aVoid -> Log.d(TAG, "친구 기본 여행 정보 저장 완료"))
+                                        .addOnFailureListener(e -> Log.e(TAG, "친구 기본 여행 정보 저장 실패", e));
                                 saveGptPlanToMember(db, memberId, travelId, startDate, accommodationLatitude, accommodationLongitude);
                             }
                         }
@@ -339,7 +343,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                             double lat = Double.parseDouble(coord[0].trim());
                             double lon = Double.parseDouble(coord[1].trim());
                             double distance = calculateDistance(accommodationLatitude, accommodationLongitude, lat, lon);
-                            if (distance <= 20.0) {
+                            if (distance < 20.0) {
                                 allFilteredPlaces.add(place);
                             }
                         } catch (NumberFormatException e) {
@@ -447,10 +451,10 @@ public class GptTripPlanActivity extends AppCompatActivity {
         prompt.append("일정 다시 생성");
         prompt.append("여행기간 :").append(startDate).append("~").append(endDate);
         prompt.append("장소 : ").append(location);
-        prompt.append("숙소 : ").append(placeToStay).append("숙소 위치를 중심으로 반경 20km까지만,동선을 고려해서 일정 생성.\n");
+        prompt.append("숙소 이름, 위도, 경도: ").append(placeToStay).append(accommodationLatitude).append(accommodationLongitude).append("숙소 중심으로 반경 20km의 장소들로 여행 생성. 동선을 고려하는 게 가장 중요.\n");
         prompt.append("여행 스타일: ").append(groupMBTIStyle);
         prompt.append("여행 스타일을 무조건 반영하여 일정 생성.");
-        prompt.append(who).append("와(과) 함께 여행\n");
+        prompt.append(who).append("와(과) 함께 여행\n").append("추천 장소에 꼭 반영할 것. 아이와일 경우 키즈카페 포함");
 
         if (!travelData.isEmpty()) {
             List<String> places = new ArrayList<>();
@@ -483,13 +487,13 @@ public class GptTripPlanActivity extends AppCompatActivity {
         prompt.append("  }\n");
         prompt.append("]\n");
 
-
         prompt.append("하루하루를 나눠서 JSON 배열로 구성. 진짜 데이터를 넣어서 날짜별로 장소 생성.\n");
-        prompt.append(teamMBTI).append("의 맨 마지막이 T인 경우엔 날마다 7곳의 일정 생성, L인 경우엔 날마다 4곳의 일정 생성.");
-
-        prompt.append(teamMBTI).append("에 F 있으면 카페 1곳, M 있으면 카페 추천 금지.");
-        prompt.append("식사는 날마다 2곳. 카페 및 음식점 추천 리스트에서 groupMBTI에 따라 추천하여 추가.\n");
+        prompt.append(teamMBTI).append("에 I 있으면 야외 추천 자제");
         prompt.append("식사/카페 제외 관광지와 쇼핑몰, 자연경관 등을 추천하여 일정에 추가 필수\n");
+        prompt.append(teamMBTI).append("에 T 있으면 날마다 식당/카페 제외 4곳의 추가 일정 생성, L 있으면 날마다 식당/카페 제외 1곳의 일정 생성.");
+
+        prompt.append(teamMBTI).append("에 F 있으면 날마다 카페 2곳, M 있으면 카페 추천 금지.");
+        prompt.append("식사는 날마다 2곳. 카페 및 음식점 추천 리스트에서 groupMBTI에 따라 추천하여 추가.\n");
         prompt.append("중복 장소 추천 금지");
         prompt.append("해당 장소에서 추천하는 준비물도 알려줘. 필요 없는 경우엔 null으로 알려줘도 돼. 예를 들자면 한라산을 방문하기 위해서는 등산화, 편한 옷이 필요하니 supply에 {등산화, 편한옷}을 넣어주면 되고 카페처럼 준비물이 없는 경우 null 값을 넣어줘.");
         prompt.append("꼭 방문해야 하는 장소는 하루에 모두 넣을 필요는 없어. \n");
@@ -602,8 +606,6 @@ public class GptTripPlanActivity extends AppCompatActivity {
         public void onMapReady(@NonNull KakaoMap kakaoMap) {
             GptTripPlanActivity.this.kakaoMap = kakaoMap;
 
-            Toast.makeText(getApplicationContext(), "Map Start!", Toast.LENGTH_SHORT).show();
-
             Log.i("k3f", "startPosition: "
                     + kakaoMap.getCameraPosition().getPosition().toString());
             Log.i("k3f", "startZoomLevel: "
@@ -632,8 +634,6 @@ public class GptTripPlanActivity extends AppCompatActivity {
 
         @Override
         public void onMapDestroy() {
-            Toast.makeText(getApplicationContext(), "onMapDestroy",
-                    Toast.LENGTH_SHORT).show();
         }
 
         @Override

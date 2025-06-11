@@ -350,8 +350,6 @@ public class PlanDetailActivity extends AppCompatActivity {
         public void onMapReady(@NonNull KakaoMap kakaoMap) {
             PlanDetailActivity.this.kakaoMap = kakaoMap;
 
-            Toast.makeText(getApplicationContext(), "Map Start!", Toast.LENGTH_SHORT).show();
-
             Log.i("k3f", "startPosition: "
                     + kakaoMap.getCameraPosition().getPosition().toString());
             Log.i("k3f", "startZoomLevel: "
@@ -374,8 +372,6 @@ public class PlanDetailActivity extends AppCompatActivity {
 
         @Override
         public void onMapDestroy() {
-            Toast.makeText(getApplicationContext(), "onMapDestroy",
-                    Toast.LENGTH_SHORT).show();
         }
 
         @Override
