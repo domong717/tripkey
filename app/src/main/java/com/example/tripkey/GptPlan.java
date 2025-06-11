@@ -80,6 +80,7 @@ public class GptPlan {
         public String getTransport() {
             return transport;
         }
+        public void setTransport(String transport) { this.transport = transport; }
 
         public String getTime() {
             return time;

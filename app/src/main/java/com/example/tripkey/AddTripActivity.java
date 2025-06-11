@@ -565,9 +565,9 @@ public class AddTripActivity extends AppCompatActivity {
                         .append(placeListStr)
                         .append("\n");
             }
-            prompt.append(teamMBTI).append("에 I 있으면 쇼핑몰, 박물관, 실내 위주 추천, O있으면 자연경관, 야외, 바다와 같은 야외 위주 추천");
+            prompt.append(teamMBTI).append("에 I 있으면 쇼핑몰, 박물관, 실내 위주 추천\n O있으면 자연경관, 야외, 바다와 같은 야외 위주 추천");
             prompt.append("식사/카페 제외 관광지와 쇼핑몰, 자연경관 등을 추천하여 일정에 추가 필수\n");
-            prompt.append(teamMBTI).append("에 F 있으면 날마다 카페 2곳 추가, M 있으면 카페이름 넘기기 절대 금지.");
+            prompt.append(teamMBTI).append("에 F 있으면 날마다 카페 2곳 추가\n M 있으면 카페이름 넘기기 절대 금지.");
             prompt.append("식사는 날마다 2곳 추가.\n");
             prompt.append("중복 장소 추천 금지");
             prompt.append("해당 장소에서 추천하는 준비물도 알려줘. 필요 없는 경우엔 null으로 알려줘도 돼. 예를 들자면 한라산을 방문하기 위해서는 등산화, 편한 옷이 필요하니 supply에 {등산화, 편한옷}을 넣어주면 되고 카페처럼 준비물이 없는 경우 null 값을 넣어줘.");

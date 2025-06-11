@@ -203,7 +203,11 @@ public class PlanDetailActivity extends AppCompatActivity {
                 placeInfoList.add("날짜: " + date);
                 //placeInfoList.add("");
 
+
                 for (GptPlan.Place place : placesForDate) {
+                    if (place.getTransport() == null){
+                        place.setTransport("택시");
+                    }
                     placeInfoList.add("📍 " + place.getPlace() + "\n" +
                             "  ∘ 카테고리: " + place.getCategory() + "\n" +
                             "  ∘ 이동수단: " + place.getTransport());
