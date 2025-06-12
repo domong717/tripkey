@@ -31,6 +31,7 @@ import com.example.tripkey.LoginActivity;
 import com.example.tripkey.MBTIDescriptionActivity;
 import com.example.tripkey.MapActivity;
 import com.example.tripkey.RecordActivity;
+import com.example.tripkey.SuggestionTravelDestinationActivity;
 import com.example.tripkey.WishListActivity;
 import com.example.tripkey.databinding.FragmentInfoBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -112,7 +113,7 @@ public class InfoFragment extends Fragment {
         });
 
         binding.mapLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), MapActivity.class);
+            Intent intent = new Intent(getActivity(), SuggestionTravelDestinationActivity.class);
             startActivity(intent);
         });
 

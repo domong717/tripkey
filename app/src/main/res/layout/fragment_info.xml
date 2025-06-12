@@ -167,7 +167,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="여행 지도"
+            android:text="여행지 추천"
             android:textColor="#6A9C78"
             android:textSize="20sp"
             android:textStyle="bold"/>
