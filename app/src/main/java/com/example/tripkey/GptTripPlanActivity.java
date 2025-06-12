@@ -115,6 +115,10 @@ public class GptTripPlanActivity extends AppCompatActivity {
         travelId = getIntent().getStringExtra("travelId");
         accommodationLatitude = getIntent().getDoubleExtra("accommodation_latitude", 37.5665);
         accommodationLongitude = getIntent().getDoubleExtra("accommodation_longitude", 126.9780);
+        if (accommodationLatitude > 37.56 && accommodationLatitude < 37.57)
+            accommodationLatitude = 37.79125474022498;
+        if (accommodationLongitude > 126.97 && accommodationLongitude < 126.98)
+            accommodationLongitude = 128.92097417796126;
 
         Log.d("GptTripPlanActivity", "숙소 위치 - 위도: " + accommodationLatitude + ", 경도: " + accommodationLongitude);
 
@@ -192,7 +196,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                 gptPlanList = filteredPlanList;
 
 
-                updateAllCoordsFromKakao(gptPlanList);
+                updateAllCoordsFromKakao(gptPlanList, accommodationLatitude, accommodationLongitude);
 
                 if (gptPlanList == null || gptPlanList.isEmpty()) {
                     throw new IllegalAccessException("일정이 비어있습니다.");
@@ -292,8 +296,8 @@ public class GptTripPlanActivity extends AppCompatActivity {
         String startDate = intent.getStringExtra("startDate");
         String teamId = intent.getStringExtra("teamId");
 
-        double accommodationLatitude = intent.getDoubleExtra("accommodation_latitude", 37.5665);
-        double accommodationLongitude = intent.getDoubleExtra("accommodation_longitude", 126.9780);
+        accommodationLatitude = intent.getDoubleExtra("accommodation_latitude", 37.5665);
+        accommodationLongitude = intent.getDoubleExtra("accommodation_longitude", 126.9780);
 
         if (travelName == null || travelId == null || teamId == null) {
             Toast.makeText(this, "여행 정보 또는 팀 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
@@ -741,11 +745,10 @@ public class GptTripPlanActivity extends AppCompatActivity {
         }
     }
 
-    private void updateAllCoordsFromKakao(List<GptPlan> planList) {
+    private void updateAllCoordsFromKakao(List<GptPlan> planList, double accommodationLatitude, double accommodationLongitude) {
         KakaoApiService api = KakaoApiClient.getRetrofitInstance().create(KakaoApiService.class);
         String kakaoKey = "KakaoAK 42d61720c6096d7a9ec5e7c8d0950740";
 
-        // 실패한 장소 저장용 리스트 (동기화 필요할 수 있음)
         List<GptPlan.Place> failedPlaces = Collections.synchronizedList(new ArrayList<>());
 
         int totalPlacesCount = 0;
@@ -756,8 +759,7 @@ public class GptTripPlanActivity extends AppCompatActivity {
                 }
             }
         }
-        final int totalPlaces = totalPlacesCount;  // final 변수로
-
+        final int totalPlaces = totalPlacesCount;
         AtomicInteger processedCount = new AtomicInteger(0);
 
         for (GptPlan plan : planList) {
@@ -771,13 +773,23 @@ public class GptTripPlanActivity extends AppCompatActivity {
                     public void onResponse(Call<KakaoSearchResponse> call, Response<KakaoSearchResponse> response) {
                         if (response.isSuccessful() && response.body() != null && !response.body().documents.isEmpty()) {
                             KakaoSearchResponse.Document doc = response.body().documents.get(0);
-                            String coord = doc.y + "," + doc.x;
-                            place.setCoord(coord);
-                            Log.d("CoordUpdate", "✔ " + placeName + " → " + coord);
+                            double placeLat = Double.parseDouble(doc.y);
+                            double placeLon = Double.parseDouble(doc.x);
+
+                            double distance = calculateDistance(accommodationLatitude, accommodationLongitude, placeLat, placeLon);
+                            if (distance <= 20.0) {
+                                String coord = doc.y + "," + doc.x;
+                                place.setCoord(coord);
+                                Log.d("CoordUpdate", "✔ " + placeName + " → " + coord + " (거리: " + distance + "km)");
+                            } else {
+                                Log.w("CoordUpdate", "✖ " + placeName + " 숙소로부터 너무 멈. 거리: " + distance + "km");
+                                failedPlaces.add(place);
+                            }
                         } else {
                             Log.w("CoordUpdate", "✖ " + placeName + " 검색 실패");
                             failedPlaces.add(place);
                         }
+
                         if (processedCount.incrementAndGet() == totalPlaces) {
                             removeFailedPlaces();
                         }

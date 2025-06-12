@@ -146,34 +146,29 @@ public class HomeFragment extends Fragment {
     private void loadTripsFromFirestore() {
         tripList.clear();
 
-        // 나 + 친구 userId 리스트 수집
-        List<String> allUserIds = new ArrayList<>();
-        allUserIds.add(userId); // 나 자신 추가
-
         db.collection("users")
-                .document(userId)
-                .collection("friends")
-                .get().addOnSuccessListener(friendSnap -> {
-                    for (QueryDocumentSnapshot doc : friendSnap) {
-                        String friendId = doc.getId(); // 친구의 userId
-                        allUserIds.add(friendId);
-                    }
+                .get()
+                .addOnSuccessListener(usersSnap -> {
+                    for (QueryDocumentSnapshot userDoc : usersSnap) {
+                        String uid = userDoc.getId();
 
-                    // 나와 친구들의 travel 데이터 조회
-                    for (String uid : allUserIds) {
                         db.collection("users")
                                 .document(uid)
                                 .collection("travel")
-                                .get().addOnSuccessListener(travelSnap -> {
+                                .get()
+                                .addOnSuccessListener(travelSnap -> {
                                     for (QueryDocumentSnapshot travelDoc : travelSnap) {
                                         String travelId = travelDoc.getId();
 
-                                        // records 컬렉션 문서 존재 여부 체크
-                                        db.collection("users").document(uid)
-                                                .collection("travel").document(travelId)
+                                        // records 존재 여부 확인
+                                        db.collection("users")
+                                                .document(uid)
+                                                .collection("travel")
+                                                .document(travelId)
                                                 .collection("records")
                                                 .limit(1)
-                                                .get().addOnSuccessListener(recordsSnap -> {
+                                                .get()
+                                                .addOnSuccessListener(recordsSnap -> {
                                                     if (!recordsSnap.isEmpty()) {
                                                         String title = travelDoc.getString("travelName");
                                                         String startDate = travelDoc.getString("startDate");
@@ -184,19 +179,21 @@ public class HomeFragment extends Fragment {
                                                         String teamId = travelDoc.getString("teamId");
                                                         String teamMBTI = travelDoc.getString("teamMBTI");
 
-                                                        // 팀 정보 및 records 로딩
+                                                        // 팀 정보 및 장소 정보 로딩
                                                         loadTeamMembersAndPlaces(uid, teamId, total, travelId, result -> {
                                                             int peopleCount = result.first;
                                                             String costPerPerson = (total != null && peopleCount > 0)
                                                                     ? String.format("%,d 원", total / peopleCount)
                                                                     : "알 수 없음";
 
-                                                            TripPost trip = new TripPost(title, date, location, peopleCount, costPerPerson, result.second, teamMBTI,travelId,uid);
+                                                            TripPost trip = new TripPost(
+                                                                    title, date, location,
+                                                                    peopleCount, costPerPerson,
+                                                                    result.second, teamMBTI, travelId, uid
+                                                            );
                                                             tripList.add(trip);
                                                             tripPostAdapter.notifyDataSetChanged();
                                                         });
-                                                    } else {
-
                                                     }
                                                 });
                                     }
@@ -204,6 +201,7 @@ public class HomeFragment extends Fragment {
                     }
                 });
     }
+
 
 
     private void loadTeamMembersAndPlaces(String userId, String teamId, Long total, String travelId, OnTripDataReadyListener listener) {

@@ -124,8 +124,6 @@ public class MapActivity extends AppCompatActivity {
 
         @Override
         public void onMapDestroy() {
-            Toast.makeText(getApplicationContext(), "onMapDestroy",
-                    Toast.LENGTH_SHORT).show();
         }
 
         @Override
